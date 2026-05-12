@@ -1,0 +1,392 @@
+{
+  "updatedAt": "2026-04-27T10:18:09.394Z",
+  "createdAt": "2026-04-15T09:29:38.193Z",
+  "id": "6JxRDrd3UHBm3q6t",
+  "name": "Поиск по сайтам с помощью ИИ",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f64f36c7-fe2e-4fbc-8808-c127166e0714",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17bZ_7mBGe0OVPMu8EmCu0_jgjWTp9TuZQmZBThuUioQ",
+          "mode": "list",
+          "cachedResultName": "Новая таблица",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17bZ_7mBGe0OVPMu8EmCu0_jgjWTp9TuZQmZBThuUioQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17bZ_7mBGe0OVPMu8EmCu0_jgjWTp9TuZQmZBThuUioQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9431eeef-5bd9-4d9c-a33c-bbed4c700914",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\n\nconst items = rows.map(row => ({\n  id: row.json['id'],\n  name: row.json['Название товара'],\n  referenceUrl: row.json['Ссылка на похожий товар'],\n  characteristics: row.json['Характеристики'],\n  targetPrice: row.json['Ценник на товар'],\n}));\n\nreturn [{\n  json: {\n    prompt: `Ты агент по поиску поставщиков товаров из Китая (1688, Alibaba и другие площадки).\n\nВот список товаров из технического задания:\n${JSON.stringify(items, null, 2)}\n\nДля каждого товара:\n1. Открой ссылку из referenceUrl через инструмент primer — изучи товар\n2. Через инструмент poisk найди аналогичных поставщиков\n3. Найди минимум 3 поставщика на каждый товар\n4. Запиши данные каждого поставщика через \"Append row in sheet\"`\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ],
+      "id": "ce16d700-447d-4a68-8bac-a4209cc489b4",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ЗАДАНИЕ:\n{{ $json.prompt }}\n\nССЫЛКА:\n{{ $('Get row(s) in sheet').item.json['Ссылка на похожий товар '] }}",
+        "options": {
+          "systemMessage": "Ты — эксперт по контролю качества и закупкам товаров из Китая (1688, Alibaba).\n\nТВОЯ ЗАДАЧА:\nНайти 10 поставщиков, чьи товары МАКСИМАЛЬНО совпадают с эталоном.\n\n---\n\nОБЯЗАТЕЛЬНЫЙ АЛГОРИТМ (СТРОГО):\n\n1. Вызови инструмент `primer`, передав ему URL товара\n2. Получи данные эталона:\n   - название\n   - изображения\n   - характеристики (specs)\n3. Проанализируй:\n   - материал\n   - размер\n   - мощность\n   - визуальные признаки (цвет, форма, кнопки, разъемы)\n4. Сформируй 2–3 поисковых запроса\n5. Вызови инструмент `poisk` минимум 3 раза\n6. Собери кандидатов\n7. Отфильтруй:\n   - исключи несоответствия по материалу\n   - исключи визуально отличающиеся товары\n8. Выбери ТОП-10:\n   - приоритет фабрикам (factory)\n   - приоритет максимальному совпадению\n9. Верни результат в JSON формате\n\n---\n\nПРАВИЛА:\n\n- Ты ОБЯЗАН использовать инструменты (`primer`, `poisk`)\n- Запрещено отвечать без вызова инструментов\n- Если инструмент вернул ошибку — попробуй снова до 3 раз\n- Если не хватает данных — сделай дополнительный поиск\n- Не выдумывай данные — используй только реальные результаты\n\n---\n\nКРИТЕРИИ СОВПАДЕНИЯ:\n\n- Совпадение ≥ 80% по визуалу и характеристикам\n- Если материал отличается — товар НЕ подходит\n- Если форма сильно отличается — НЕ подходит\n\n---\n\nФОРМАТ ОТВЕТА (СТРОГО JSON):\n\n{\n  \"products\": [\n    {\n      \"name\": \"string\",\n      \"url\": \"string\",\n      \"price\": \"string\",\n      \"supplier\": \"string\",\n      \"match_score\": number,\n      \"is_factory\": boolean\n    }\n  ]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        704,
+        0
+      ],
+      "id": "1004e13d-07f6-4c67-a791-afd0e90235a2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        288
+      ],
+      "id": "27d973cc-51f4-4a5e-935f-ac8969edbf1d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "349cVczzg4DqlA1N",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "ожт"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        288
+      ],
+      "id": "147f9c03-14f6-42d8-a23b-16afb12bf281",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "IDPGnSSkmIHW0reW",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://browser.lux.kz/function",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  detached: false,\n  code: `\nmodule.exports = async ({ page, context }) => {\n  const { url } = context;\n\n  try {\n    await page.setUserAgent(\n      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36'\n    );\n\n    await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });\n\n    const data = await page.evaluate(() => {\n\n      // 📸 Изображения\n      const images = Array.from(document.querySelectorAll('img'))\n        .map(img => img.src)\n        .filter(src => src && src.startsWith('http'))\n        .slice(0, 8);\n\n      // 🧾 Название\n      const title =\n        document.querySelector('h1')?.innerText ||\n        document.title ||\n        '';\n\n      // 📊 Характеристики (структурировано)\n      const specs = {};\n      document.querySelectorAll('.prop-item, .mod-detail-attributes tr').forEach(el => {\n        let key = '';\n        let value = '';\n\n        if (el.querySelector) {\n          key =\n            el.querySelector('.prop-name')?.innerText ||\n            el.children[0]?.innerText;\n\n          value =\n            el.querySelector('.prop-value')?.innerText ||\n            el.children[1]?.innerText;\n        }\n\n        if (key && value) {\n          specs[key.trim()] = value.trim();\n        }\n      });\n\n      // 📄 Описание\n      const description =\n        document.querySelector('.detail-desc, .desc-lazyload-container')?.innerText ||\n        '';\n\n      return {\n        title,\n        images,\n        specs,\n        description: description.slice(0, 2000)\n      };\n    });\n\n    return {\n      status: 'success',\n      data\n    };\n\n  } catch (error) {\n    return {\n      status: 'error',\n      message: error.message\n    };\n  }\n};\n  `,\n  context: {\n    url: $fromAI('url')\n  }\n})\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        752,
+        288
+      ],
+      "id": "7330f071-ee82-4a94-b9e4-18a1bc184ee2",
+      "name": "primer"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://browser.lux.kz/function",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  detached: false,\n  code: `\nmodule.exports = async ({ page, context }) => {\n  const { keyword } = context;\n\n  const searchUrl = \"https://s.1688.com/selloffer/offer_search.htm?keywords=\" + encodeURIComponent(keyword);\n\n  try {\n    await page.setUserAgent(\n      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36'\n    );\n\n    await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });\n\n    // 🔥 СКРОЛЛ (ключевой момент)\n    await autoScroll(page);\n\n    // чуть подождать после скролла\n    await new Promise(r => setTimeout(r, 3000));\n\n    const results = await page.evaluate(() => {\n\n      const clean = (t) => t?.replace(/\\\\s+/g, ' ').trim() || '';\n\n      const items = Array.from(document.querySelectorAll('a[href*=\"detail.1688.com/offer\"]'));\n\n      return items.slice(0, 20).map(link => {\n        const parent = link.closest('div');\n\n        return {\n          title: clean(link.innerText),\n          productUrl: link.href,\n          price: clean(parent?.innerText.match(/\\\\d+[\\\\.\\\\d]*/)?.[0]),\n          raw: clean(parent?.innerText)\n        };\n      });\n    });\n\n    const filtered = results.filter(r =>\n      r.title &&\n      r.productUrl &&\n      r.title.length > 5\n    );\n\n    return {\n      status: 'success',\n      data: filtered\n    };\n\n  } catch (error) {\n    return {\n      status: 'error',\n      message: error.message\n    };\n  }\n};\n\n\n// 🚀 функция автоскролла\nasync function autoScroll(page) {\n  await page.evaluate(async () => {\n    await new Promise((resolve) => {\n      let totalHeight = 0;\n      const distance = 300;\n\n      const timer = setInterval(() => {\n        window.scrollBy(0, distance);\n        totalHeight += distance;\n\n        if (totalHeight >= document.body.scrollHeight) {\n          clearInterval(timer);\n          resolve();\n        }\n      }, 300);\n    });\n  });\n}\n  `,\n  context: {\n    keyword: $fromAI('keyword')\n  }\n})\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        288
+      ],
+      "id": "aaa2fe64-c455-477a-bcc1-9e8ea840c24b",
+      "name": "poisk"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1O5MgRpfAFMGmlO3ZYR8OAnCK28JZMlPm_JPQfD2AA0k",
+          "mode": "list",
+          "cachedResultName": "Поиск продавцов",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5MgRpfAFMGmlO3ZYR8OAnCK28JZMlPm_JPQfD2AA0k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5MgRpfAFMGmlO3ZYR8OAnCK28JZMlPm_JPQfD2AA0k/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Название компании ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('__________________', ``, 'string') }}",
+            "Номер почта": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('___________', ``, 'string') }}",
+            "Деятельность ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('_____________', ``, 'string') }}",
+            "Ссылка на товар": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('_______________', ``, 'string') }}",
+            "Ссылка на продавца ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('___________________', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Название компании ",
+              "displayName": "Название компании ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Номер почта",
+              "displayName": "Номер почта",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Деятельность ",
+              "displayName": "Деятельность ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ссылка на продавца ",
+              "displayName": "Ссылка на продавца ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ссылка на товар",
+              "displayName": "Ссылка на товар",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1056,
+        288
+      ],
+      "id": "88ee2aeb-4848-4e55-b7df-15013e67db65",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "primer": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "poisk": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a2c584a6-7cd2-4ba4-82ac-239791b683cc",
+  "activeVersionId": null,
+  "versionCounter": 166,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-15T09:29:38.194Z",
+      "createdAt": "2026-04-15T09:29:38.194Z",
+      "role": "workflow:owner",
+      "workflowId": "6JxRDrd3UHBm3q6t",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": null
+}
