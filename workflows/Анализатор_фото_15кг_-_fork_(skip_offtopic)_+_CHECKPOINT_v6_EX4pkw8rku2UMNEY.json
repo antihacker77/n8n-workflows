@@ -1,0 +1,1283 @@
+{
+  "updatedAt": "2026-05-07T12:10:20.195Z",
+  "createdAt": "2026-04-01T11:44:21.195Z",
+  "id": "EX4pkw8rku2UMNEY",
+  "name": "Анализатор фото 15кг - fork (skip offtopic) + CHECKPOINT v6",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2064,
+        672
+      ],
+      "id": "accc8789-3fd1-4aca-a285-ac45e0010004",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I",
+          "mode": "list",
+          "cachedResultName": "Обработка фото",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "checkpoint",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1808,
+        656
+      ],
+      "id": "686c4799-b348-4c07-9d81-2bba1b5762e8",
+      "name": "Read Checkpoint1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nif (!Array.isArray(staticData.processedIds)) staticData.processedIds = [];\nif (staticData.skipUntilDelimiter === undefined) staticData.skipUntilDelimiter = false;\n\nconst item = $input.first();\nconst photoId = item.json.id ? String(item.json.id) : null;\nconst isDelimiter = item.json.text === 'true';\n\n// --- РАЗДЕЛИТЕЛЬ ---\nif (isDelimiter) {\n  if (staticData.skipUntilDelimiter && staticData.resumeDelimiterId === photoId) {\n    staticData.skipUntilDelimiter = false;\n  }\n  if (!staticData.skipUntilDelimiter) {\n    staticData.lastDelimiterId = photoId;\n  }\n  return [{\n    json: {\n      id: photoId,\n      text: 'true',\n      _isDelimiter: true,\n      _sessionId: photoId\n    },\n    binary: item.binary\n  }];\n}\n\n// --- ОБЫЧНОЕ ФОТО (пропускаем) ---\nif (staticData.skipUntilDelimiter) {\n  return [{\n    json: {\n      id: photoId,\n      text: 'skip',         // ← было 'true', теперь 'skip'\n      _checkpoint_skip: true,\n      _reason: 'before_last_delimiter'\n    },\n    binary: item.binary\n  }];\n}\n\nif (photoId && staticData.processedIds.includes(photoId)) {\n  return [{\n    json: {\n      id: photoId,\n      text: 'skip',         // ← было 'true', теперь 'skip'\n      _checkpoint_skip: true,\n      _reason: 'already_processed'\n    },\n    binary: item.binary\n  }];\n}\n\n// --- НОВОЕ ФОТО — на AI Agent ---\nreturn [{\n  json: {\n    id: photoId,\n    text: item.json.text,\n    _sessionId: staticData.lastDelimiterId || 'session_default'\n  },\n  binary: item.binary\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        656
+      ],
+      "id": "9b1d2bfa-37df-4894-96be-e5f8396c1c0e",
+      "name": "Checkpoint1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nconst lastDelimiterId = staticData.lastDelimiterId || '';\nconst rowNumber = staticData.rowNumber || 1;\nconst qrRowNumber = staticData.qrRowNumber || 1;\nconst processedIds = Array.isArray(staticData.processedIds)\n  ? staticData.processedIds.join(',')\n  : '';\n\nreturn [{\n  json: {\n    checkpoint_row: 1,  // всегда обновляем строку 1 (единственная строка данных)\n    last_delimiter_id: lastDelimiterId,\n    row_number: rowNumber,\n    qr_row_number: qrRowNumber,\n    processed_ids: processedIds\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        240
+      ],
+      "id": "d5df0d63-96fe-4800-9434-ae2221dcf2e1",
+      "name": "Prepare Checkpoint Data1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I",
+          "mode": "list",
+          "cachedResultName": "Обработка фото",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 570106194,
+          "mode": "list",
+          "cachedResultName": "checkpoint",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I/edit#gid=570106194"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "checkpoint_row": "={{ $json.checkpoint_row }}",
+            "last_delimiter_id": "={{ $json.last_delimiter_id }}",
+            "row_number": "={{ $json.row_number }}",
+            "qr_row_number": "={{ $json.qr_row_number }}",
+            "processed_ids": "={{ $json.processed_ids }}"
+          },
+          "matchingColumns": [
+            "checkpoint_row"
+          ],
+          "schema": [
+            {
+              "id": "checkpoint_row",
+              "displayName": "checkpoint_row",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_delimiter_id",
+              "displayName": "last_delimiter_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "qr_row_number",
+              "displayName": "qr_row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "processed_ids",
+              "displayName": "processed_ids",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        576,
+        240
+      ],
+      "id": "e2694901-0c2e-4012-a98e-3387fde25d43",
+      "name": "Save Checkpoint1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst rows = $input.all();\n\n// Ищем строку с checkpoint_row=1, или берём первую строку\nconst row = rows.find(r => String(r.json['checkpoint_row']) === '1')?.json\n          || rows[0]?.json\n          || {};\n\nconst lastDelimiterId = row['last_delimiter_id'] ? String(row['last_delimiter_id']).trim() : null;\nconst rowNumber = parseInt(row['row_number']) || 1;\nconst qrRowNumber = parseInt(row['qr_row_number']) || 1;\nconst processedRaw = row['processed_ids'] ? String(row['processed_ids']).trim() : '';\nconst processedIds = processedRaw ? processedRaw.split(',').map(s => s.trim()).filter(Boolean) : [];\n\nstaticData.lastDelimiterId = lastDelimiterId;\nstaticData.rowNumber = rowNumber;\nstaticData.qrRowNumber = qrRowNumber;\nstaticData.processedIds = processedIds;\nstaticData.currentCompany = {};\nstaticData.skipUntilDelimiter = lastDelimiterId ? true : false;\nstaticData.resumeDelimiterId = lastDelimiterId;\n\nreturn [{\n  json: {\n    _init: true,\n    rowNumber,\n    qrRowNumber,\n    processedCount: processedIds.length,\n    lastDelimiterId,\n    skipUntilDelimiter: staticData.skipUntilDelimiter\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1584,
+        656
+      ],
+      "id": "2bc381f0-e6d1-4ff6-9664-f3175e0aecdb",
+      "name": "Init Checkpoint"
+    },
+    {
+      "parameters": {
+        "url": "https://tg-api.lux.kz/photos?limit=1400&offset_id=0",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1360,
+        656
+      ],
+      "id": "8e478e80-1a17-471a-b27c-eb9e6f678d98",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "messages",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        656
+      ],
+      "id": "44b088d2-17cd-4025-bed7-b4675e045bb6",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -960,
+        640
+      ],
+      "id": "042802d3-475b-4aa4-ab4c-b5cbe05e371f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "url": "=https://tg-api.lux.kz/photo/{{$json.id}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -528,
+        672
+      ],
+      "id": "b24c9be2-eecc-4b1d-9d68-e5baa2ea7384",
+      "name": "HTTP Request8",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "=Посмотри на фото. Ответь ТОЛЬКО одним словом:\n- \"true\" - если на фото пол, земля, асфальт, ковёр снятый сверху вниз, случайное фото без чёткого объекта съёмки, нога или обувь крупным планом\n- \"false\" - если на фото товар, стенд, оборудование, продукция, выставочный стенд, баннер с информацией\n\nНикакого другого текста, только \"true\" или \"false\".\n\n",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -1904,
+        -16
+      ],
+      "id": "4d135469-ffa4-42fc-b4f9-aed5483084e7",
+      "name": "Analyze image",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "349cVczzg4DqlA1N",
+          "name": "ai_secretary_n8n"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst http = $('HTTP Request8').first().json;\n\nconst rawText =\n  $input.first().json.content.parts[0].text ??\n  item?.content?.[0]?.text ??\n  item?.['0']?.content?.[0]?.text ??\n  item?.text ??\n  'unknown';\n\nreturn [{\n  json: { \n    id: http?.id ?? null,\n    text: String(rawText)\n  },\n  binary: $('HTTP Request8').first().binary\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        656
+      ],
+      "id": "f2240b97-cd9a-4adb-bdb4-18d6c7d0403d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3a9fc649-3f36-411e-b93d-44734a726e34",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "true",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        656
+      ],
+      "id": "ae1e5607-bb91-43ec-8e49-2a53d8be8104",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "amount": 9
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        768
+      ],
+      "id": "1a1cf71a-bd28-40fc-8cc1-d54c50c4581b",
+      "name": "Wait",
+      "webhookId": "3639ed81-0d43-4a03-a258-d9a460fa2ff3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Проанализируй это фото и верни JSON строго по формату из System Message.",
+        "options": {
+          "systemMessage": "Ты — ИИ-агент для анализа ОДНОГО фото выставочного стенда (один кадр из группы).\nТвоя задача: извлечь, что видно на этом фото: название компании, деятельность, контакт.\n\nОБЯЗАТЕЛЬНО:\n- Верни ТОЛЬКО валидный JSON (без markdown, без пояснений, без ```).\n- Никогда не возвращай null. Если ничего не видно — верни пустые строки и confidence=\"low\".\n- Ничего не выдумывай: если не читается — оставь пусто.\n- company может быть на любом языке (как на фото).\n- product: деятельность/чем занимается компания — опиши по-русски кратко.\n- contacts всегда начинается с одинарной кавычки и пробела: \"' \".\n\nПРИОРИТЕТ КОНТАКТА (важно для разделения листов):\n1) СНАЧАЛА ищи номер(а) телефона/моб/WhatsApp/WeChat/факс (любые строки с цифрами и +, (), -, пробелами).\n   - Если на фото есть хотя бы один номер: запиши его в contacts и установи qr=\"null\".\n   - Если на фото есть и номер, и QR — QR игнорируй (qr=\"null\").\n2) Если на фото НЕТ никаких номеров: тогда допускается QR как контакт, но только если QR КРУПНЫЙ и явно контактный\n   (визитка/табличка/экран/наклейка, QR — главный объект и его реально сканировать).\n   - В этом случае: contacts=\"' QR\" и qr=\"present\".\n   - Мелкие QR на плакатах/внизу стенда НЕ подходят — тогда qr=\"null\".\n\nФОРМАТ (строго такие ключи):\n{\n  \"company\": \"...\",\n  \"product\": \"...\",\n  \"contacts\": \"' ...\",\n  \"qr\": \"present/null\",\n  \"confidence\": \"high/medium/low\"\n}\n\nКритерии confidence:\n- high: company читается уверенно и есть контакт (номер или крупный контактный QR).\n- medium: часть данных читается, но не всё.\n- low: почти ничего не читается.\n\nДополнительно:\n- если ты видишь изображение не как не относящиеся к компании товару или к выставке пусти его "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        768
+      ],
+      "id": "3512c32c-deb8-4c03-b565-cb0abf3e66c8",
+      "name": "AI Agent",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Checkpoint1').item.json._sessionId || 'session_default' }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        1088
+      ],
+      "id": "3e60ac5c-2d35-47ed-82ae-b1e6c6cf369e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-image-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        640,
+        1088
+      ],
+      "id": "0ac35816-8218-4452-b32b-8a1a22c9ee0e",
+      "name": "Google Gemini Chat Model",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H8XIEwmjn0GuMnGK",
+          "name": "Google Gemini(PaLM) Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.currentCompany) staticData.currentCompany = {};\nif (!Array.isArray(staticData.processedIds)) staticData.processedIds = [];\n\n// Сохраняем id этого фото как обработанного\nconst photoId = $('Checkpoint1').item?.json?.id;\nif (photoId && !staticData.processedIds.includes(String(photoId))) {\n  staticData.processedIds.push(String(photoId));\n}\n\n// Парсим ответ агента\nconst raw = $input.first().json.output || '{}';\nlet result;\ntry {\n  result = JSON.parse(raw.replace(/```json|```/g, '').trim());\n} catch (e) {\n  return [{ json: { action: 'skip' } }];\n}\n\nif (!result || typeof result !== 'object') {\n  return [{ json: { action: 'skip' } }];\n}\n\nconst toStr = (v) => (typeof v === 'string' ? v : (v == null ? '' : String(v)));\nconst normalizeContacts = (s) => {\n  s = toStr(s).trim();\n  if (!s) return \"' \";\n  return s.startsWith(\"'\") ? s : (\"' \" + s);\n};\n\nconst company = toStr(result.company).trim();\nconst product = toStr(result.product).trim();\nconst contacts = normalizeContacts(result.contacts);\nconst qr = toStr(result.qr).trim();\nconst confidence = toStr(result.confidence).trim().toLowerCase();\n\nconst cleanedContacts = contacts.replace(/^\\'\\s*/, '');\nconst phoneRegex = /(?:\\+?\\d[\\d\\s().-]{5,}\\d)/;\nconst photoHasPhone = phoneRegex.test(cleanedContacts);\nconst photoHasQr = (qr === 'present') || (/\\bqr\\b/i.test(cleanedContacts));\n\n// Мержим в currentCompany — обновляем только если нашли лучшие данные\nconst cur = staticData.currentCompany;\nif (typeof cur.hasPhone !== 'boolean') cur.hasPhone = false;\n\n// Обновляем company и product если нашли или confidence=high\nif (company && (!cur.company || confidence === 'high')) cur.company = company;\nif (product && (!cur.product || confidence === 'high')) cur.product = product;\n\n// Контакты — приоритет телефона над QR\nif (photoHasPhone && !cur.hasPhone) {\n  cur.contacts = contacts;\n  cur.hasPhone = true;\n  cur.qr = 'null';\n  cur.qrImageBinary = null;\n} else if (!cur.hasPhone) {\n  if (photoHasQr) {\n    cur.contacts = \"' QR\";\n    cur.qr = 'present';\n    cur.qrImageBinary = $('Checkpoint1').item.binary?.data || cur.qrImageBinary || null;\n  } else if (cleanedContacts && cleanedContacts.length > 1 && (!cur.contacts || cur.contacts === \"' \")) {\n    cur.contacts = contacts;\n    if (!cur.qr) cur.qr = 'null';\n  }\n}\n\nstaticData.currentCompany = cur;\nreturn [{ json: { action: 'skip' } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        752
+      ],
+      "id": "9ffe6b61-584e-4200-8e8a-9daaec343c63",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Финализация группы при встрече разделителя\n// rowNumber инкрементируется здесь\nconst staticData = $getWorkflowStaticData('global');\nconst row = staticData.currentCompany || {};\nstaticData.currentCompany = {};\n\nif (!staticData.rowNumber) staticData.rowNumber = 1;\nif (!staticData.qrRowNumber) staticData.qrRowNumber = 1;\n\nconst contacts = (row.contacts || \"' \").toString();\nconst cleanedContacts = contacts.replace(/^'\\s*/, '');\nconst phoneRegex = /(?:\\+?\\d[\\d\\s().-]{5,}\\d)/;\nconst hasPhone = (row.hasPhone === true) || phoneRegex.test(cleanedContacts);\nconst hasQr = !!(row.qr && row.qr !== 'null');\n\nif (row.company || row.product || row.contacts || row.qr) {\n  const targetSheet = (!hasPhone && hasQr) ? 'qr_only' : 'main';\n  const rowNum = targetSheet === 'qr_only' ? staticData.qrRowNumber : staticData.rowNumber;\n\n  if (targetSheet === 'qr_only') {\n    staticData.qrRowNumber++;\n  } else {\n    staticData.rowNumber++;\n  }\n\n  const item = {\n    json: {\n      action: 'write',\n      targetSheet,\n      rowNumber: rowNum,\n      company: row.company || '',\n      product: row.product || '',\n      contacts: row.contacts || \"' \",\n      qr: (!hasPhone && hasQr) ? (row.qr || 'present') : 'null'\n    }\n  };\n\n  if (targetSheet === 'qr_only' && row.qrImageBinary) {\n    item.binary = { data: row.qrImageBinary };\n  }\n\n  return [item];\n}\n\nreturn [{ json: { action: 'skip' } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        192
+      ],
+      "id": "84983209-2e06-4471-9c07-c2e554467d57",
+      "name": "Code in JavaScript12"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3a904b6a-5e9d-45fe-ae51-c53ee8af06c9",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "write",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        32,
+        192
+      ],
+      "id": "5d48ac38-9d99-45d1-a999-b2d40addc920",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c0b7d6ad-3f36-411e-b93d-44734a726e35",
+              "leftValue": "={{ $json.targetSheet }}",
+              "rightValue": "qr_only",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1008,
+        176
+      ],
+      "id": "e6a742d5-5100-438d-8337-b23b46f6fe0d",
+      "name": "If QR sheet1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I",
+          "mode": "list",
+          "cachedResultName": "Обработка фото",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 54651385,
+          "mode": "list",
+          "cachedResultName": "Дом Китай 2026",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I/edit#gid=54651385"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Компания": "={{ $json.company }}",
+            "Предложение": "={{ $json.product }}",
+            "Контакты": "={{ $json.contacts }}",
+            "№": "={{ $json.rowNumber }}"
+          },
+          "matchingColumns": [
+            "№"
+          ],
+          "schema": [
+            {
+              "id": "№",
+              "displayName": "№",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Компания",
+              "displayName": "Компания",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Предложение",
+              "displayName": "Предложение",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        192
+      ],
+      "id": "1dab925a-cf90-45bd-be92-31e33cc56ae8",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ \"qr_supplier_\" + $json.rowNumber + \".jpg\" }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "10J7xppQQa1IVag8pLyfxor6iMIamc6Uh",
+          "mode": "list",
+          "cachedResultName": "QR обработка ",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/10J7xppQQa1IVag8pLyfxor6iMIamc6Uh"
+        },
+        "options": {
+          "simplifyOutput": false
+        }
+      },
+      "id": "d17d4633-2409-4b27-896c-15ab99e912dd",
+      "name": "Upload QR Photo To Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1264,
+        400
+      ],
+      "typeVersion": 3,
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "qTPk8OIS7ZoIqkpz",
+          "name": "Google Drive vkitae"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id || $json.fileId }}"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "id": "26a97ffc-0117-43d1-bea0-b6bb88992e25",
+      "name": "Share QR Photo1",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1488,
+        400
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "qTPk8OIS7ZoIqkpz",
+          "name": "Google Drive vkitae"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const src = $('If QR sheet1').item.json;\nconst upload = $('Upload QR Photo To Drive1').item.json;\n\nreturn [{\n  json: {\n    action: 'write',\n    targetSheet: 'qr_only',\n    rowNumber: src.rowNumber,\n    company: src.company,\n    product: src.product,\n    contacts: src.contacts,\n    qr: upload.webViewLink\n  }\n}];"
+      },
+      "id": "ac3ec9d2-7c6f-4ff8-8f83-26e698d42d07",
+      "name": "Build QR Sheet Row1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1712,
+        400
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I",
+          "mode": "list",
+          "cachedResultName": "Обработка фото",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 162150259,
+          "mode": "list",
+          "cachedResultName": "Дом Китай 2026 QR",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TcGCwhOGoRQzdGi2uwIEJkvP9njkY3rDQ7_b_WKZ54I/edit#gid=162150259"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "QR": "={{ $json.qr }}",
+            "row_number": 0,
+            "Предложение": "={{ $json.product }}",
+            "Компания": "={{ $json.company }}",
+            "№": "={{ $json.rowNumber }}"
+          },
+          "matchingColumns": [
+            "№"
+          ],
+          "schema": [
+            {
+              "id": "№",
+              "displayName": "№",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Компания",
+              "displayName": "Компания",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Предложение",
+              "displayName": "Предложение",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "QR",
+              "displayName": "QR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1936,
+        400
+      ],
+      "id": "8b8a4429-2819-41a3-9466-13a91d98e77c",
+      "name": "Update row in QR sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Посмотри на фото. Ответь ТОЛЬКО одним словом:\n- \"true\" - если на фото пол, земля, асфальт, ковёр снятый сверху вниз, случайное фото без чёткого объекта съёмки, нога или обувь крупным планом\n- \"false\" - если на фото товар, стенд, оборудование, продукция, выставочный стенд, баннер с информацией\n\nНикакого другого текста, только \"true\" или \"false\".",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -352,
+        656
+      ],
+      "id": "85c70be9-3221-4705-a903-721d0f7b897b",
+      "name": "Analyze an image",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H8XIEwmjn0GuMnGK",
+          "name": "Google Gemini(PaLM) Api"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -736,
+        496
+      ],
+      "id": "a2ac1a98-72d2-41d2-a223-741a514e716e",
+      "name": "Wait1",
+      "webhookId": "a7343a9b-af02-4bba-8504-940e2cfdc0e2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "736aa059-2ad1-4378-9830-acdd83c8e570",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": 237,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -736,
+        656
+      ],
+      "id": "b0e5adb4-9c83-4d5a-9b06-96ff004f65dd",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "channel_post"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2016,
+        1056
+      ],
+      "id": "8d6d673d-528b-4eeb-aab1-17ad8e39c072",
+      "name": "Telegram Trigger",
+      "webhookId": "4342e8e2-dfb7-4c76-9f3f-c13dbd6eddae",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read Checkpoint1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Checkpoint1": {
+      "main": [
+        [
+          {
+            "node": "Init Checkpoint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checkpoint1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Checkpoint Data1": {
+      "main": [
+        [
+          {
+            "node": "Save Checkpoint1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Checkpoint1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Checkpoint": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request8": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Checkpoint1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript12",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript12": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "If QR sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Checkpoint Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If QR sheet1": {
+      "main": [
+        [
+          {
+            "node": "Upload QR Photo To Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Prepare Checkpoint Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload QR Photo To Drive1": {
+      "main": [
+        [
+          {
+            "node": "Share QR Photo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share QR Photo1": {
+      "main": [
+        [
+          {
+            "node": "Build QR Sheet Row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build QR Sheet Row1": {
+      "main": [
+        [
+          {
+            "node": "Update row in QR sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in QR sheet1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Checkpoint Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "global": {
+      "currentCompany": {}
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "dab1f150-4b75-41b6-9ad1-a3f0b3c73e69",
+  "activeVersionId": null,
+  "versionCounter": 810,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-01T11:44:21.196Z",
+      "createdAt": "2026-04-01T11:44:21.196Z",
+      "role": "workflow:owner",
+      "workflowId": "EX4pkw8rku2UMNEY",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": null
+}
