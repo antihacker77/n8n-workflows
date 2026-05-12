@@ -1,0 +1,442 @@
+{
+  "updatedAt": "2026-05-12T05:41:45.603Z",
+  "createdAt": "2026-05-12T04:10:00.698Z",
+  "id": "tqnATji6C7Bx3rNr",
+  "name": "Проверка Whatsap",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9ade47ef-f7fe-4410-8bbf-1491d38536ac",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12L0IzH9Ae03H9oJYLI_p85PWcMYf_X5BWtdsgJOsYmc",
+          "mode": "list",
+          "cachedResultName": "CMEF_компании_контакты_WhatsApp_найденные",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12L0IzH9Ae03H9oJYLI_p85PWcMYf_X5BWtdsgJOsYmc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 673976126,
+          "mode": "list",
+          "cachedResultName": "CMEF контакты",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12L0IzH9Ae03H9oJYLI_p85PWcMYf_X5BWtdsgJOsYmc/edit#gid=673976126"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "5ce0dd72-6f06-4fc6-b9e1-17341b710698",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = [];\n\nfor (const item of $input.all()) {\n  const phoneField = item.json['WhatsApp (кандидаты)'];\n  \n  // Если пусто или \"empty\" — пропускаем / возвращаем как есть\n  if (!phoneField || String(phoneField).trim().toLowerCase() === 'empty') {\n    result.push(item);\n    continue;\n  }\n  \n  // Разделяем по ; и переносу строки\n  const phones = String(phoneField)\n    .split(/[;\\n]+/)\n    .map(p => p.trim())\n    .filter(p => p.length > 0 && p.toLowerCase() !== 'empty');\n  \n  if (phones.length <= 1) {\n    result.push({\n      json: {\n        ...item.json,\n        'WhatsApp (кандидаты)': phones[0] || phoneField,\n      }\n    });\n  } else {\n    phones.forEach((phone, index) => {\n      result.push({\n        json: {\n          ...item.json,\n          'WhatsApp (кандидаты)': phone,\n          'WhatsApp все номера': phoneField,\n          'Индекс номера': index + 1,\n        }\n      });\n    });\n  }\n}\n\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1c8bdf3e-0c92-47d7-b9fe-043605f2ad50",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "Contacts",
+        "operation": "Check Exists",
+        "session": "default",
+        "phone": "={{ $json['WhatsApp (кандидаты)'] }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "8d2e3c6c-6cd9-4be9-9f5f-1b555fd6b389",
+      "name": "Check phone number is registered in WhatsApp.",
+      "credentials": {
+        "wahaApi": {
+          "id": "nKoHMSDIW4u9JBlV",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const checkResult = $('Check phone number is registered in WhatsApp.').first();\nconst ifItem = $('If').first();\n\nreturn [{\n  json: {\n    'row_number': ifItem.json['row_number'],\n    'WhatsApp (кандидаты)': ifItem.json['WhatsApp (кандидаты)'],\n    'numberExists': checkResult.json['numberExists'],\n    'WhatsApp найденные': checkResult.json['numberExists'] === true \n      ? ifItem.json['WhatsApp (кандидаты)'] \n      : 'false',\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "81e9dbf5-9e0b-4561-9121-ee4fe7f52f03",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "12L0IzH9Ae03H9oJYLI_p85PWcMYf_X5BWtdsgJOsYmc",
+          "mode": "list",
+          "cachedResultName": "CMEF_компании_контакты_WhatsApp_найденные",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12L0IzH9Ae03H9oJYLI_p85PWcMYf_X5BWtdsgJOsYmc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 673976126,
+          "mode": "list",
+          "cachedResultName": "CMEF контакты",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12L0IzH9Ae03H9oJYLI_p85PWcMYf_X5BWtdsgJOsYmc/edit#gid=673976126"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "WhatsApp (кандидаты)": "={{ $('If').item.json['WhatsApp (кандидаты)'] }}"
+          },
+          "matchingColumns": [
+            "WhatsApp (кандидаты)"
+          ],
+          "schema": [
+            {
+              "id": "Название компании",
+              "displayName": "Название компании",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Деятельность компании",
+              "displayName": "Деятельность компании",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Номер телефона",
+              "displayName": "Номер телефона",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "WhatsApp (кандидаты)",
+              "displayName": "WhatsApp (кандидаты)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "WhatsApp ссылки",
+              "displayName": "WhatsApp ссылки",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "WhatsApp найденные",
+              "displayName": "WhatsApp найденные",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "WhatsApp найденные детали",
+              "displayName": "WhatsApp найденные детали",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Адрес почты",
+              "displayName": "Адрес почты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        -176
+      ],
+      "id": "bb5a1d83-7e32-46cf-9a83-2ca5a129e26b",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        592,
+        0
+      ],
+      "id": "6b3e7bfb-849c-48b5-80b4-bb9c6e7eb230",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5aa22bde-0fac-4083-a3ce-8016c305844f",
+              "leftValue": "={{ $json['WhatsApp (кандидаты)'] !== 'empty' && !!$json['WhatsApp (кандидаты)'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        816,
+        16
+      ],
+      "id": "83c89a77-d357-4f84-9eb8-723a2d5af90a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const groups = {};\n\nfor (const item of $input.all()) {\n  const rowNum = item.json['row_number'];\n  \n  if (!groups[rowNum]) {\n    groups[rowNum] = {\n      ...item.json,\n      '_foundPhones': [],\n      '_foundLinks': [],\n    };\n  }\n  \n  const phone = item.json['WhatsApp найденные'];\n  const link = item.json['WhatsApp ссылки'];\n  \n  if (phone && phone !== 'empty') {\n    if (!groups[rowNum]['_foundPhones'].includes(phone)) {\n      groups[rowNum]['_foundPhones'].push(phone);\n    }\n  }\n  \n  if (link && link !== 'empty') {\n    if (!groups[rowNum]['_foundLinks'].includes(link)) {\n      groups[rowNum]['_foundLinks'].push(link);\n    }\n  }\n}\n\nreturn Object.values(groups).map(group => {\n  const found = group['_foundPhones'];\n  return {\n    json: {\n      ...group,\n      'WhatsApp найденные': found.length > 0 ? found.join('; ') : 'empty',\n      'WhatsApp ссылки': group['_foundLinks'].length > 0 ? group['_foundLinks'].join(';\\n') : 'empty',\n      'WhatsApp найденные детали': found.length > 0 ? `Найдено: ${found.length}` : 'empty',\n      '_foundPhones': undefined,\n      '_foundLinks': undefined,\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        -160
+      ],
+      "id": "9d105ef6-bb10-4219-9ace-f4dbc4dcda25",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check phone number is registered in WhatsApp.": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Check phone number is registered in WhatsApp.",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "00d7f23e-e125-435d-bcf1-41fd94766696",
+  "activeVersionId": null,
+  "versionCounter": 78,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-05-12T04:10:00.702Z",
+      "createdAt": "2026-05-12T04:10:00.702Z",
+      "role": "workflow:owner",
+      "workflowId": "tqnATji6C7Bx3rNr",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
