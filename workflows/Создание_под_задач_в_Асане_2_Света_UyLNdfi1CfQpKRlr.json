@@ -1,0 +1,588 @@
+{
+  "updatedAt": "2026-04-28T07:20:07.000Z",
+  "createdAt": "2026-04-07T06:48:13.024Z",
+  "id": "UyLNdfi1CfQpKRlr",
+  "name": "Создание под задач  в Асане 2 Света",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Получаем тему письма\nconst subject = items[0].json.subject;\n\n// Извлекаем номер KZ (например, KZ117648437)\nconst match = subject.match(/KZ\\d+/);\nconst kzNumber = match ? match[0] : \"Номер не найден\";\n\n// Возвращаем объект, сохраняя бинарные данные\nreturn {\n  json: {\n    kzNumber: kzNumber,\n    subject: subject\n  },\n  binary: items[0].binary // Передаем все вложения дальше\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "68f98684-602c-43d4-8ffd-9cf6e8f57969",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "url": "https://app.asana.com/api/1.0/portfolios/1213923781662424/items",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "asanaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        688,
+        -16
+      ],
+      "id": "4f32943e-2784-4667-974c-4e3d050ac0c7",
+      "name": "HTTP Request",
+      "credentials": {
+        "asanaApi": {
+          "id": "k1vPpQ0691WvWhhw",
+          "name": "Asana Svyat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1152,
+        -16
+      ],
+      "id": "3b2d9d5c-9658-4901-ac99-84c7fd5e64f2",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "project": "={{ $json.gid }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "585be993-a7a7-4407-befb-cf42647d08fb",
+      "name": "Get many tasks",
+      "credentials": {
+        "asanaApi": {
+          "id": "k1vPpQ0691WvWhhw",
+          "name": "Asana Svyat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        944,
+        -16
+      ],
+      "id": "6a359fd4-3461-47fd-a276-8c6ea1b9dac0",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7564f1c3-bcbb-46b2-bd77-c91052f391a2",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "=\\b{{ $('Code in JavaScript1').item.json.kzNumber }}\\b",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            },
+            {
+              "id": "2cb33e45-754c-45db-bcfa-7a43ff25e70b",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Отследить переход границы и отправить талон в бухгалтерию",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1648,
+        0
+      ],
+      "id": "1dda5329-c540-44c1-a0fd-9c6336961a4a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9b727155-99e6-4e6a-8bc2-e9f974ec2128",
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "Обращение:",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "877d0f6a-2299-478f-8631-583b8232cc3f",
+              "leftValue": "={{ Object.keys($binary || {}).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1e25e89f-fbf7-4ef6-b63d-fadec324562f",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "resource": "subtask",
+        "taskId": "={{ $('If').item.json.gid }}",
+        "name": "проверить талон",
+        "otherProperties": {
+          "assignee": "1213794359803573",
+          "completed": false,
+          "due_on": "={{ $now.format('yyyy-MM-dd') }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        -16
+      ],
+      "id": "bf870a0d-32b1-4a20-8210-cbf9bf76a31d",
+      "name": "Create a subtask",
+      "credentials": {
+        "asanaApi": {
+          "id": "k1vPpQ0691WvWhhw",
+          "name": "Asana Svyat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.asana.com/api/1.0/tasks/{{ $('Create a subtask').first().json.gid }}/attachments",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "asanaApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "={{ $('Email Trigger (IMAP)1').first().binary.attachment_0 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2592,
+        -96
+      ],
+      "id": "f321816d-bd57-489b-a074-df2f2e4a394a",
+      "name": "HTTP Request1",
+      "credentials": {
+        "asanaApi": {
+          "id": "k1vPpQ0691WvWhhw",
+          "name": "Asana Svyat"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2160,
+        -112
+      ],
+      "id": "34edc9c7-0a4a-4b3d-b94f-13cb582d0344",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $('Get many tasks').first().json.gid }}"
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        -16
+      ],
+      "id": "01df2c09-33ca-4031-97c6-cd4b4b1ef25b",
+      "name": "Get a task",
+      "credentials": {
+        "asanaApi": {
+          "id": "k1vPpQ0691WvWhhw",
+          "name": "Asana Svyat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "it@mail6.luxkz.kz",
+        "toEmail": "it@mail6.luxkz.kz",
+        "subject": "={{ $('Email Trigger (IMAP)1').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "Готово",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2736,
+        -96
+      ],
+      "id": "a26e0b07-b530-4625-af8e-30a48dfadad8",
+      "name": "Send an Email",
+      "webhookId": "6e77acbb-a04a-4d0d-bc01-3fdce5c214e2",
+      "credentials": {
+        "smtp": {
+          "id": "lxRMvSgmhy8vuPm4",
+          "name": "SMTP Свят"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ae3a0d91-cac2-48aa-8f8b-ba00cd47cb9d",
+              "leftValue": "={{ Object.keys($binary || {}).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        160,
+        -128
+      ],
+      "id": "58d4698c-db0e-4c64-8978-2f7da9c6304f",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "mailbox": "dostavka dpd",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        -64
+      ],
+      "id": "b8f271e2-7b73-490c-a7f8-433e87553213",
+      "name": "Email Trigger (IMAP)1",
+      "credentials": {
+        "imap": {
+          "id": "WYPT0hluyPLajSvu",
+          "name": "IMAP Svyat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2368,
+        -112
+      ],
+      "id": "12c7069c-5b3f-47d0-97dd-ff0034537aeb",
+      "name": "Loop Over Items1"
+    }
+  ],
+  "connections": {
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get many tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many tasks": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get a task",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a subtask": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task": {
+      "main": [
+        [
+          {
+            "node": "Create a subtask",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger (IMAP)1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Email Trigger (IMAP)": {
+      "lastMessageUid": 3042
+    },
+    "node:Email Trigger (IMAP)1": {
+      "lastMessageUid": 481
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "61ad141d-9efb-4d8b-91f3-fff14ae7b99b",
+  "activeVersionId": null,
+  "versionCounter": 1237,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-07T06:48:13.025Z",
+      "createdAt": "2026-04-07T06:48:13.025Z",
+      "role": "workflow:owner",
+      "workflowId": "UyLNdfi1CfQpKRlr",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:53:47.995Z",
+      "createdAt": "2026-04-27T06:53:47.995Z",
+      "id": "qNK3oWM9JMr79pUP",
+      "name": "testing"
+    },
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": null
+}
