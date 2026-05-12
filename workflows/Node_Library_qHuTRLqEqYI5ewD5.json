@@ -1,0 +1,97 @@
+{
+  "updatedAt": "2026-04-27T06:59:26.386Z",
+  "createdAt": "2026-04-17T07:23:00.527Z",
+  "id": "qHuTRLqEqYI5ewD5",
+  "name": "Node Library",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ff.lux.kz/compress",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "bitrate",
+              "value": "12k"
+            },
+            {
+              "name": "sample_rate",
+              "value": "16000"
+            },
+            {
+              "name": "channels",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        80,
+        -32
+      ],
+      "id": "8c32b5ae-5e84-4a50-b987-57561b4f6325",
+      "name": "HTTP Request1"
+    }
+  ],
+  "connections": {
+    "HTTP Request1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "563ed4e8-b780-40e5-b153-7dfa92f5bf7e",
+  "activeVersionId": null,
+  "versionCounter": 63,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-17T07:23:00.528Z",
+      "createdAt": "2026-04-17T07:23:00.528Z",
+      "role": "workflow:owner",
+      "workflowId": "qHuTRLqEqYI5ewD5",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:59:13.614Z",
+      "createdAt": "2026-04-27T06:59:13.614Z",
+      "id": "clLGjyfLVkrFxV3Z",
+      "name": "Node Library"
+    }
+  ],
+  "activeVersion": null
+}
