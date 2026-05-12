@@ -1,0 +1,2377 @@
+{
+  "updatedAt": "2026-05-05T20:24:57.510Z",
+  "createdAt": "2026-04-02T18:00:38.719Z",
+  "id": "DwGkebnB5Wys44I1",
+  "name": "Закрытия задач асаны Света",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "update",
+        "id": "={{ $json.gid }}",
+        "otherProperties": {
+          "completed": true
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2672,
+        -64
+      ],
+      "id": "855c08ea-0928-40c7-9c60-ab1da524d474",
+      "name": "Update a task",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Берем текст письма из предыдущего узла\nconst bodyText = $input.first().json.text || \"\";\n\n// Очищаем текст от лишних пробелов и переводим в нижний регистр для точности\nconst isAllowed = bodyText.toLowerCase().includes(\"вывоз разрешен\");\n\nreturn {\n  status: isAllowed ? \"РАЗРЕШЕН\" : \"НЕ НАЙДЕНО\",\n  orderId: bodyText.match(/KZ\\d+/)?.[0] || \"Не определен\" // Извлекает номер заказа типа KZ117597849\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        -48
+      ],
+      "id": "8439e6ae-f988-44d0-b8f5-fac5a19bac54",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "url": "https://app.asana.com/api/1.0/portfolios/1208493754502428/items ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "asanaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1408,
+        -64
+      ],
+      "id": "149e74b5-5cf6-4e41-ab9b-6f7b8955e7a8",
+      "name": "HTTP Request",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1808,
+        -64
+      ],
+      "id": "b9c46f88-4246-495b-83e0-468b1dadae0b",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "project": "={{ $json.gid }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        -48
+      ],
+      "id": "0b258fa4-76c2-434c-9795-04e335632529",
+      "name": "Get many tasks",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        -64
+      ],
+      "id": "5d5c7108-1517-4543-a313-170069589fae",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7564f1c3-bcbb-46b2-bd77-c91052f391a2",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "=\\b{{ $('Code in JavaScript1').item.json.orderId }}\\b",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2304,
+        -48
+      ],
+      "id": "c344c0eb-1da7-4c53-ad89-8e1940ec5eea",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9b727155-99e6-4e6a-8bc2-e9f974ec2128",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "РАЗРЕШЕН",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1136,
+        -48
+      ],
+      "id": "2ab44236-c7b5-4145-9063-31a1dd8d9874",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ad8b5a3a-ddda-4e09-98d1-80509e8ae452",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Оформить разрешение на вывоз груза",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        2496,
+        -64
+      ],
+      "id": "e66538e3-4c6b-4035-a427-1cd2c40f6f4d",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "fromEmail": "opt@lux.kz",
+        "toEmail": "swetlanka.28@mail.ru",
+        "subject": "={{ $('Email Trigger (IMAP)').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "Готово",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2832,
+        -64
+      ],
+      "id": "787e1f8a-e4a5-439c-80f4-3f51a74eff8f",
+      "name": "Send an Email",
+      "webhookId": "6e77acbb-a04a-4d0d-bc01-3fdce5c214e2",
+      "credentials": {
+        "smtp": {
+          "id": "MlpwrPUWwfRPYD1g",
+          "name": "SMTP Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mailbox": "dostavka dpd",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        112
+      ],
+      "id": "12a0ab60-4f5e-4da8-ac59-1c17a5d95a76",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "NRgRgfp372Ylb9gO",
+          "name": "Света Закуп"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "subtask",
+        "taskId": "={{ $('If2').item.json.gid }}",
+        "name": "Проверить талон",
+        "otherProperties": {
+          "assignee": "1206077570445346",
+          "completed": false,
+          "due_on": "={{ $now.format('yyyy-MM-dd') }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        224
+      ],
+      "id": "56adaeaf-9041-4029-a77c-0fbc5913edc6",
+      "name": "Create a subtask",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.asana.com/api/1.0/tasks/{{ $('Create a subtask').first().json.gid }}/attachments",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "asanaApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "={{ $('Email Trigger (IMAP)').first().binary.attachment_0 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3360,
+        144
+      ],
+      "id": "11dd3e46-47da-418e-b975-702029ac668a",
+      "name": "HTTP Request1",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2928,
+        128
+      ],
+      "id": "af6fe675-8a2f-4c91-a267-505b596280b8",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $('Get many tasks1').first().json.gid }}"
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        224
+      ],
+      "id": "2b6234b1-b375-41e2-bb05-d532da480b80",
+      "name": "Get a task",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ae3a0d91-cac2-48aa-8f8b-ba00cd47cb9d",
+              "leftValue": "={{ Object.keys($binary || {}).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        928,
+        112
+      ],
+      "id": "dc73c7dd-78f1-4ab4-95c1-857f85c81ad2",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3136,
+        128
+      ],
+      "id": "f47c003f-0e7f-4504-8523-520f751c179d",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Получаем тему письма\nconst subject = items[0].json.subject;\n\n// Извлекаем номер KZ (например, KZ117648437)\nconst match = subject.match(/KZ\\d+/);\nconst kzNumber = match ? match[0] : \"Номер не найден\";\n\n// Возвращаем объект, сохраняя бинарные данные\nreturn {\n  json: {\n    kzNumber: kzNumber,\n    subject: subject\n  },\n  binary: items[0].binary // Передаем все вложения дальше\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        240
+      ],
+      "id": "5375b6e2-f44f-4411-85ce-fddbe5b08263",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "https://app.asana.com/api/1.0/portfolios/1208493754502428/items",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "asanaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1456,
+        224
+      ],
+      "id": "416f5b95-4d5a-42e3-ba64-a6bdedca4e8d",
+      "name": "HTTP Request2",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1920,
+        224
+      ],
+      "id": "c46ea697-a7a6-4444-857f-bc2b88625de3",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "project": "={{ $json.gid }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        240
+      ],
+      "id": "4a252d4d-f255-4e71-aa49-502c43b2e520",
+      "name": "Get many tasks1",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        224
+      ],
+      "id": "e82e0312-9713-48b2-96ab-a573808d62b4",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7564f1c3-bcbb-46b2-bd77-c91052f391a2",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "=\\b{{ $('Code in JavaScript').item.json.kzNumber }}\\b",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            },
+            {
+              "id": "2cb33e45-754c-45db-bcfa-7a43ff25e70b",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Отследить переход границы и отправить талон в бухгалтерию",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2416,
+        240
+      ],
+      "id": "f564bc4c-c6ca-401b-b32c-713f727e59a5",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9b727155-99e6-4e6a-8bc2-e9f974ec2128",
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "Обращение:",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "877d0f6a-2299-478f-8631-583b8232cc3f",
+              "leftValue": "={{ Object.keys($binary || {}).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        240
+      ],
+      "id": "1e79e13d-8e99-4b43-a419-9115da0a1a3b",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "fromEmail": "opt@lux.kz",
+        "toEmail": "swetlanka.28@mail.ru",
+        "subject": "={{ $('Email Trigger (IMAP)').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "Готово",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        3520,
+        144
+      ],
+      "id": "149c185c-0116-4ff3-b03d-1d5ab31948b8",
+      "name": "Send an Email1",
+      "webhookId": "6e77acbb-a04a-4d0d-bc01-3fdce5c214e2",
+      "credentials": {
+        "smtp": {
+          "id": "MlpwrPUWwfRPYD1g",
+          "name": "SMTP Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "subtask",
+        "taskId": "={{ $('If4').item.json.gid }}",
+        "name": "Запросить талон",
+        "otherProperties": {
+          "assignee": "1206077570445346",
+          "completed": false,
+          "due_on": "={{ $now.format('yyyy-MM-dd') }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        480
+      ],
+      "id": "75191655-ab1e-49df-a29b-7c54f4cdd087",
+      "name": "Create a subtask1",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $('Get many tasks2').first().json.gid }}"
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        480
+      ],
+      "id": "902c3be1-8bfe-42ea-8cf7-cdb62e260a14",
+      "name": "Get a task1",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://app.asana.com/api/1.0/portfolios/1208493754502428/items",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "asanaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1472,
+        480
+      ],
+      "id": "ec9fe8ee-cb56-44c3-9ed6-563ed308dce3",
+      "name": "HTTP Request3",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1936,
+        480
+      ],
+      "id": "b899b7a9-0939-4e6a-b535-8f4b88758d12",
+      "name": "Loop Over Items3"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "project": "={{ $json.gid }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        496
+      ],
+      "id": "22513aba-5e28-41eb-98da-016dfc94820f",
+      "name": "Get many tasks2",
+      "credentials": {
+        "asanaApi": {
+          "id": "jlAdDexJXw5zrr8I",
+          "name": "Asana Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        480
+      ],
+      "id": "c1309783-9578-4978-9211-0d4589f53176",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7564f1c3-bcbb-46b2-bd77-c91052f391a2",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "=\\b{{ $('Code in JavaScript').item.json.kzNumber }}\\b",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            },
+            {
+              "id": "2cb33e45-754c-45db-bcfa-7a43ff25e70b",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Отследить переход границы и отправить талон в бухгалтерию",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2432,
+        496
+      ],
+      "id": "ce2ab219-d7bd-4778-843e-191ec3cc9306",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "fromEmail": "opt@lux.kz",
+        "toEmail": "swetlanka.28@mail.ru",
+        "subject": "={{ $('Email Trigger (IMAP)').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "Запросить талон",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2960,
+        480
+      ],
+      "id": "d1ae6219-3ac1-479d-8019-471ec9616261",
+      "name": "Send an Email2",
+      "webhookId": "6e77acbb-a04a-4d0d-bc01-3fdce5c214e2",
+      "credentials": {
+        "smtp": {
+          "id": "MlpwrPUWwfRPYD1g",
+          "name": "SMTP Света"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get many tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many tasks": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Update a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a task": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a subtask": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Send an Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task": {
+      "main": [
+        [
+          {
+            "node": "Create a subtask",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get many tasks1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many tasks1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Get a task",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task1": {
+      "main": [
+        [
+          {
+            "node": "Create a subtask1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items3": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get many tasks2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many tasks2": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Get a task1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a subtask1": {
+      "main": [
+        [
+          {
+            "node": "Send an Email2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Email Trigger (IMAP)": {
+      "lastMessageUid": 3502
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2185f4cb-6de9-42ed-b700-92807d321cde",
+  "activeVersionId": "2185f4cb-6de9-42ed-b700-92807d321cde",
+  "versionCounter": 5191,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-02T18:00:38.720Z",
+      "createdAt": "2026-04-02T18:00:38.720Z",
+      "role": "workflow:owner",
+      "workflowId": "DwGkebnB5Wys44I1",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:53:47.995Z",
+      "createdAt": "2026-04-27T06:53:47.995Z",
+      "id": "qNK3oWM9JMr79pUP",
+      "name": "testing"
+    },
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-05-05T20:27:54.000Z",
+    "createdAt": "2026-05-05T20:24:57.511Z",
+    "versionId": "2185f4cb-6de9-42ed-b700-92807d321cde",
+    "workflowId": "DwGkebnB5Wys44I1",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "update",
+          "id": "={{ $json.gid }}",
+          "otherProperties": {
+            "completed": true
+          }
+        },
+        "type": "n8n-nodes-base.asana",
+        "typeVersion": 1,
+        "position": [
+          2672,
+          -64
+        ],
+        "id": "855c08ea-0928-40c7-9c60-ab1da524d474",
+        "name": "Update a task",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Берем текст письма из предыдущего узла\nconst bodyText = $input.first().json.text || \"\";\n\n// Очищаем текст от лишних пробелов и переводим в нижний регистр для точности\nconst isAllowed = bodyText.toLowerCase().includes(\"вывоз разрешен\");\n\nreturn {\n  status: isAllowed ? \"РАЗРЕШЕН\" : \"НЕ НАЙДЕНО\",\n  orderId: bodyText.match(/KZ\\d+/)?.[0] || \"Не определен\" // Извлекает номер заказа типа KZ117597849\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          928,
+          -48
+        ],
+        "id": "8439e6ae-f988-44d0-b8f5-fac5a19bac54",
+        "name": "Code in JavaScript1"
+      },
+      {
+        "parameters": {
+          "url": "https://app.asana.com/api/1.0/portfolios/1208493754502428/items ",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "asanaApi",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1408,
+          -64
+        ],
+        "id": "149e74b5-5cf6-4e41-ab9b-6f7b8955e7a8",
+        "name": "HTTP Request",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1808,
+          -64
+        ],
+        "id": "b9c46f88-4246-495b-83e0-468b1dadae0b",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "filters": {
+            "project": "={{ $json.gid }}"
+          }
+        },
+        "type": "n8n-nodes-base.asana",
+        "typeVersion": 1,
+        "position": [
+          2096,
+          -48
+        ],
+        "id": "0b258fa4-76c2-434c-9795-04e335632529",
+        "name": "Get many tasks",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1600,
+          -64
+        ],
+        "id": "5d5c7108-1517-4543-a313-170069589fae",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "7564f1c3-bcbb-46b2-bd77-c91052f391a2",
+                "leftValue": "={{ $json.name }}",
+                "rightValue": "=\\b{{ $('Code in JavaScript1').item.json.orderId }}\\b",
+                "operator": {
+                  "type": "string",
+                  "operation": "regex"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2304,
+          -48
+        ],
+        "id": "c344c0eb-1da7-4c53-ad89-8e1940ec5eea",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "9b727155-99e6-4e6a-8bc2-e9f974ec2128",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "РАЗРЕШЕН",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1136,
+          -48
+        ],
+        "id": "2ab44236-c7b5-4145-9063-31a1dd8d9874",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "ad8b5a3a-ddda-4e09-98d1-80509e8ae452",
+                "leftValue": "={{ $json.name }}",
+                "rightValue": "Оформить разрешение на вывоз груза",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          2496,
+          -64
+        ],
+        "id": "e66538e3-4c6b-4035-a427-1cd2c40f6f4d",
+        "name": "Filter1"
+      },
+      {
+        "parameters": {
+          "fromEmail": "opt@lux.kz",
+          "toEmail": "swetlanka.28@mail.ru",
+          "subject": "={{ $('Email Trigger (IMAP)').item.json.subject }}",
+          "emailFormat": "text",
+          "text": "Готово",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          2832,
+          -64
+        ],
+        "id": "787e1f8a-e4a5-439c-80f4-3f51a74eff8f",
+        "name": "Send an Email",
+        "webhookId": "6e77acbb-a04a-4d0d-bc01-3fdce5c214e2",
+        "credentials": {
+          "smtp": {
+            "id": "MlpwrPUWwfRPYD1g",
+            "name": "SMTP Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mailbox": "dostavka dpd",
+          "format": "resolved",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.emailReadImap",
+        "typeVersion": 2.1,
+        "position": [
+          656,
+          112
+        ],
+        "id": "12a0ab60-4f5e-4da8-ac59-1c17a5d95a76",
+        "name": "Email Trigger (IMAP)",
+        "credentials": {
+          "imap": {
+            "id": "NRgRgfp372Ylb9gO",
+            "name": "Света Закуп"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "subtask",
+          "taskId": "={{ $('If2').item.json.gid }}",
+          "name": "Проверить талон",
+          "otherProperties": {
+            "assignee": "1206077570445346",
+            "completed": false,
+            "due_on": "={{ $now.format('yyyy-MM-dd') }}"
+          }
+        },
+        "type": "n8n-nodes-base.asana",
+        "typeVersion": 1,
+        "position": [
+          2768,
+          224
+        ],
+        "id": "56adaeaf-9041-4029-a77c-0fbc5913edc6",
+        "name": "Create a subtask",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://app.asana.com/api/1.0/tasks/{{ $('Create a subtask').first().json.gid }}/attachments",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "asanaApi",
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "parameterType": "formBinaryData",
+                "name": "file",
+                "inputDataFieldName": "={{ $('Email Trigger (IMAP)').first().binary.attachment_0 }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          3360,
+          144
+        ],
+        "id": "11dd3e46-47da-418e-b975-702029ac668a",
+        "name": "HTTP Request1",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          2928,
+          128
+        ],
+        "id": "af6fe675-8a2f-4c91-a267-505b596280b8",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "id": "={{ $('Get many tasks1').first().json.gid }}"
+        },
+        "type": "n8n-nodes-base.asana",
+        "typeVersion": 1,
+        "position": [
+          2608,
+          224
+        ],
+        "id": "2b6234b1-b375-41e2-bb05-d532da480b80",
+        "name": "Get a task",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "ae3a0d91-cac2-48aa-8f8b-ba00cd47cb9d",
+                "leftValue": "={{ Object.keys($binary || {}).length }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          928,
+          112
+        ],
+        "id": "dc73c7dd-78f1-4ab4-95c1-857f85c81ad2",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          3136,
+          128
+        ],
+        "id": "f47c003f-0e7f-4504-8523-520f751c179d",
+        "name": "Loop Over Items1"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Получаем тему письма\nconst subject = items[0].json.subject;\n\n// Извлекаем номер KZ (например, KZ117648437)\nconst match = subject.match(/KZ\\d+/);\nconst kzNumber = match ? match[0] : \"Номер не найден\";\n\n// Возвращаем объект, сохраняя бинарные данные\nreturn {\n  json: {\n    kzNumber: kzNumber,\n    subject: subject\n  },\n  binary: items[0].binary // Передаем все вложения дальше\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          928,
+          240
+        ],
+        "id": "5375b6e2-f44f-4411-85ce-fddbe5b08263",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "url": "https://app.asana.com/api/1.0/portfolios/1208493754502428/items",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "asanaApi",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1456,
+          224
+        ],
+        "id": "416f5b95-4d5a-42e3-ba64-a6bdedca4e8d",
+        "name": "HTTP Request2",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1920,
+          224
+        ],
+        "id": "c46ea697-a7a6-4444-857f-bc2b88625de3",
+        "name": "Loop Over Items2"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "filters": {
+            "project": "={{ $json.gid }}"
+          }
+        },
+        "type": "n8n-nodes-base.asana",
+        "typeVersion": 1,
+        "position": [
+          2128,
+          240
+        ],
+        "id": "4a252d4d-f255-4e71-aa49-502c43b2e520",
+        "name": "Get many tasks1",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1712,
+          224
+        ],
+        "id": "e82e0312-9713-48b2-96ab-a573808d62b4",
+        "name": "Split Out1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "7564f1c3-bcbb-46b2-bd77-c91052f391a2",
+                "leftValue": "={{ $json.name }}",
+                "rightValue": "=\\b{{ $('Code in JavaScript').item.json.kzNumber }}\\b",
+                "operator": {
+                  "type": "string",
+                  "operation": "regex"
+                }
+              },
+              {
+                "id": "2cb33e45-754c-45db-bcfa-7a43ff25e70b",
+                "leftValue": "={{ $json.name }}",
+                "rightValue": "Отследить переход границы и отправить талон в бухгалтерию",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2416,
+          240
+        ],
+        "id": "f564bc4c-c6ca-401b-b32c-713f727e59a5",
+        "name": "If2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "9b727155-99e6-4e6a-8bc2-e9f974ec2128",
+                "leftValue": "={{ $json.subject }}",
+                "rightValue": "Обращение:",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "877d0f6a-2299-478f-8631-583b8232cc3f",
+                "leftValue": "={{ Object.keys($binary || {}).length }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1184,
+          240
+        ],
+        "id": "1e79e13d-8e99-4b43-a419-9115da0a1a3b",
+        "name": "If3"
+      },
+      {
+        "parameters": {
+          "fromEmail": "opt@lux.kz",
+          "toEmail": "swetlanka.28@mail.ru",
+          "subject": "={{ $('Email Trigger (IMAP)').item.json.subject }}",
+          "emailFormat": "text",
+          "text": "Готово",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          3520,
+          144
+        ],
+        "id": "149c185c-0116-4ff3-b03d-1d5ab31948b8",
+        "name": "Send an Email1",
+        "webhookId": "6e77acbb-a04a-4d0d-bc01-3fdce5c214e2",
+        "credentials": {
+          "smtp": {
+            "id": "MlpwrPUWwfRPYD1g",
+            "name": "SMTP Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "subtask",
+          "taskId": "={{ $('If4').item.json.gid }}",
+          "name": "Запросить талон",
+          "otherProperties": {
+            "assignee": "1206077570445346",
+            "completed": false,
+            "due_on": "={{ $now.format('yyyy-MM-dd') }}"
+          }
+        },
+        "type": "n8n-nodes-base.asana",
+        "typeVersion": 1,
+        "position": [
+          2784,
+          480
+        ],
+        "id": "75191655-ab1e-49df-a29b-7c54f4cdd087",
+        "name": "Create a subtask1",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "id": "={{ $('Get many tasks2').first().json.gid }}"
+        },
+        "type": "n8n-nodes-base.asana",
+        "typeVersion": 1,
+        "position": [
+          2624,
+          480
+        ],
+        "id": "902c3be1-8bfe-42ea-8cf7-cdb62e260a14",
+        "name": "Get a task1",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "https://app.asana.com/api/1.0/portfolios/1208493754502428/items",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "asanaApi",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1472,
+          480
+        ],
+        "id": "ec9fe8ee-cb56-44c3-9ed6-563ed308dce3",
+        "name": "HTTP Request3",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1936,
+          480
+        ],
+        "id": "b899b7a9-0939-4e6a-b535-8f4b88758d12",
+        "name": "Loop Over Items3"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "filters": {
+            "project": "={{ $json.gid }}"
+          }
+        },
+        "type": "n8n-nodes-base.asana",
+        "typeVersion": 1,
+        "position": [
+          2144,
+          496
+        ],
+        "id": "22513aba-5e28-41eb-98da-016dfc94820f",
+        "name": "Get many tasks2",
+        "credentials": {
+          "asanaApi": {
+            "id": "jlAdDexJXw5zrr8I",
+            "name": "Asana Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1728,
+          480
+        ],
+        "id": "c1309783-9578-4978-9211-0d4589f53176",
+        "name": "Split Out2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "7564f1c3-bcbb-46b2-bd77-c91052f391a2",
+                "leftValue": "={{ $json.name }}",
+                "rightValue": "=\\b{{ $('Code in JavaScript').item.json.kzNumber }}\\b",
+                "operator": {
+                  "type": "string",
+                  "operation": "regex"
+                }
+              },
+              {
+                "id": "2cb33e45-754c-45db-bcfa-7a43ff25e70b",
+                "leftValue": "={{ $json.name }}",
+                "rightValue": "Отследить переход границы и отправить талон в бухгалтерию",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2432,
+          496
+        ],
+        "id": "ce2ab219-d7bd-4778-843e-191ec3cc9306",
+        "name": "If4"
+      },
+      {
+        "parameters": {
+          "fromEmail": "opt@lux.kz",
+          "toEmail": "swetlanka.28@mail.ru",
+          "subject": "={{ $('Email Trigger (IMAP)').item.json.subject }}",
+          "emailFormat": "text",
+          "text": "Запросить талон",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          2960,
+          480
+        ],
+        "id": "d1ae6219-3ac1-479d-8019-471ec9616261",
+        "name": "Send an Email2",
+        "webhookId": "6e77acbb-a04a-4d0d-bc01-3fdce5c214e2",
+        "credentials": {
+          "smtp": {
+            "id": "MlpwrPUWwfRPYD1g",
+            "name": "SMTP Света"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Code in JavaScript1": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get many tasks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many tasks": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Filter1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter1": {
+        "main": [
+          [
+            {
+              "node": "Update a task",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update a task": {
+        "main": [
+          [
+            {
+              "node": "Send an Email",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Email Trigger (IMAP)": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a subtask": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "Send an Email1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a task": {
+        "main": [
+          [
+            {
+              "node": "Create a subtask",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items1": {
+        "main": [
+          [],
+          [
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "If3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request2": {
+        "main": [
+          [
+            {
+              "node": "Split Out1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items2": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get many tasks1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many tasks1": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "Get a task",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Items2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If3": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "HTTP Request3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a task1": {
+        "main": [
+          [
+            {
+              "node": "Create a subtask1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request3": {
+        "main": [
+          [
+            {
+              "node": "Split Out2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items3": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get many tasks2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many tasks2": {
+        "main": [
+          [
+            {
+              "node": "If4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out2": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If4": {
+        "main": [
+          [
+            {
+              "node": "Get a task1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Items3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a subtask1": {
+        "main": [
+          [
+            {
+              "node": "Send an Email2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Святослав it@mail6.luxkz.kz",
+    "name": "Version 2185f4cb",
+    "description": "",
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-05-05T20:27:54.468Z",
+        "id": 502,
+        "workflowId": "DwGkebnB5Wys44I1",
+        "versionId": "2185f4cb-6de9-42ed-b700-92807d321cde",
+        "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    ]
+  }
+}
