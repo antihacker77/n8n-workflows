@@ -1,0 +1,1576 @@
+{
+  "updatedAt": "2026-04-27T10:18:57.133Z",
+  "createdAt": "2026-04-22T10:02:14.600Z",
+  "id": "xxQhZEE3n11Mli0l",
+  "name": "Отправка сообщения поставщикам Телеграм",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "03928f39-3127-4928-bd18-f97ee795d214",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -2816,
+        1744
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Статус"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "133a4cd5-cf4e-4fc8-9e51-ba71b4f71818",
+      "name": "Read Sheet1 Contacts",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -2576,
+        1744
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a1",
+              "leftValue": "={{ ($json['Контакты'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "a2",
+              "leftValue": "={{ ($json['First Contact Sent'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8af9b942-9138-4991-af79-25b823f5c399",
+      "name": "Needs first contact",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -2352,
+        1744
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "004a72d6-2921-4d55-9906-1db5c0eed716",
+      "name": "Loop Contacts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -2128,
+        1728
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ $json['Контакты'].toString() }}"
+            },
+            {
+              "id": "b2",
+              "name": "First Contact Sent",
+              "type": "string",
+              "value": "Yes"
+            },
+            {
+              "id": "b3",
+              "name": "Stage",
+              "type": "string",
+              "value": "awaiting_catalog"
+            },
+            {
+              "id": "b4",
+              "name": "Название компании временно",
+              "type": "string",
+              "value": "={{ $json['Название компании временно'] || '' }}"
+            },
+            {
+              "id": "b5",
+              "name": "Деятельность компании временно",
+              "type": "string",
+              "value": "={{ $json['Деятельность компании временно'] || '' }}"
+            },
+            {
+              "id": "b6",
+              "name": "Ссылка на каталог временно",
+              "type": "string",
+              "value": "={{ $json['Ссылка на каталог временно'] || '' }}"
+            },
+            {
+              "id": "b7",
+              "name": "Полный пакет получен",
+              "type": "string",
+              "value": "={{ $json['Полный пакет получен'] || '' }}"
+            },
+            {
+              "id": "b8",
+              "name": "Last Reply",
+              "type": "string",
+              "value": "={{ \"Здравствуйте, мы компания из Казахстана, занимающаяся продажей товаров из Китая. Планируем расширять ассортимент. Отправьте, пожалуйста, ваш каталог товаров. И подскажите, как называется ваша компания и что вы производите.\" }}"
+            },
+            {
+              "id": "b9",
+              "name": "Updated At",
+              "type": "string",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b05b5fe5-2a44-4fb4-81ee-233d8ce3299b",
+      "name": "Build First Message",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1904,
+        1744
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json['Контакты'] }}",
+        "text": "={{ $json['Last Reply'] }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "83f5f032-17f1-41c4-adad-751cf0407221",
+      "name": "Send First Telegram Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -1696,
+        1744
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "63471abd-d420-4101-992b-d5f281c6ec9a",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Статус": "={{ $json.ok }}",
+            "Контакты": "={{ $('Read Sheet1 Contacts').item.json['Контакты'] }}"
+          },
+          "matchingColumns": [
+            "Контакты"
+          ],
+          "schema": [
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Статус",
+              "displayName": "Статус",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "41db5ed2-ffce-4331-b5db-3a4f53d4540b",
+      "name": "Update Sheet1 After First Message",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -1472,
+        1744
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "9506ca1d-b375-4bdd-a52b-bdbab6e6a373",
+      "name": "Continue Loop",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        -1248,
+        1744
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "a270060d-d005-42a6-8285-37e7421c16b8",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -2816,
+        2064
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "9fde1b8c-fd6b-4e19-a391-f6dc16b963b2",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ String($json.message.chat.id) }}"
+            },
+            {
+              "id": "c2",
+              "name": "supplier_message",
+              "type": "string",
+              "value": "={{ $json.message.text || $json.message.caption || '' }}"
+            },
+            {
+              "id": "c3",
+              "name": "has_media",
+              "type": "boolean",
+              "value": "={{ !!($json.message.document || $json.message.photo || $json.message.video || $json.message.audio) }}"
+            },
+            {
+              "id": "c4",
+              "name": "file_id",
+              "type": "string",
+              "value": "={{ ($json.message.document && $json.message.document.file_id) || ($json.message.video && $json.message.video.file_id) || ($json.message.audio && $json.message.audio.file_id) || (($json.message.photo && $json.message.photo.length) ? $json.message.photo[$json.message.photo.length - 1].file_id : '') || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b472d5a1-76db-4373-b835-97b94c43d373",
+      "name": "Normalize Telegram Payload",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -2608,
+        2064
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 487056885,
+          "mode": "list",
+          "cachedResultName": "Временно",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=487056885"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Контакты",
+              "lookupValue": "={{ $('Normalize Telegram Payload').item.json['Контакты'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "31950ff2-04d0-46ac-9bfe-a924a3517e7e",
+      "name": "Find Contact In Sheet1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -2432,
+        2144
+      ],
+      "typeVersion": 4.6,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "3bfdd4a2-7da6-4f02-b88f-122773becfbc",
+      "name": "Merge Incoming And Sheet1",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -2096,
+        2080
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const incoming = $('Normalize Telegram Payload').item.json;\nconst row = $json || {};\nreturn {\n  json: {\n    contact: incoming['Контакты'],\n    supplier_message: incoming.supplier_message,\n    has_media: incoming.has_media,\n    file_id: incoming.file_id,\n    current_stage: row['Stage'] || 'new',\n    known_company_name: row['Название компании временно'] || '',\n    known_activity: row['Деятельность компании временно'] || '',\n    known_catalog: row['Ссылка на каталог временно'] || '',\n    package_done: row['Полный пакет получен'] || '',\n    first_contact_sent: row['First Contact Sent'] || '',\n    status_chat: $json['Статус'] || ''\n  }\n};"
+      },
+      "id": "9e3d33fc-285f-45a0-8aea-d20df3ce3caf",
+      "name": "Build Dialog Context",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -1872,
+        2080
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json, null, 2) }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Ты ведешь диалог с поставщиком в Telegram как живой менеджер по закупкам. Твоя цель — получить полный пакет данных: 1) название компании, 2) деятельность компании / что производят, 3) каталог. Говори коротко, вежливо, естественно. Не задавай больше 1-2 связанных вопросов за раз. Если не хватает названия компании — спроси его. Если не хватает деятельности компании — спроси, что производит компания. Если не хватает каталога — попроси каталог или ссылку на него. Если пришел файл, считай, что каталог получен. Если все три элемента уже есть, reply_text должен быть пустым и stage='completed'. Верни только JSON по схеме. \nКогда ты собрал все данные ты должен дать ответ пользователю Например: Спасибо, я передал ваши данные в отдел закупок с вами обязательно свяжуться.\nТак же на любую благодарность отвечай Например: Рады сотрудничать! На связи!\nЕсли пользователь задаёт вопрос дай логичный ответ\nКритически ВАЖНО:\n- Если поле status_chat равно true, reply_text не должен начинаться с приветствия."
+            }
+          ]
+        }
+      },
+      "id": "da659ec0-f99c-4e5a-9a16-b8e14c3062e1",
+      "name": "Supplier Dialog Planner",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -1680,
+        2080
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company_name\": { \"type\": \"string\" },\n    \"business_activity\": { \"type\": \"string\" },\n    \"catalog_received\": { \"type\": \"boolean\" },\n    \"catalog_reference\": { \"type\": \"string\" },\n    \"stage\": { \"type\": \"string\", \"enum\": [\"new\", \"awaiting_catalog\", \"awaiting_company_name\", \"awaiting_activity\", \"in_progress\", \"completed\"] },\n    \"reply_text\": { \"type\": \"string\" }\n  },\n  \"required\": [\"company_name\", \"business_activity\", \"catalog_received\", \"catalog_reference\", \"stage\", \"reply_text\"]\n}"
+      },
+      "id": "e054345c-a79d-433c-9965-9dead22f5030",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        -1472,
+        2336
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ $('Build Dialog Context').item.json.contact }}"
+            },
+            {
+              "id": "d2",
+              "name": "First Contact Sent",
+              "type": "string",
+              "value": "={{ $('Build Dialog Context').item.json.first_contact_sent || 'Yes' }}"
+            },
+            {
+              "id": "d3",
+              "name": "Stage",
+              "type": "string",
+              "value": "={{ $json.output.stage }}"
+            },
+            {
+              "id": "d4",
+              "name": "Название компании временно",
+              "type": "string",
+              "value": "={{ $json.output.company_name || $('Build Dialog Context').item.json.known_company_name }}"
+            },
+            {
+              "id": "d5",
+              "name": "Деятельность компании временно",
+              "type": "string",
+              "value": "={{ $json.output.business_activity || $('Build Dialog Context').item.json.known_activity }}"
+            },
+            {
+              "id": "d6",
+              "name": "Ссылка на каталог временно",
+              "type": "string",
+              "value": "={{ $json.output.catalog_reference || $('Build Dialog Context').item.json.known_catalog }}"
+            },
+            {
+              "id": "d7",
+              "name": "Полный пакет получен",
+              "type": "string",
+              "value": "={{ (($json.output.company_name || $('Build Dialog Context').item.json.known_company_name) && ($json.output.business_activity || $('Build Dialog Context').item.json.known_activity) && (($json.output.catalog_reference || $('Build Dialog Context').item.json.known_catalog) || $json.output.catalog_received)) ? 'Yes' : '' }}"
+            },
+            {
+              "id": "d8",
+              "name": "Last Reply",
+              "type": "string",
+              "value": "={{ $json.output.reply_text }}"
+            },
+            {
+              "id": "d9",
+              "name": "Updated At",
+              "type": "string",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "39657207-b26a-4948-9f4b-a76cb8ba54e6",
+      "name": "Prepare Sheet1 Progress",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1392,
+        2080
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $('Build Dialog Context').item.json.has_media ? 'true' : 'false' }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d297212b-b056-4552-a907-2ee0a355a0a5",
+      "name": "Catalog File Attached",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -1152,
+        2080
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Build Dialog Context').item.json.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "3800a760-3648-4dcf-b04d-af56789695fa",
+      "name": "Download Catalog From Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -912,
+        2000
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "4c5089a3-cd5b-4b39-ae47-8eba1eae5333",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName || ('catalog_' + $('Build Dialog Context').item.json.contact + '.bin') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1ms3xo_xQiNfNby4GY9q_oJQu-Wo_fe93",
+          "mode": "list",
+          "cachedResultName": "База исходящих",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ms3xo_xQiNfNby4GY9q_oJQu-Wo_fe93"
+        },
+        "options": {
+          "simplifyOutput": false
+        }
+      },
+      "id": "a5456884-d079-4314-a984-928e808c140f",
+      "name": "Upload Catalog To Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -672,
+        2000
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "qTPk8OIS7ZoIqkpz",
+          "name": "Google Drive vkitae"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "id": "41cf394f-b8f7-4c54-820a-7dd1cf886de5",
+      "name": "Share Catalog File",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -432,
+        2000
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "qTPk8OIS7ZoIqkpz",
+          "name": "Google Drive vkitae"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Контакты'] }}"
+            },
+            {
+              "id": "f2",
+              "name": "First Contact Sent",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['First Contact Sent'] }}"
+            },
+            {
+              "id": "f3",
+              "name": "Stage",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Stage'] }}"
+            },
+            {
+              "id": "f4",
+              "name": "Название компании временно",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Название компании временно'] }}"
+            },
+            {
+              "id": "f5",
+              "name": "Деятельность компании временно",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Деятельность компании временно'] }}"
+            },
+            {
+              "id": "f6",
+              "name": "Ссылка на каталог временно",
+              "type": "string",
+              "value": "={{ 'https://drive.google.com/file/d/' + ($json.id || $json.fileId) + '/view' }}"
+            },
+            {
+              "id": "f7",
+              "name": "Полный пакет получен",
+              "type": "string",
+              "value": "={{ ($('Prepare Sheet1 Progress').item.json['Название компании временно'] && $('Prepare Sheet1 Progress').item.json['Деятельность компании временно']) ? 'Yes' : '' }}"
+            },
+            {
+              "id": "f8",
+              "name": "Last Reply",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Last Reply'] }}"
+            },
+            {
+              "id": "f9",
+              "name": "Updated At",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Updated At'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cc0a9f9d-6d49-477a-b318-35d10d7f0700",
+      "name": "Add Drive Link To Progress",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -192,
+        2000
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 487056885,
+          "mode": "list",
+          "cachedResultName": "Временно",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=487056885"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Контакты": "={{ $json['Контакты'] }}",
+            "First Contact Sent": "={{ $json['First Contact Sent'] }}",
+            "Stage": "={{ $json.Stage }}",
+            "Название компании временно": "={{ $json['Название компании временно'] }}",
+            "Деятельность компании временно": "={{ $json['Деятельность компании временно'] }}",
+            "Ссылка на каталог временно": "={{ $json['Ссылка на каталог временно'] }}",
+            "Полный пакет получен": "={{ $json['Полный пакет получен'] }}",
+            "Last Reply": "={{ $json['Last Reply'] }}",
+            "Updated At": "={{ $json['Updated At'] }}"
+          },
+          "matchingColumns": [
+            "Контакты"
+          ],
+          "schema": [
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First Contact Sent",
+              "displayName": "First Contact Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Stage",
+              "displayName": "Stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Название компании временно",
+              "displayName": "Название компании временно",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Деятельность компании временно",
+              "displayName": "Деятельность компании временно",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Ссылка на каталог временно",
+              "displayName": "Ссылка на каталог временно",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Полный пакет получен",
+              "displayName": "Полный пакет получен",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Reply",
+              "displayName": "Last Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "318d39bb-a27c-4854-aaff-7e7c9c148fb7",
+      "name": "Upsert Sheet1 Progress",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        64,
+        2080
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "g1",
+              "leftValue": "={{ ($json['Название компании временно'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "g2",
+              "leftValue": "={{ ($json['Деятельность компании временно'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "g3",
+              "leftValue": "={{ ($json['Ссылка на каталог временно'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cbd11c6a-3d58-4359-a065-0451e1811f60",
+      "name": "Full Package Ready",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        288,
+        2032
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "h1",
+              "name": "Название компании",
+              "type": "string",
+              "value": "={{ $json['Название компании временно'] }}"
+            },
+            {
+              "id": "h2",
+              "name": "ссылка на каталог",
+              "type": "string",
+              "value": "={{ $json['Ссылка на каталог временно'] }}"
+            },
+            {
+              "id": "h3",
+              "name": "Номер телефона",
+              "type": "string",
+              "value": "={{ $json['Контакты'] }}"
+            },
+            {
+              "id": "h4",
+              "name": "Деятельность компании",
+              "type": "string",
+              "value": "={{ $json['Деятельность компании временно'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "974bb21f-580c-42f7-8773-018e09d43096",
+      "name": "Prepare Final Row For Sheet2",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        496,
+        2016
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2142687821,
+          "mode": "list",
+          "cachedResultName": "Лист2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=2142687821"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Название компании ": "={{ $json['Название компании'] }}",
+            "ссылка на каталог": "={{ $json['ссылка на каталог'] }}",
+            "Номер телефона": "={{ $json['Номер телефона'] }}",
+            "Деятельность компании ": "={{ $json['Деятельность компании'] }}"
+          },
+          "matchingColumns": [
+            "Номер телефона"
+          ],
+          "schema": [
+            {
+              "id": "Название компании ",
+              "displayName": "Название компании ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ссылка на каталог",
+              "displayName": "ссылка на каталог",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Номер телефона",
+              "displayName": "Номер телефона",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Деятельность компании ",
+              "displayName": "Деятельность компании ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "160370de-460a-4ca6-912d-dc243d0afb27",
+      "name": "Upsert Final To Sheet2",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        720,
+        2016
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "i1",
+              "leftValue": "={{ ($json['Last Reply'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f46abf51-1bc9-4c36-971b-5d684062bf27",
+      "name": "Reply Needed",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        288,
+        2176
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json['Контакты'] }}",
+        "text": "={{ $json['Last Reply'] }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "e4a90c2a-3486-4feb-8a51-e5ff1d163851",
+      "name": "Send Telegram Reply",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        496,
+        2160
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "6d58472c-0546-472c-9236-d46916e2003c",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1728,
+        2336
+      ],
+      "id": "92f512e3-9731-4964-b8b1-c86794075ce7",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H8XIEwmjn0GuMnGK",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Контакты",
+              "lookupValue": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "efd9e81a-aecb-4bc4-af41-5d12e0b7554b",
+      "name": "Find Contact In Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -2256,
+        2144
+      ],
+      "typeVersion": 4.6,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-waha.wahaTrigger",
+      "typeVersion": 202411,
+      "position": [
+        -3024,
+        2288
+      ],
+      "id": "633b1e09-d5d0-40cc-8fbe-78c6d00abab4",
+      "name": "WAHA Trigger",
+      "webhookId": "e5b05539-f429-4c9d-b3e4-157d5f06f5a2"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        -2384,
+        2464
+      ],
+      "id": "788b70f7-cdfc-4fd9-aa11-1bcfc549b1b4",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "nKoHMSDIW4u9JBlV",
+          "name": "WAHA account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Sheet1 Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Sheet1 Contacts": {
+      "main": [
+        [
+          {
+            "node": "Needs first contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs first contact": {
+      "main": [
+        [
+          {
+            "node": "Loop Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Contacts": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Build First Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build First Message": {
+      "main": [
+        [
+          {
+            "node": "Send First Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send First Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet1 After First Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet1 After First Message": {
+      "main": [
+        [
+          {
+            "node": "Continue Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Telegram Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Telegram Payload": {
+      "main": [
+        [
+          {
+            "node": "Find Contact In Sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Incoming And Sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Contact In Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Find Contact In Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Incoming And Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Build Dialog Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Dialog Context": {
+      "main": [
+        [
+          {
+            "node": "Supplier Dialog Planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Supplier Dialog Planner",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supplier Dialog Planner": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sheet1 Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sheet1 Progress": {
+      "main": [
+        [
+          {
+            "node": "Catalog File Attached",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Catalog File Attached": {
+      "main": [
+        [
+          {
+            "node": "Download Catalog From Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upsert Sheet1 Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Catalog From Telegram": {
+      "main": [
+        [
+          {
+            "node": "Upload Catalog To Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Catalog To Drive": {
+      "main": [
+        [
+          {
+            "node": "Share Catalog File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share Catalog File": {
+      "main": [
+        [
+          {
+            "node": "Add Drive Link To Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Drive Link To Progress": {
+      "main": [
+        [
+          {
+            "node": "Upsert Sheet1 Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Sheet1 Progress": {
+      "main": [
+        [
+          {
+            "node": "Full Package Ready",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reply Needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Full Package Ready": {
+      "main": [
+        [
+          {
+            "node": "Prepare Final Row For Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Final Row For Sheet2": {
+      "main": [
+        [
+          {
+            "node": "Upsert Final To Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Needed": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Supplier Dialog Planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue Loop": {
+      "main": [
+        [
+          {
+            "node": "Loop Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Contact In Sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge Incoming And Sheet1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "WAHA Trigger": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "808293f8-9b13-43da-ae9e-0b248fcca999",
+  "activeVersionId": null,
+  "versionCounter": 469,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-04-22T10:02:14.602Z",
+      "createdAt": "2026-04-22T10:02:14.602Z",
+      "role": "workflow:owner",
+      "workflowId": "xxQhZEE3n11Mli0l",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": null
+}
