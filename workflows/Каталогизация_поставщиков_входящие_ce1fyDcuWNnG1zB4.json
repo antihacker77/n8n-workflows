@@ -1,0 +1,529 @@
+{
+  "updatedAt": "2026-04-27T10:17:59.993Z",
+  "createdAt": "2026-04-01T11:43:53.422Z",
+  "id": "ce1fyDcuWNnG1zB4",
+  "name": "Каталогизация поставщиков входящие",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "ae351892-aca1-4fb3-8d26-3f5df5f1edbd",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json[\"Деятельность компании\"] || \"\" }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Ты классифицируешь компании по полю \"Деятельность компании\".\n\nТвоя задача:\nопределить наиболее подходящую товарную категорию компании по свободному текстовому описанию.\n\nНужно выбрать ровно одну категорию только из списка ниже.\n\nДопустимые категории:\nОбувь\nМеха, кожа, пуховики и сопутствующие товары\nКовры и гобелены\nТкачество, изделия из ротанга и железа\nТехнологическое оборудование\nПромышленная автоматизация и интеллектуальное производство\nЭлектронная и электротехническая продукция\nЗапчасти для автомобилей\nКрепёжные изделия\nТранспортные средства\nОсветительное оборудование\nИнструменты\nКосметика\nЧасы и оптические инструменты\nФестивальная и праздничная продукция\nСтеклянные изделия\nСантехническое оборудование\nКерамика\nДомашняя утварь\nУкрашения для дома\nЕда\nИгрушки\nСредства личной гигиены\nТовары для детей, младенцев и беременных\nТовары для домашних животных\nДетская одежда\nСтроительные и декоративные материалы\nУкрашения\nТовары 18+\nБытовая электроника и информационные продукты\nТовары для сада\nТуалетные принадлежности\nТекстильное сырье и ткани\nДомашний текстиль\nПодарки и премии\nСпортивная и повседневная одежда\nМебель\nЛекарства, товары для здоровья\nМодные аксессуары и фурнитура\nКухонные принадлежности и столовая посуда\nЧехлы и сумки\nМужская и женская одежда\nТовары для спорта, путешествий и отдыха\nОфисные принадлежности\nПрочее\n\nОсновные правила:\n1. Выбирай ровно одну категорию только из списка выше.\n2. Не придумывай новые категории.\n3. Если в тексте есть и тип компании, и товарная группа, ориентируйся на товарную группу.\n4. Слова \"поставка\", \"поставщик\", \"фабрика\", \"завод\", \"производство\", \"торговля\" сами по себе не являются товарной категорией.\n5. Не выбирай \"Прочее\", если из текста можно разумно определить наиболее близкую товарную категорию.\n6. Выбирай \"Прочее\" только если описание слишком общее, слишком короткое, противоречивое или не содержит понятной товарной группы.\n7. Если в описании несколько товарных групп, выбирай наиболее конкретную и наиболее полезную для бизнес-классификации категорию.\n8. Не относись к бытовым, кухонным, домашним изделиям как к строительным материалам без явного указания на стройку, отделку, монтаж, сантехнику или декор для ремонта.\n\nСпециальные бизнес-правила:\n1. Пластиковые контейнеры, пищевые контейнеры, контейнеры для хранения еды, кухонные контейнеры, ланч-боксы, пластиковые емкости для кухни относить к категории \"Кухонные принадлежности и столовая посуда\".\n2. Пластиковые изделия для кухни и хранения еды относить к категории \"Кухонные принадлежности и столовая посуда\".\n3. Если в описании есть контейнеры и формы, но основной товар — кухонные контейнеры или бытовые контейнеры, выбирать \"Кухонные принадлежности и столовая посуда\".\n4. Мебель, шкафы, столы, стулья, диваны, корпусная мебель, мягкая мебель относить к категории \"Мебель\".\n5. Электротовары, электрооборудование, электрика, электротехнические изделия относить к категории \"Электронная и электротехническая продукция\" только если основной смысл описания связан именно с электротехникой, электроникой, оборудованием, комплектующими, электрикой, кабелями, освещением или бытовой техникой.\n6. Спортивные товары, товары для спорта, отдыха, туризма, путешествий, кемпинга относить к категории \"Товары для спорта, путешествий и отдыха\".\n7. Если в описании одновременно есть спортивные и электрические товары, по умолчанию выбирать \"Товары для спорта, путешествий и отдыха\", если описание не делает явный акцент именно на электротехнической продукции.\n8. Если текст говорит только \"поставка\", \"фабрика\", \"производство\", \"торговая компания\" без товарной группы, выбирать \"Прочее\".\n9. Если описание похоже на товар для дома, кухни, хранения, быта или повседневного использования, отдавай приоритет бытовой категории, а не промышленной или строительной.\n\nПримеры:\n\"Компания по производству мебели\" -> {\"category\":\"Мебель\"}\n\"все виды мебели\" -> {\"category\":\"Мебель\"}\n\"Компания занимается поставкой.\" -> {\"category\":\"Прочее\"}\n\"поставка\" -> {\"category\":\"Прочее\"}\n\"Фабрика\" -> {\"category\":\"Прочее\"}\n\"Спортивные и электрические товары\" -> {\"category\":\"Товары для спорта, путешествий и отдыха\"}\n\"производство пластиковых контейнеров и форм\" -> {\"category\":\"Кухонные принадлежности и столовая посуда\"}\n\"Компания по производству пластиковых изделий с заводом форм.\" -> {\"category\":\"Кухонные принадлежности и столовая посуда\"}\n\"пластиковые контейнеры для хранения\" -> {\"category\":\"Кухонные принадлежности и столовая посуда\"}\n\"мебельное производство\" -> {\"category\":\"Мебель\"}\n\"электротехническая продукция\" -> {\"category\":\"Электронная и электротехническая продукция\"}\n\"товары для спорта и отдыха\" -> {\"category\":\"Товары для спорта, путешествий и отдыха\"}\n\nОтвет возвращай строго только в JSON без пояснений:\n{\"category\":\"одна категория из списка\"}\n"
+            }
+          ]
+        }
+      },
+      "id": "46ea902a-8435-421a-b9b0-d40b41ad45e2",
+      "name": "Categorize company",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        448,
+        -16
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "3ae37c4f-2cf0-491f-a71c-07244facb0a4",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        448,
+        192
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "349cVczzg4DqlA1N",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"category\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"category\"]\n}"
+      },
+      "id": "b822883f-111c-414b-a1fd-391adc1b2abb",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        688,
+        192
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca001",
+              "name": "Компания",
+              "type": "string",
+              "value": "={{ $('Get row(s) in sheet').item.json['Компания'] || '' }}"
+            },
+            {
+              "id": "ca002",
+              "name": "Ссылка на прайс",
+              "type": "string",
+              "value": "={{ $('Get row(s) in sheet').item.json['Ссылка на прайс'] || '' }}"
+            },
+            {
+              "id": "ca003",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ $('Get row(s) in sheet').item.json['Контакты'] || '' }}"
+            },
+            {
+              "id": "ca004",
+              "name": "Дата",
+              "type": "string",
+              "value": "={{ $('Get row(s) in sheet').item.json['Дата'] || '' }}"
+            },
+            {
+              "id": "ca005",
+              "name": "Деятельность компании",
+              "type": "string",
+              "value": "={{ $('Get row(s) in sheet').item.json['Деятельность компании'] || '' }}"
+            },
+            {
+              "id": "ca006",
+              "name": "Категория",
+              "type": "string",
+              "value": "={{ $json.output.category }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7a76ca0c-3aac-4534-95dd-7e4622d0b93d",
+      "name": "Prepare row for category sheet",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        848,
+        -16
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM",
+          "mode": "list",
+          "cachedResultName": "База поставщиков",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $json['Категория'] }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Компания": "={{ $json['Компания'] }}",
+            "Контакты": "={{ $json['Контакты'] }}",
+            "Ссылка на прайс": "={{ $json['Ссылка на прайс'] }}",
+            "Дата": "={{ $json['Дата'] }}",
+            "Деятельность компании": "={{ $json['Деятельность компании'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Компания",
+              "displayName": "Компания",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ссылка на прайс",
+              "displayName": "Ссылка на прайс",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Дата",
+              "displayName": "Дата",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Деятельность компании",
+              "displayName": "Деятельность компании",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "8f32faf0-310c-4eb0-ae0f-3b25d2b069bb",
+      "name": "Append row to category sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1296,
+        0
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM",
+          "mode": "list",
+          "cachedResultName": "База поставщиков",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Категория ",
+              "lookupValue": "="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "24de969e-17c5-4d6c-8e16-488e16891b91",
+      "name": "Get row(s) in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        240,
+        -16
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1072,
+        -16
+      ],
+      "id": "74e9c6df-e6d9-4d76-8f95-a8d267d9abab",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM",
+          "mode": "list",
+          "cachedResultName": "База поставщиков",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Деятельность компании": "={{ $json['Деятельность компании'] }}",
+            "Категория ": "={{ $('Prepare row for category sheet').item.json['Категория'] }}"
+          },
+          "matchingColumns": [
+            "Деятельность компании"
+          ],
+          "schema": [
+            {
+              "id": "Компания",
+              "displayName": "Компания",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ссылка на прайс",
+              "displayName": "Ссылка на прайс",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Дата",
+              "displayName": "Дата",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Деятельность компании",
+              "displayName": "Деятельность компании",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Категория ",
+              "displayName": "Категория ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "43b2564d-334f-4291-8313-4e36b71fdf18",
+      "name": "Append row to category sheet1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1504,
+        0
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Categorize company",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Categorize company",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Categorize company": {
+      "main": [
+        [
+          {
+            "node": "Prepare row for category sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare row for category sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Categorize company",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Append row to category sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row to category sheet": {
+      "main": [
+        [
+          {
+            "node": "Append row to category sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row to category sheet1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "52775498-4648-4612-91f3-d1e9b77a4848",
+  "activeVersionId": null,
+  "versionCounter": 81,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-01T11:43:53.425Z",
+      "createdAt": "2026-04-01T11:43:53.425Z",
+      "role": "workflow:owner",
+      "workflowId": "ce1fyDcuWNnG1zB4",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": null
+}
