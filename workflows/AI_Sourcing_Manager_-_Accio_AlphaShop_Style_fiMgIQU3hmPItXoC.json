@@ -1,0 +1,105 @@
+{
+  "updatedAt": "2026-04-27T07:00:51.000Z",
+  "createdAt": "2026-04-15T12:45:34.676Z",
+  "id": "fiMgIQU3hmPItXoC",
+  "name": "AI Sourcing Manager - Accio AlphaShop Style",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "aba76cd0-8ac0-4b24-ba0c-2142db7b1d55",
+      "name": "When chat message received",
+      "webhookId": "9a438641-88ef-4a62-bf5e-cfd6c5601c50"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://browser.lux.kz/function",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"code\": \"module.exports = async ({ page, context }) => { await page.goto('https://www.accio.com/', { waitUntil: 'domcontentloaded' }); const inputSelector = 'textarea, input[type=\\\"text\\\"], [contenteditable=\\\"true\\\"]'; await page.waitForSelector(inputSelector, { timeout: 10000 }); await page.click(inputSelector); await page.keyboard.down('Control'); await page.keyboard.press('A'); await page.keyboard.up('Control'); await page.keyboard.press('Backspace'); await page.keyboard.type(context.query); await page.keyboard.press('Enter'); await page.waitForTimeout(6000); const result = await page.evaluate(() => ({ title: document.title, text: document.body.innerText.slice(0, 8000), url: location.href })); return { data: { query: context.query, url: result.url, pageTitle: result.title, text: result.text }, type: 'application/json' }; }\",\n  \"context\": {\n    \"query\": \"{{$json.chatInput}}\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "958bf6a5-6d90-43da-b70d-d969ab71c1db",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "656fec0a-b9c8-4752-81e5-eced6c47b8dd",
+  "activeVersionId": null,
+  "versionCounter": 201,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-15T12:45:34.677Z",
+      "createdAt": "2026-04-15T12:45:34.677Z",
+      "role": "workflow:owner",
+      "workflowId": "fiMgIQU3hmPItXoC",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
