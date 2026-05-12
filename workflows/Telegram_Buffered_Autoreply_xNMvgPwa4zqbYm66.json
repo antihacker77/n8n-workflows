@@ -1,0 +1,940 @@
+{
+  "updatedAt": "2026-04-27T10:18:44.639Z",
+  "createdAt": "2026-04-24T05:03:20.119Z",
+  "id": "xNMvgPwa4zqbYm66",
+  "name": "Telegram Buffered Autoreply",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "112dd047-4b97-4e87-9c73-c71d0ab81bbb",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -112,
+        -192
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "14ce764b-af3e-41d0-b89c-d16d139f0b21",
+      "credentials": {
+        "telegramApi": {
+          "id": "yO2XgMSlvA23CyKY",
+          "name": "Telegram ai_seller09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "n1",
+              "name": "chat_id",
+              "type": "string",
+              "value": "={{ String($json.message.chat.id) }}"
+            },
+            {
+              "id": "n2",
+              "name": "message_text",
+              "type": "string",
+              "value": "={{ ($json.message.text || $json.message.caption || '').trim() }}"
+            },
+            {
+              "id": "n3",
+              "name": "message_id",
+              "type": "string",
+              "value": "={{ String($json.message.message_id || '') }}"
+            },
+            {
+              "id": "n4",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ String($json.message.date || '') }}"
+            },
+            {
+              "id": "n5",
+              "name": "sender_name",
+              "type": "string",
+              "value": "={{ [$json.message.from?.first_name, $json.message.from?.last_name].filter(Boolean).join(' ') }}"
+            },
+            {
+              "id": "n6",
+              "name": "username",
+              "type": "string",
+              "value": "={{ $json.message.from?.username || '' }}"
+            },
+            {
+              "id": "n7",
+              "name": "pending_token",
+              "type": "string",
+              "value": "={{ String($json.message.chat.id) + '_' + String($json.message.date || '') + '_' + String($json.message.message_id || '') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9700a2b1-7cb8-4c0e-9610-9e30d4635c7b",
+      "name": "Normalize Telegram payload",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        112,
+        -192
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "tx1",
+              "leftValue": "={{ $json.message_text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "095a3b59-fc79-4ada-b506-01e6a126afd9",
+      "name": "Text exists?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        336,
+        -192
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM",
+          "mode": "list",
+          "cachedResultName": "Тест ответы на очередь сообщений",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 97978022,
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM/edit#gid=97978022"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "chat id",
+              "lookupValue": "={{ $json.chat_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7b0ed04b-33bc-41bf-b7e8-b6a56d60dbfc",
+      "name": "Find buffer row",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        576,
+        0
+      ],
+      "typeVersion": 4.6,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "d83d93dc-df54-43b7-ac2f-756d20465afd",
+      "name": "Merge incoming and buffer",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        768,
+        -192
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const incoming = $('Normalize Telegram payload').item.json;\nconst row = $json || {};\nconst existingBuffer = String(row['Buffer'] || '').trim();\nconst currentPart = String(incoming.message_text || '').trim();\nconst mergedBuffer = [existingBuffer, currentPart].filter(Boolean).join(' ').replace(/\\s+/g, ' ').trim();\nreturn {\n  json: {\n    'Chat ID': incoming.chat_id,\n    'Buffer': mergedBuffer,\n    'Pending Token': incoming.pending_token,\n    'Last Message At': incoming.timestamp,\n    'Sender Name': incoming.sender_name,\n    'Username': incoming.username,\n    'Last Reply': row['Last Reply'] || '',\n    'Updated At': $now\n  }\n};"
+      },
+      "id": "6dd97cca-8232-4f54-9ae5-625b507beed7",
+      "name": "Build buffer update",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        992,
+        -192
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM",
+          "mode": "list",
+          "cachedResultName": "Тест ответы на очередь сообщений",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 97978022,
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM/edit#gid=97978022"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat id": "={{ $json['Chat ID'] }}",
+            "Buffer": "={{ $json.Buffer }}",
+            "Pending Token": "={{ $json['Pending Token'] }}",
+            "Last Message At": "={{ $json['Last Message At'] }}",
+            "Sender Name": "={{ $json['Sender Name'] }}",
+            "Username": "={{ $json.Username }}",
+            "Last Reply": "={{ $json['Last Reply'] }}",
+            "Updated At": "={{ $json['Updated At'] }}"
+          },
+          "matchingColumns": [
+            "chat id"
+          ],
+          "schema": [
+            {
+              "id": "chat id",
+              "displayName": "chat id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Buffer",
+              "displayName": "Buffer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pending Token",
+              "displayName": "Pending Token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Message At",
+              "displayName": "Last Message At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sender Name",
+              "displayName": "Sender Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Username",
+              "displayName": "Username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Reply",
+              "displayName": "Last Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b8b78c7a-ab64-4472-839e-73bdf77f435f",
+      "name": "Upsert buffer row",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1216,
+        -192
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 7
+      },
+      "id": "bdc1c0b5-fc0b-4530-bd44-3a45a454c501",
+      "name": "Wait 7 seconds",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1424,
+        -192
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "b26e9b08-fe64-41aa-9522-543d6239f59f"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM",
+          "mode": "list",
+          "cachedResultName": "Тест ответы на очередь сообщений",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 97978022,
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM/edit#gid=97978022"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "chat id",
+              "lookupValue": "={{ $('Build buffer update').item.json['Chat ID'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cee1ed5b-9e9a-412e-b462-206dc2cab818",
+      "name": "Read current buffer row",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1648,
+        -96
+      ],
+      "typeVersion": 4.6,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "92732b53-dadd-4f69-afbd-b10864f65c5f",
+      "name": "Merge wait and current row",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1872,
+        -176
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "lt1",
+              "leftValue": "={{ $json['Pending Token'] || '' }}",
+              "rightValue": "={{ $('Build buffer update').item.json['Pending Token'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "lt2",
+              "leftValue": "={{ $json['Buffer'] || '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "23acf297-88a5-4213-a245-4c57e07a190c",
+      "name": "Is latest batch?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2080,
+        -176
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: {\n    chat_id: $json['Chat ID'],\n    merged_message: $json['Buffer'] || '',\n    sender_name: $json['Sender Name'] || '',\n    username: $json['Username'] || '',\n    pending_token: $json['Pending Token'] || '',\n    last_message_at: $json['Last Message At'] || '',\n    last_reply: $json['Last Reply'] || ''\n  }\n};"
+      },
+      "id": "b1ada94a-17d8-43b2-b0a5-7ffe5f97961c",
+      "name": "Build reply context",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2304,
+        -192
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json, null, 2) }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Ты помощник-автоответчик для Telegram. Тебе приходит уже склеенное сообщение пользователя из нескольких подряд сообщений одного чата. Нужно понять итоговый смысл всей реплики и ответить один раз, как живой менеджер. Не упоминай, что сообщения были объединены. Если пользователь сначала поздоровался, а потом дописал вопрос, отвечай на весь итоговый вопрос целиком. Пиши кратко, естественно и по делу. Если вопрос неполный, вежливо уточни недостающую часть. Верни только JSON по схеме."
+            }
+          ]
+        }
+      },
+      "id": "7dd3fa17-bde6-4e9f-a988-849972c2bbe9",
+      "name": "Auto-reply planner",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        2512,
+        -192
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "ed73f824-be6f-4b9a-9d6a-5a1e31a5a650",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2480,
+        80
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "349cVczzg4DqlA1N",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"cleaned_user_message\": { \"type\": \"string\" },\n    \"reply_text\": { \"type\": \"string\" }\n  },\n  \"required\": [\"cleaned_user_message\", \"reply_text\"]\n}"
+      },
+      "id": "04ae592c-3dad-4556-b2a5-1b6a8ae7d833",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        2720,
+        80
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pr1",
+              "name": "Chat ID",
+              "type": "string",
+              "value": "={{ $('Merge wait and current row').item.json['chat id'] }}"
+            },
+            {
+              "id": "pr2",
+              "name": "reply_text",
+              "type": "string",
+              "value": "={{ $json.output.reply_text }}"
+            },
+            {
+              "id": "pr3",
+              "name": "cleaned_user_message",
+              "type": "string",
+              "value": "={{ $json.output.cleaned_user_message }}"
+            },
+            {
+              "id": "pr4",
+              "name": "Pending Token",
+              "type": "string",
+              "value": "={{ $('Build reply context').item.json.pending_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4570b7d0-401b-437c-87de-aa51d5941562",
+      "name": "Prepare reply",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2816,
+        -192
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json['Chat ID'] }}",
+        "text": "={{ $json.reply_text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "20561034-abcd-4a54-8a1b-16c5b772b7e2",
+      "name": "Send Telegram reply",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2992,
+        -192
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "636eb43a-b5ba-4062-81fd-c30cc94e86ea",
+      "credentials": {
+        "telegramApi": {
+          "id": "yO2XgMSlvA23CyKY",
+          "name": "Telegram ai_seller09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM",
+          "mode": "list",
+          "cachedResultName": "Тест ответы на очередь сообщений",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 97978022,
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1znl8mfjTJl0bokqNxKsOR-3D3ABwh9UAUtDNhY3kdOM/edit#gid=97978022"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chat id": "={{ $json.result.chat.id }}",
+            "Last Reply": "={{ $('Prepare reply').item.json['reply_text'] }}",
+            "Updated At": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat id",
+              "displayName": "chat id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Buffer",
+              "displayName": "Buffer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pending Token",
+              "displayName": "Pending Token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Message At",
+              "displayName": "Last Message At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sender Name",
+              "displayName": "Sender Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Username",
+              "displayName": "Username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Reply",
+              "displayName": "Last Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6952683e-b3bf-4f78-aaa8-19a3de5bfc44",
+      "name": "Clear buffer row",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3184,
+        -192
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Telegram payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Telegram payload": {
+      "main": [
+        [
+          {
+            "node": "Text exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text exists?": {
+      "main": [
+        [
+          {
+            "node": "Find buffer row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge incoming and buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find buffer row": {
+      "main": [
+        [
+          {
+            "node": "Merge incoming and buffer",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge incoming and buffer": {
+      "main": [
+        [
+          {
+            "node": "Build buffer update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build buffer update": {
+      "main": [
+        [
+          {
+            "node": "Upsert buffer row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert buffer row": {
+      "main": [
+        [
+          {
+            "node": "Wait 7 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 7 seconds": {
+      "main": [
+        [
+          {
+            "node": "Read current buffer row",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge wait and current row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read current buffer row": {
+      "main": [
+        [
+          {
+            "node": "Merge wait and current row",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge wait and current row": {
+      "main": [
+        [
+          {
+            "node": "Is latest batch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is latest batch?": {
+      "main": [
+        [
+          {
+            "node": "Build reply context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build reply context": {
+      "main": [
+        [
+          {
+            "node": "Auto-reply planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Auto-reply planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-reply planner",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-reply planner": {
+      "main": [
+        [
+          {
+            "node": "Prepare reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare reply": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram reply": {
+      "main": [
+        [
+          {
+            "node": "Clear buffer row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "78a60551-5a3d-40cf-8c59-5dff08e9ab5a",
+  "activeVersionId": null,
+  "versionCounter": 118,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-24T05:03:20.122Z",
+      "createdAt": "2026-04-24T05:03:20.122Z",
+      "role": "workflow:owner",
+      "workflowId": "xNMvgPwa4zqbYm66",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": null
+}
