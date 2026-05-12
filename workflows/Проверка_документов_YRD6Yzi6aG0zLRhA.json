@@ -1,0 +1,576 @@
+{
+  "updatedAt": "2026-04-27T10:18:20.753Z",
+  "createdAt": "2026-04-01T11:41:45.827Z",
+  "id": "YRD6Yzi6aG0zLRhA",
+  "name": "Проверка документов",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        64
+      ],
+      "id": "9cee9100-d33c-427d-af23-14c2571f36cb",
+      "name": "Gmail Trigger"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        208,
+        272
+      ],
+      "id": "0dbf963c-8cf2-4566-a383-93fc42bdddcd",
+      "name": "WhatsApp Trigger",
+      "webhookId": "641f472f-9aac-4bf1-b99b-6d7af56c5a62"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=={{ $json.userMessage }}",
+        "options": {
+          "systemMessage": "Ты — система верификации документов для импорта из Китая.\n\nСписок ожидаемых документов придёт в промпте. Проанализируй текст письма и вложения.\n\nДля каждого документа из списка определи: упомянут ли он в письме (явно или косвенно через ключевые слова).\n\nВерни СТРОГО валидный JSON без markdown и без пояснений:\n{\n  \"supplier_name\": \"название компании\",\n  \"supplier_contact\": \"email или телефон из подписи\",\n  \"source_channel\": \"gmail или whatsapp\",\n  \"documents\": [\n    {\n      \"doc_key\": \"ключ документа\",\n      \"doc_name\": \"название\",\n      \"found\": true или false,\n      \"evidence\": \"цитата или описание откуда понял что есть/нет\"\n    }\n  ],\n  \"total_required\": число,\n  \"total_found\": число,\n  \"completeness_score\": число от 0 до 100,\n  \"missing\": [\"список ключей недостающих документов\"],\n  \"verdict\": \"ALL_FOUND или PARTIAL или NONE\",\n  \"ready_for_deal\": true или false\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        944,
+        192
+      ],
+      "id": "7e3195ad-8c01-4de4-a962-55e077af398e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        384
+      ],
+      "id": "2bdc49ce-ee8a-4723-b2cb-da025953fe47",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst msg = items[0].json;\n\nconst text = msg.text || msg.snippet || '';\nconst subject = msg.Subject || msg.subject || '';\nconst from = msg.From || msg.from || '';\nconst source = msg.source || 'gmail';\n\nconst attachments = [];\n\nif (msg.attachments && Array.isArray(msg.attachments)) {\n  msg.attachments.forEach(a => {\n    attachments.push({\n      name: a.filename || a.name || 'unknown',\n      type: a.mimeType || '',\n      size: a.size || 0\n    });\n  });\n}\n\ntry {\n  const binaryKeys = Object.keys($binary || {});\n  binaryKeys.forEach(key => {\n    const b = $binary[key];\n    if (b && b.fileName) {\n      attachments.push({\n        name: b.fileName,\n        type: b.mimeType || '',\n        size: b.fileSize || 0\n      });\n    }\n  });\n} catch(e) {}\n\nif (msg.payload?.parts) {\n  const scanParts = (parts) => {\n    parts.forEach(part => {\n      if (part.filename && part.filename.length > 0) {\n        attachments.push({\n          name: part.filename,\n          type: part.mimeType || '',\n          size: part.body?.size || 0\n        });\n      }\n      if (part.parts) scanParts(part.parts);\n    });\n  };\n  scanParts(msg.payload.parts);\n}\n\nconst attachmentList = attachments.length > 0\n  ? attachments.map(a => `• ${a.name} (${a.type})`).join('\\n')\n  : 'Вложений не обнаружено';\n\nconst docList = [\n  '- contract: \"Контракт\" / \"Contract\"',\n  '- invoice: \"Инвойс / Проформа\" / \"Invoice / Proforma\"',\n  '- packing_list: \"Упаковочный лист\" / \"Packing List\"',\n  '- certificate: \"Сертификат соответствия\" / \"Certificate CCC\"',\n  '- export_declaration: \"Экспортная декларация EX-1\" / \"Export Declaration\"',\n  '- business_license: \"Бизнес-лицензия\" / \"Business License\"',\n  '- export_license: \"Экспортная лицензия\" / \"Export License\"',\n  '- rep_document: \"Документ представителя\" / \"Representative Doc\"'\n].join('\\n');\n\nconst userMessage = `Письмо от поставщика:\nОт: ${from}\nТема: ${subject}\nКанал: ${source}\n\nПРИКРЕПЛЁННЫЕ ФАЙЛЫ (${attachments.length} шт.):\n${attachmentList}\n\nТекст письма:\n${text.substring(0, 2000)}\n\n---\nПроверь наличие документов по именам файлов во вложениях и тексту.\nЕсли файл есть среди вложений — found: true.\n\nНеобходимые документы:\n${docList}`;\n\nreturn [{ json: {\n  userMessage,\n  from,\n  subject,\n  source,\n  attachmentsCount: attachments.length,\n  attachmentsList: attachments\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        192
+      ],
+      "id": "db8805a0-54f4-4dd1-a4bb-952ed82196dd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE doc_templates (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  doc_key VARCHAR(50) NOT NULL,\n  doc_name_ru VARCHAR(200) NOT NULL,\n  doc_name_en VARCHAR(200) NOT NULL,\n  is_required TINYINT(1) DEFAULT 1,\n  keywords JSON COMMENT 'Ключевые слова для поиска в тексте'\n);\n\nINSERT INTO doc_templates (doc_key, doc_name_ru, doc_name_en, is_required, keywords) VALUES\n('contract',          'Контракт',                    'Contract',           1, '[\"contract\",\"контракт\",\"договор\",\"agreement\"]'),\n('invoice',           'Инвойс / Проформа',           'Invoice',            1, '[\"invoice\",\"proforma\",\"инвойс\",\"счёт\",\"счет\"]'),\n('packing_list',      'Упаковочный лист',            'Packing List',       1, '[\"packing list\",\"упаковочный\",\"packing\"]'),\n('certificate',       'Сертификат соответствия',     'Certificate CCC',    1, '[\"certificate\",\"сертификат\",\"CCC\",\"declaration\",\"декларация\"]'),\n('export_declaration','Экспортная декларация EX-1',  'Export Declaration', 1, '[\"export declaration\",\"EX-1\",\"экспортная декларация\"]'),\n('business_license',  'Бизнес-лицензия',             'Business License',   1, '[\"business license\",\"лицензия\",\"营业执照\"]'),\n('export_license',    'Экспортная лицензия',         'Export License',     1, '[\"export license\",\"экспортная лицензия\"]'),\n('rep_document',      'Документ представителя',      'Representative Doc', 1, '[\"representative\",\"представитель\",\"доверенность\",\"power of attorney\"]');",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        -272
+      ],
+      "id": "bc4d46d6-b832-419e-ad08-c98e55e433e5",
+      "name": "Execute a SQL query"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Сохранить результат проверки документа в БД. \nВызывай после сравнения полей с образцами.",
+        "table": {
+          "__rl": true,
+          "value": "document_checks",
+          "mode": "list",
+          "cachedResultName": "document_checks"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "source",
+              "value": "={{ $fromAI(\"source\") }}"
+            },
+            {
+              "column": "sender",
+              "value": "={{ $fromAI(\"sender\") }}"
+            },
+            {
+              "column": "filename",
+              "value": "={{ $fromAI(\"filename\") }}"
+            },
+            {
+              "column": "doc_type",
+              "value": "={{ $fromAI(\"doc_type\") }}"
+            },
+            {
+              "column": "status",
+              "value": "={{ $fromAI(\"status\") }}"
+            },
+            {
+              "column": "extracted_fields",
+              "value": "={{ $fromAI(\"fields\") }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.5,
+      "position": [
+        1200,
+        384
+      ],
+      "id": "e0b142da-e604-439a-9b55-18db4022687d",
+      "name": "save_result"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Получить список всех обязательных документов из базы.\nВозвращает doc_key, doc_name_ru, doc_name_en для каждого документа.",
+        "operation": "executeQuery",
+        "query": "SELECT doc_key, doc_name_ru, doc_name_en\nFROM doc_templates",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.5,
+      "position": [
+        1104,
+        384
+      ],
+      "id": "3a0d8830-490e-4efc-925b-7d4b60477d58",
+      "name": "get_templates"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b6c9c3ee-8c88-41cd-9791-00ca2b65fd2a",
+              "leftValue": "={{ $json.ready_for_deal }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1472,
+        192
+      ],
+      "id": "f1d72da7-f6cb-400f-82a7-be1b80077a35",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "7233323716",
+        "text": "=🟢 Партнёр готов к сделке!  Компания: {{ $json.supplier_name }} Контакт: {{ $json.supplier_contact }} Канал: {{ $json.source_channel }}  Документы: ✅ все {{ $json.total_required }} получены",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1776,
+        96
+      ],
+      "id": "53b288d8-b5ee-48c4-ab4d-1a9074b657eb",
+      "name": "Send a text message",
+      "webhookId": "e3905360-a877-43e2-917e-47dab04ab068"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=={{ \"Поставщик: \" + $json.supplier_name + \"\\nНедостающие документы: \" + $json.missing.join(\", \") + \"\\nНапиши письмо с запросом этих документов.\" }}",
+        "options": {
+          "systemMessage": "Ты — менеджер по закупкам Валерия из компании STLine.\nПишешь короткое письмо поставщику с запросом документов.\n\nСтруктура:\n1. Приветствие: просто \"Greetings!\" — без имени и компании\n2. Одна фраза — пришлите следующие документы\n3. Список документов\n4. Одна фраза: \"Пожалуйста, прикрепите все файлы в формате PDF или Excel — без ссылок\".\n\nСтиль: просто, по-человечески, без лишних слов. Профессионально но живо.\nЯзык: английский.\nДлина: максимум 5 строк + список.\n\nНе используй:\n- личное имя в приветствии\n- фразы про сотрудничество и партнёрство\n- \"Надеюсь, это письмо найдет тебя хорошо\"\n- канцелярские клише\n- ссылки вместо вложений\n\nВерни ТОЛЬКО текст письма, без тетиси."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1696,
+        336
+      ],
+      "id": "385aad29-f4f0-4eba-9923-7009d2ba64d4",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1664,
+        560
+      ],
+      "id": "b94615b9-b861-491d-823f-052d105ef6c0",
+      "name": "OpenAI Chat Model1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fb376d60-56f4-4121-ae51-a54f4055b605",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2064,
+        384
+      ],
+      "id": "d087f4a6-bf7f-48fe-9616-696429d6c360",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Gmail Trigger').item.json.headers.from }}",
+        "subject": "Запрос документов",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2384,
+        304
+      ],
+      "id": "95a01a0f-cf4c-4e94-8742-cf2235ed1c11",
+      "name": "Send a message",
+      "webhookId": "42244af6-f845-4ff7-aa40-01be18c13d8e"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        2400,
+        512
+      ],
+      "id": "07510d50-3dd6-4147-9e41-59bf77bff9a5",
+      "name": "Send message",
+      "webhookId": "93338fa0-0ee2-413c-8b1c-1e114623bce4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output || '{}';\nlet result;\ntry {\n  result = JSON.parse(raw.replace(/```json|```/g, '').trim());\n} catch(e) {\n  result = { verdict: 'NONE', ready_for_deal: false, missing: [] };\n}\nreturn [{ json: { ...result, rawOutput: raw } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        192
+      ],
+      "id": "10874b9f-210e-45d2-b11b-4a384e2e0403",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "attachment_",
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        -224
+      ],
+      "id": "f42af7be-b20b-40a5-b219-dc666b131070",
+      "name": "Get a message",
+      "webhookId": "f18f25b1-3b25-4191-8514-90d878d2a7a9",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "raw",
+        "options": {
+          "encoding": "base64"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        -272
+      ],
+      "id": "9f3cf468-dc5a-42ee-9d63-6f2fb4832163",
+      "name": "Extract from File"
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save_result": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_templates": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "3f56e75b-bb07-455d-9c06-e5eea9f32083",
+  "activeVersionId": null,
+  "versionCounter": 4,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-01T11:41:45.828Z",
+      "createdAt": "2026-04-01T11:41:45.828Z",
+      "role": "workflow:owner",
+      "workflowId": "YRD6Yzi6aG0zLRhA",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": null
+}
