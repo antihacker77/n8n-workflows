@@ -1,0 +1,4700 @@
+{
+  "updatedAt": "2026-05-12T06:47:29.649Z",
+  "createdAt": "2026-04-23T09:58:08.928Z",
+  "id": "K1cTRtPzk2iPSANE",
+  "name": "Диалоги с поставщиками Исходящие/Входящие",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 59
+            }
+          ]
+        }
+      },
+      "id": "ca3ada6c-fb62-4540-a9b7-016789a9d65a",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        96,
+        1312
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Статус"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "01032ada-703f-4224-9d63-d925750188a5",
+      "name": "Read Sheet1 Contacts",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        336,
+        1312
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a1",
+              "leftValue": "={{ ($json['Контакты'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "a2",
+              "leftValue": "={{ ($json['First Contact Sent'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3562ee88-9248-4b87-90ca-e2008f218e9e",
+      "name": "Needs first contact",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        560,
+        1312
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "31aef3b5-8b70-45b9-b6f8-01cdbccaa707",
+      "name": "Loop Contacts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        784,
+        1296
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ $json['Контакты'].toString() }}"
+            },
+            {
+              "id": "b2",
+              "name": "First Contact Sent",
+              "type": "string",
+              "value": "Yes"
+            },
+            {
+              "id": "b3",
+              "name": "Stage",
+              "type": "string",
+              "value": "awaiting_catalog"
+            },
+            {
+              "id": "b4",
+              "name": "Название компании временно",
+              "type": "string",
+              "value": "={{ $json['Название компании временно'] || '' }}"
+            },
+            {
+              "id": "b5",
+              "name": "Деятельность компании временно",
+              "type": "string",
+              "value": "={{ $json['Деятельность компании временно'] || '' }}"
+            },
+            {
+              "id": "b6",
+              "name": "Ссылка на каталог временно",
+              "type": "string",
+              "value": "={{ $json['Ссылка на каталог временно'] || '' }}"
+            },
+            {
+              "id": "b7",
+              "name": "Полный пакет получен",
+              "type": "string",
+              "value": "={{ $json['Полный пакет получен'] || '' }}"
+            },
+            {
+              "id": "b8",
+              "name": "Last Reply",
+              "type": "string",
+              "value": "={{ `Hello! My name is Ilyas, I am a purchasing manager from Kazakhstan.\n\nWe are a wholesale and retail company developing our own brands (electronics and other categories), and we are currently expanding into the sports equipment segment (website: https://15kg.net) \n\nWe met at the Shanghai Sports Expo (March 13–15) and discussed potential cooperation.\n\nAt this stage, we are interested in the following products:\ndumbbells, resistance bands, workout mats, shakers, ankle/wrist weights, foldable hoops, jump ropes, Pilates platforms, foam rollers, and similar items.\n\nCould you please share:\n* your latest product catalog\n* MOQ for trial order\n* private label options (logo printing) and MOQ for branding\n* price range for key products\n\nWe are planning to build a long-term partnership and scale volumes if quality and pricing meet our expectations.\n\nLooking forward to your reply.` }}"
+            },
+            {
+              "id": "b9",
+              "name": "Updated At",
+              "type": "string",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "85df9ceb-da14-4b43-9625-085e4ebdb376",
+      "name": "Build First Message",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1008,
+        1312
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "=default",
+        "chatId": "={{ $('Build First Message').item.json['Контакты'] }}@s.whatsapp.net",
+        "text": "={{ $('Build First Message').item.json['Last Reply'] }}",
+        "requestOptions": {}
+      },
+      "id": "7b5e4dab-8434-4873-a35c-b97b27def157",
+      "name": "Send First WAHA Message",
+      "type": "n8n-nodes-waha.WAHA",
+      "position": [
+        1664,
+        1232
+      ],
+      "typeVersion": 202411,
+      "credentials": {
+        "wahaApi": {
+          "id": "nKoHMSDIW4u9JBlV",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Статус": "={{ $json.key.fromMe }}",
+            "Контакты": "={{ $('Read Sheet1 Contacts').item.json['Контакты'] }}"
+          },
+          "matchingColumns": [
+            "Контакты"
+          ],
+          "schema": [
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Статус",
+              "displayName": "Статус",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f7697f65-a98d-4a21-9832-c7aafa83f7be",
+      "name": "Update Sheet1 After First Message",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1856,
+        1232
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "8845e43b-1314-498c-a9ca-d9eba89fbc31",
+      "name": "Continue Loop",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        2032,
+        1312
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "ba16c2e0-ffd2-4c3d-a025-01afe0bd717b",
+      "name": "WAHA Trigger",
+      "type": "n8n-nodes-waha.wahaTrigger",
+      "position": [
+        -672,
+        2000
+      ],
+      "typeVersion": 202411,
+      "webhookId": "e5b05539-f429-4c9d-b3e4-157d5f06f5a2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "value": "={{ $('WAHA Trigger').item.json.payload._data.key.remoteJidAlt.split('@')[0] }}",
+              "name": "Контакты",
+              "id": "c1",
+              "type": "string"
+            },
+            {
+              "value": "={{ $json.merged_message || ''}}",
+              "name": "supplier_message",
+              "id": "c2",
+              "type": "string"
+            },
+            {
+              "value": "={{ !!$('WAHA Trigger').item.json.payload.hasMedia }}",
+              "name": "has_media",
+              "id": "c3",
+              "type": "boolean"
+            },
+            {
+              "value": "={{ ($('WAHA Trigger').item.json.payload.media && $('WAHA Trigger').item.json.payload.media.url) ? $('WAHA Trigger').item.json.payload.media.url : '' }}",
+              "name": "media_url",
+              "id": "c4",
+              "type": "string"
+            },
+            {
+              "value": "={{ ($('WAHA Trigger').item.json.payload.media && $('WAHA Trigger').item.json.payload.media.filename) ? $('WAHA Trigger').item.json.payload.media.filename : '' }}",
+              "name": "file_name",
+              "id": "c5",
+              "type": "string"
+            },
+            {
+              "value": "={{ ($('WAHA Trigger').item.json.payload.media && $('WAHA Trigger').item.json.payload.media.mimetype) ? $('WAHA Trigger').item.json.payload.media.mimetype : '' }}",
+              "name": "mime_type",
+              "id": "c6",
+              "type": "string"
+            },
+            {
+              "value": "={{ $('WAHA Trigger').item.json.session || 'default' }}",
+              "name": "session",
+              "id": "c7",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ef991a12-0c2a-476f-8167-7b2d8328e528",
+      "name": "Normalize WAHA Payload",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        64,
+        2256
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 487056885,
+          "mode": "list",
+          "cachedResultName": "Временно",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=487056885"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Контакты",
+              "lookupValue": "={{ $('Normalize WAHA Payload').item.json['Контакты'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "64ab1ccd-be0f-4dc8-ad22-d7875a9badcb",
+      "name": "Find Contact In Sheet1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        240,
+        2352
+      ],
+      "typeVersion": 4.6,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "id": "f2803aa9-4714-430b-b728-7d474e7e199c",
+      "name": "Merge Incoming And Sheet1",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        416,
+        2240
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const incoming = $('Normalize WAHA Payload').item.json;\nconst row = $json || {};\nreturn {\n  json: {\n    contact: incoming['Контакты'],\n    supplier_message: incoming.supplier_message,\n    has_media: incoming.has_media,\n    media_url: incoming.media_url || '',\n    file_name: incoming.file_name || '',\n    mime_type: incoming.mime_type || '',\n    session: incoming.session || 'default',\n    current_stage: row['Stage'] || 'new',\n    known_company_name: row['Название компании временно'] || '',\n    known_activity: row['Деятельность компании временно'] || '',\n    known_catalog: row['Ссылка на каталог временно'] || '',\n    package_done: row['Полный пакет получен'] || '',\n    first_contact_sent: row['First Contact Sent'] || '',\n    status_chat: row['Статус'] || ''\n  }\n};"
+      },
+      "id": "8407ab2a-2e3a-42e4-9df5-24b13405e628",
+      "name": "Build Dialog Context",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        576,
+        2256
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json, null, 2) }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You communicate with the supplier as a real purchasing manager named Ilyas.\n\nIf someone asks you your name, you must tell them that your name is Ilyas.\n\nYour goal is to collect the full package of data:\n1. company name\n2. business activity / what the company manufactures\n3. catalog\n\nMain language rule:\n- reply_text must always be written only in English.\n- Never write reply_text in Russian.\n- Never mix English and Russian in reply_text.\n\nData extraction language rule:\n- company_name must be kept in the original form provided by the supplier.\n- business_activity must always be written in Russian.\n- catalog_reference must be returned exactly as received, without translation if it is a link, file reference, or filename.\n- Do not translate company_name unless the supplier explicitly provides a translated version.\n- Do not translate catalog_reference.\n\nDialogue rules:\n- Keep messages short, polite, and natural.\n- Do not ask more than 1–2 related questions at a time.\n- If the company name is missing, ask for the company name.\n- If the business activity is missing, ask what the company manufactures.\n- If the catalog is missing, ask for the catalog in PDF format.\n- If a file is received, treat it as the catalog being received.\n- If the user asks a question, answer it directly.\n- Return only JSON according to the required schema.\n\nGreeting rule:\n- If status_chat = true, reply_text must begin directly with the main point, without a greeting.\n- If status_chat is empty, null, false, or missing, reply_text must begin with a polite greeting in English.\n- If status_chat is empty, null, false, or missing, do not start immediately with a question without a greeting.\n\nAllowed greetings when status_chat is empty:\n- \"Hello,\"\n- \"Hello!\"\n- \"Hi,\"\n- \"Good day,\"\n\nCompletion rules:\n- If all three elements have been collected and stage is not \"completed\", you may send the final confirmation once:\n  \"Thank you, I have forwarded your information to our procurement department. They will contact you.\"\n- After that, stage must become \"completed\".\n\nCritically important:\n- If stage = \"completed\", do not repeat the final confirmation.\n- Do not repeat phrases like:\n  - \"Thank you, I have forwarded your information...\"\n  - \"They will contact you\"\n- If stage = \"completed\" and the user asks a new question, answer only the question itself.\n- If stage = \"completed\" and the user sends a meaningful message that requires a response, reply appropriately.\n- If stage = \"completed\" and the user asks whether the catalog was reviewed or when they will be contacted, reply with:\n  \"Your catalog has been forwarded to our procurement department. Please wait for further contact. Thank you for your understanding.\"\n\nRule for thanks and short reactions:\n- If the user sends thanks, a short confirmation, an emoji, a sticker, or a short reaction, reply_text must be:\n  \"Glad to cooperate! Stay in touch!\"\n- This rule applies both before and after completion.\n\nExamples of thanks and short reactions:\n- \"Thank you\"\n- \"Thanks\"\n- \"Got it\"\n- \"Okay\"\n- \"Understood\"\n- \"👍\"\n- \"🙂\"\n- a sticker\n\nExamples:\n1.\nstage = \"new\"\nstatus_chat = \"\"\nsupplier_message = \"Hello\"\ncompany_name = \"\"\nbusiness_activity = \"\"\ncatalog_reference = \"\"\nreply_text = \"Hello! Could you please tell me your company name?\"\nstage = \"awaiting_company_name\"\n\n2.\nstage = \"new\"\nstatus_chat = true\nsupplier_message = \"Hello\"\ncompany_name = \"\"\nbusiness_activity = \"\"\ncatalog_reference = \"\"\nreply_text = \"Could you please tell me your company name?\"\nstage = \"awaiting_company_name\"\n\n3.\nstage = \"awaiting_company_name\"\nsupplier_message = \"We are Polisonik\"\ncompany_name = \"Polisonik\"\nbusiness_activity = \"\"\ncatalog_reference = \"\"\nreply_text = \"Could you please tell me what your company manufactures?\"\nstage = \"awaiting_activity\"\n\n4.\nstage = \"awaiting_activity\"\nsupplier_message = \"We manufacture air conditioners\"\ncompany_name = \"Polisonik\"\nbusiness_activity = \"производство кондиционеров\"\ncatalog_reference = \"\"\nreply_text = \"Please send your catalog in PDF format.\"\nstage = \"awaiting_catalog\"\n\n5.\nstage = \"awaiting_activity\"\nsupplier_message = \"We produce plastic kitchen containers\"\ncompany_name = \"Polisonik\"\nbusiness_activity = \"производство пластиковых кухонных контейнеров\"\ncatalog_reference = \"\"\nreply_text = \"Please send your catalog in PDF format.\"\nstage = \"awaiting_catalog\"\n\n6.\nstage = \"awaiting_catalog\"\nsupplier_message = \"\"\nhas_media = true\ncompany_name = \"Polisonik\"\nbusiness_activity = \"производство кондиционеров\"\ncatalog_received = true\nreply_text = \"Thank you, I have forwarded your information to our procurement department. They will contact you.\"\nstage = \"completed\"\n\n7.\nstage = \"completed\"\nsupplier_message = \"Thank you\"\nreply_text = \"Glad to cooperate! Stay in touch!\"\nstage = \"completed\"\n\n8.\nstage = \"completed\"\nsupplier_message = \"👍\"\nreply_text = \"Glad to cooperate! Stay in touch!\"\nstage = \"completed\"\n\n9.\nstage = \"completed\"\nsupplier_message = \"When will I be contacted?\"\nreply_text = \"Your catalog has been forwarded to our procurement department. Please wait for further contact. Thank you for your understanding.\"\nstage = \"completed\"\n\n10.\nstage = \"completed\"\nsupplier_message = \"Who are you?\"\nreply_text = \"I am a procurement manager. Your company information and catalog have already been forwarded to our procurement department.\"\nstage = \"completed\"\n\n11.\nstage = \"completed\"\nsupplier_message = \"What do you know about my company?\"\nreply_text = \"You provided your company name, your business activity, and your catalog. These details have already been forwarded to our procurement department.\"\nstage = \"completed\"\n\n12.\nsupplier_message = \"We are Polisonik\"\ncompany_name = \"Polisonik\"\n\n13.\nsupplier_message = \"We manufacture compressors and air conditioners\"\nbusiness_activity = \"производство компрессоров и кондиционеров\"\n\n14.\nsupplier_message = \"Catalog: https://example.com/catalog.pdf\"\ncatalog_reference = \"https://example.com/catalog.pdf\"\n\nSelf-check before returning the answer:\n1. reply_text must always be only in English.\n2. business_activity must always be in Russian.\n3. company_name must remain in the supplier’s original form.\n4. If stage = \"completed\", do not repeat the final confirmation.\n5. If the user sent thanks, a short confirmation, an emoji, or a sticker, reply_text must be:\n   \"Glad to cooperate! Stay in touch!\"\n6. If status_chat = true, reply_text must not start with a greeting.\n7. If status_chat is empty, null, false, or missing, reply_text must start with a polite greeting in English.\n8. If the user asked a question, reply_text must not be empty.\n"
+            }
+          ]
+        }
+      },
+      "id": "601116ca-14ed-445f-a572-932e77e54335",
+      "name": "Supplier Dialog Planner",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        736,
+        2256
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company_name\": { \"type\": \"string\" },\n    \"business_activity\": { \"type\": \"string\" },\n    \"catalog_received\": { \"type\": \"boolean\" },\n    \"catalog_reference\": { \"type\": \"string\" },\n    \"stage\": { \"type\": \"string\", \"enum\": [\"new\", \"awaiting_catalog\", \"awaiting_company_name\", \"awaiting_activity\", \"in_progress\", \"completed\"] },\n    \"reply_text\": { \"type\": \"string\" }\n  },\n  \"required\": [\"company_name\", \"business_activity\", \"catalog_received\", \"catalog_reference\", \"stage\", \"reply_text\"]\n}"
+      },
+      "id": "5bd668a1-6956-44ca-824f-625aff9146a8",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        880,
+        2416
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ $('Build Dialog Context').item.json.contact }}"
+            },
+            {
+              "id": "d2",
+              "name": "First Contact Sent",
+              "type": "string",
+              "value": "={{ $('Build Dialog Context').item.json.first_contact_sent || 'Yes' }}"
+            },
+            {
+              "id": "d3",
+              "name": "Stage",
+              "type": "string",
+              "value": "={{ $json.output.stage }}"
+            },
+            {
+              "id": "d4",
+              "name": "Название компании временно",
+              "type": "string",
+              "value": "={{ $json.output.company_name || $('Build Dialog Context').item.json.known_company_name }}"
+            },
+            {
+              "id": "d5",
+              "name": "Деятельность компании временно",
+              "type": "string",
+              "value": "={{ $json.output.business_activity || $('Build Dialog Context').item.json.known_activity }}"
+            },
+            {
+              "id": "d6",
+              "name": "Ссылка на каталог временно",
+              "type": "string",
+              "value": "={{ $json.output.catalog_reference || $('Build Dialog Context').item.json.known_catalog }}"
+            },
+            {
+              "id": "d7",
+              "name": "Полный пакет получен",
+              "type": "string",
+              "value": "={{ (($json.output.company_name || $('Build Dialog Context').item.json.known_company_name) && ($json.output.business_activity || $('Build Dialog Context').item.json.known_activity) && (($json.output.catalog_reference || $('Build Dialog Context').item.json.known_catalog) || $json.output.catalog_received)) ? 'Yes' : '' }}"
+            },
+            {
+              "id": "d8",
+              "name": "Last Reply",
+              "type": "string",
+              "value": "={{ $json.output.reply_text }}"
+            },
+            {
+              "id": "d9",
+              "name": "Updated At",
+              "type": "string",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "646e9a28-f3df-4cab-8273-f917c41cba28",
+      "name": "Prepare Sheet1 Progress",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1024,
+        2256
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $('Build Dialog Context').item.json.has_media ? 'true' : 'false' }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "38b138d7-1b4b-439f-aef6-648e7f64f2d7",
+      "name": "Catalog File Attached",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1200,
+        2256
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName || ('catalog_' + $('Build Dialog Context').item.json.contact + '.bin') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1ms3xo_xQiNfNby4GY9q_oJQu-Wo_fe93",
+          "mode": "list",
+          "cachedResultName": "База исходящих",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ms3xo_xQiNfNby4GY9q_oJQu-Wo_fe93"
+        },
+        "options": {
+          "simplifyOutput": false
+        }
+      },
+      "id": "32b0aa6b-437d-4325-8aec-b6c9e6766eb5",
+      "name": "Upload Catalog To Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1488,
+        2144
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "qTPk8OIS7ZoIqkpz",
+          "name": "Google Drive vkitae"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "id": "417ccbbd-7293-49ac-bbe7-01b81fa0405c",
+      "name": "Share Catalog File",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1616,
+        2144
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "qTPk8OIS7ZoIqkpz",
+          "name": "Google Drive vkitae"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Контакты'] }}"
+            },
+            {
+              "id": "f2",
+              "name": "First Contact Sent",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['First Contact Sent'] }}"
+            },
+            {
+              "id": "f3",
+              "name": "Stage",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Stage'] }}"
+            },
+            {
+              "id": "f4",
+              "name": "Название компании временно",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Название компании временно'] }}"
+            },
+            {
+              "id": "f5",
+              "name": "Деятельность компании временно",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Деятельность компании временно'] }}"
+            },
+            {
+              "id": "f6",
+              "name": "Ссылка на каталог временно",
+              "type": "string",
+              "value": "={{ 'https://drive.google.com/file/d/' + ($json.id || $json.fileId) + '/view' }}"
+            },
+            {
+              "id": "f7",
+              "name": "Полный пакет получен",
+              "type": "string",
+              "value": "={{ ($('Prepare Sheet1 Progress').item.json['Название компании временно'] && $('Prepare Sheet1 Progress').item.json['Деятельность компании временно']) ? 'Yes' : '' }}"
+            },
+            {
+              "id": "f8",
+              "name": "Last Reply",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Last Reply'] }}"
+            },
+            {
+              "id": "f9",
+              "name": "Updated At",
+              "type": "string",
+              "value": "={{ $('Prepare Sheet1 Progress').item.json['Updated At'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "880c4de0-81cf-4582-98e8-0ada61408d2f",
+      "name": "Add Drive Link To Progress",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1760,
+        2144
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 487056885,
+          "mode": "list",
+          "cachedResultName": "Временно",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=487056885"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Контакты": "={{ $json['Контакты'] }}",
+            "First Contact Sent": "={{ $json['First Contact Sent'] }}",
+            "Stage": "={{ $json.Stage }}",
+            "Название компании временно": "={{ $json['Название компании временно'] }}",
+            "Деятельность компании временно": "={{ $json['Деятельность компании временно'] }}",
+            "Ссылка на каталог временно": "={{ $json['Ссылка на каталог временно'] }}",
+            "Полный пакет получен": "={{ $json['Полный пакет получен'] }}",
+            "Last Reply": "={{ $json['Last Reply'] }}",
+            "Updated At": "={{ $json['Updated At'] }}"
+          },
+          "matchingColumns": [
+            "Контакты"
+          ],
+          "schema": [
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First Contact Sent",
+              "displayName": "First Contact Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Stage",
+              "displayName": "Stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Название компании временно",
+              "displayName": "Название компании временно",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Деятельность компании временно",
+              "displayName": "Деятельность компании временно",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Ссылка на каталог временно",
+              "displayName": "Ссылка на каталог временно",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Полный пакет получен",
+              "displayName": "Полный пакет получен",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Reply",
+              "displayName": "Last Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Updated At",
+              "displayName": "Updated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "8074a335-b3eb-4a4d-89f8-29aec62ab293",
+      "name": "Upsert Sheet1 Progress",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1888,
+        2272
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "g1",
+              "leftValue": "={{ ($json['Название компании временно'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "g2",
+              "leftValue": "={{ ($json['Деятельность компании временно'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "g3",
+              "leftValue": "={{ ($json['Ссылка на каталог временно'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9ff799ff-b5b1-4d52-807d-2fc162f9d532",
+      "name": "Full Package Ready",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2096,
+        2160
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "h1",
+              "name": "Название компании",
+              "type": "string",
+              "value": "={{ $json['Название компании временно'] }}"
+            },
+            {
+              "id": "h2",
+              "name": "ссылка на каталог",
+              "type": "string",
+              "value": "={{ $json['Ссылка на каталог временно'] }}"
+            },
+            {
+              "id": "h3",
+              "name": "Номер телефона",
+              "type": "string",
+              "value": "={{ $json['Контакты'] }}"
+            },
+            {
+              "id": "h4",
+              "name": "Деятельность компании",
+              "type": "string",
+              "value": "={{ $json['Деятельность компании временно'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "33a62715-98b8-4ed9-9a75-a70d6fd3e9ee",
+      "name": "Prepare Final Row For Sheet2",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2320,
+        2144
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2142687821,
+          "mode": "list",
+          "cachedResultName": "Лист2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=2142687821"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Название компании ": "={{ $json['Название компании'] }}",
+            "ссылка на каталог": "={{ $json['ссылка на каталог'] }}",
+            "Номер телефона": "={{ $json['Номер телефона'] }}",
+            "Деятельность компании ": "={{ $json['Деятельность компании'] }}"
+          },
+          "matchingColumns": [
+            "Номер телефона"
+          ],
+          "schema": [
+            {
+              "id": "Название компании ",
+              "displayName": "Название компании ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ссылка на каталог",
+              "displayName": "ссылка на каталог",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Номер телефона",
+              "displayName": "Номер телефона",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Деятельность компании ",
+              "displayName": "Деятельность компании ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6a174d7d-c3b5-44f8-a6ec-c5ddf653edd4",
+      "name": "Upsert Final To Sheet2",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2512,
+        2144
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "i1",
+              "leftValue": "={{ ($json['Last Reply'] || '').toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ab827ecd-e222-471f-b41e-1549efa241f6",
+      "name": "Reply Needed",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2096,
+        2352
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "=default",
+        "chatId": "={{ $json['Контакты'] }}",
+        "text": "={{ $json['Last Reply'] }}",
+        "requestOptions": {}
+      },
+      "id": "00225c2f-fd07-475b-99ea-ae3f3265315b",
+      "name": "Send WAHA Reply",
+      "type": "n8n-nodes-waha.WAHA",
+      "position": [
+        2320,
+        2336
+      ],
+      "typeVersion": 202411,
+      "credentials": {
+        "wahaApi": {
+          "id": "nKoHMSDIW4u9JBlV",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        736,
+        2416
+      ],
+      "id": "9910a330-91dc-4166-954f-8d97718a4d78",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H8XIEwmjn0GuMnGK",
+          "name": "Google Gemini(PaLM) Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Контакты",
+              "lookupValue": "={{ $json['Контакты'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1906723-5bec-4da7-b154-b7cd3e03878d",
+      "name": "Find Contact In Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        240,
+        2160
+      ],
+      "typeVersion": 4.6,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "86b8fd43-c423-484c-8d57-dbd037d148a2",
+              "leftValue": "={{ $json.payload._data.key.remoteJidAlt }}",
+              "rightValue": "77075536107@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -480,
+        1648
+      ],
+      "id": "d85ef816-8352-44a4-8332-2bfc04dc2e99",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('WAHA Trigger').item.json.payload.media.url.replace('http://localhost:3000', 'https://waha.lux.kz') }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "a3f8c2d1e4b5a6f7c8d9e0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1360,
+        2144
+      ],
+      "id": "646d9cf5-1470-422c-af23-5c441c3d7bc1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d8344a63-4c80-461e-a5eb-d6e769235c02",
+              "leftValue": "={{ $json.event === 'message' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "18b32efe-4a7d-426d-ba48-646c7b3899c1",
+              "leftValue": "={{ $json.payload && $json.payload.fromMe === false }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "f490fd12-8bcd-4d2c-a1e3-42d4586ba8a4",
+              "leftValue": "={{ (Date.now() / 1000) - Number($json.payload.timestamp || 0) < 120 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -448,
+        2016
+      ],
+      "id": "bbf88463-f3af-467f-9f31-94468fad42b7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "n1",
+              "name": "chat_id",
+              "type": "string",
+              "value": "={{ String($json.payload.from || '') }}\n"
+            },
+            {
+              "id": "n2",
+              "name": "message_text",
+              "type": "string",
+              "value": "={{ ($json.payload.body || '').trim() }}"
+            },
+            {
+              "id": "n3",
+              "name": "message_id",
+              "type": "string",
+              "value": "={{ String($json.payload.id || '') }}"
+            },
+            {
+              "id": "n4",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ String($json.payload.timestamp || '') }}"
+            },
+            {
+              "id": "n5",
+              "name": "sender_name",
+              "type": "string",
+              "value": "={{ $json.payload.notifyName || $json.payload.from || '' }}"
+            },
+            {
+              "id": "n6",
+              "name": "username",
+              "type": "string",
+              "value": "={{ '' }}"
+            },
+            {
+              "id": "n7",
+              "name": "pending_token",
+              "type": "string",
+              "value": "={{ String($json.payload.from || '') + '_' + String($json.payload.timestamp || '') + '_' + String($json.payload.id || '') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "73397ef5-f773-4580-b94b-592e30dd1f72",
+      "name": "Normalize Telegram payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        1744
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "tx1",
+              "leftValue": "={{ $json.message_text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "159ee5d1-130c-4963-a2a0-07656e8c90d8",
+      "name": "Text exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        1744
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "buffer_state",
+        "key": "=tg_buffer:{{ $json.chat_id }}",
+        "options": {}
+      },
+      "id": "9330772d-cfb6-4ae1-9956-0c069e92d6b3",
+      "name": "Redis Get Buffer",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        496,
+        1872
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "redis": {
+          "id": "IDPGnSSkmIHW0reW",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "283fbeb8-0b65-41d8-8c54-b4a8c8a63010",
+      "name": "Merge incoming and buffer",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        720,
+        1744
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const incoming = $('Normalize Telegram payload').item.json;\nconst raw = String($json.buffer_state || '').trim();\nlet row = {};\nif (raw) {\n  try {\n    row = JSON.parse(raw);\n  } catch (e) {\n    row = {};\n  }\n}\nconst existingBuffer = String(row.Buffer || '').trim();\nconst currentPart = String(incoming.message_text || '').trim();\nconst mergedBuffer = [existingBuffer, currentPart].filter(Boolean).join(' ').replace(/\\s+/g, ' ').trim();\nconst state = {\n  'Chat ID': incoming.chat_id,\n  'Buffer': mergedBuffer,\n  'Pending Token': incoming.pending_token,\n  'Last Message At': incoming.timestamp,\n  'Sender Name': incoming.sender_name,\n  'Username': incoming.username,\n  'Last Reply': row['Last Reply'] || '',\n  'Updated At': $now\n};\nreturn {\n  json: {\n    ...state,\n    redis_key: `tg_buffer:${incoming.chat_id}`,\n    redis_value: JSON.stringify(state)\n  }\n};"
+      },
+      "id": "d604e831-9c95-454d-8a9a-5ffa97b52f79",
+      "name": "Build buffer update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        1744
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $json.redis_key }}",
+        "value": "={{ $json.redis_value }}",
+        "expire": true,
+        "ttl": "={{ 300 }}"
+      },
+      "id": "29aa5cc8-9967-4b47-8213-41f21a4dbbae",
+      "name": "Redis Set Buffer",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        1744
+      ],
+      "credentials": {
+        "redis": {
+          "id": "IDPGnSSkmIHW0reW",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "buffer_state",
+        "key": "={{ $('Build buffer update').item.json.redis_key }}",
+        "options": {}
+      },
+      "id": "3736d707-6775-4376-a912-4c5ac470f634",
+      "name": "Redis Get Current Buffer",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        1872
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "redis": {
+          "id": "IDPGnSSkmIHW0reW",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "54ea3837-50da-49f2-85c8-37e70f5b76d1",
+      "name": "Merge wait and current row",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1808,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "lt1",
+              "leftValue": "={{ (() => { try { return JSON.parse($json.buffer_state || '{}')['Pending Token'] || ''; } catch (e) { return ''; } })() }}",
+              "rightValue": "={{ $('Build buffer update').item.json['Pending Token'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "lt2",
+              "leftValue": "={{ (() => { try { return JSON.parse($json.buffer_state || '{}').Buffer || ''; } catch (e) { return ''; } })() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "90457828-c17d-4d51-8245-244e279a426f",
+      "name": "Is latest batch?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2032,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let row = {};\ntry {\n  row = JSON.parse(String($json.buffer_state || '{}'));\n} catch (e) {\n  row = {};\n}\nreturn {\n  json: {\n    chat_id: row['Chat ID'] || '',\n    merged_message: row['Buffer'] || '',\n    sender_name: row['Sender Name'] || '',\n    username: row['Username'] || '',\n    pending_token: row['Pending Token'] || '',\n    last_message_at: row['Last Message At'] || '',\n    last_reply: row['Last Reply'] || '',\n    redis_key: $('Build buffer update').item.json.redis_key\n  }\n};"
+      },
+      "id": "ceec5de1-ba1f-462d-a8f2-54ce97601326",
+      "name": "Build buffered output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        1744
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('Redis Set Buffer').item.json.redis_key || ''}}"
+      },
+      "id": "5d7583a8-9c2e-4ebc-8712-d8124535959f",
+      "name": "Redis Delete Buffer",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        2272
+      ],
+      "credentials": {
+        "redis": {
+          "id": "IDPGnSSkmIHW0reW",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Блок памяти для ответа на массив сообщений ",
+        "height": 416,
+        "width": 2432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        1616
+      ],
+      "id": "a4e41b4a-9eef-40ab-b3ee-d09578f5df30",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Блок первого письма поставщикам по номеру ",
+        "height": 320,
+        "width": 2228,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        1216
+      ],
+      "id": "10df6aa7-94a2-4c2c-8f65-f524f59bcd49",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "b69e23a5-b9f9-4f8d-a021-c7b7fd9081f9",
+      "name": "Wait 10 seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1376,
+        1744
+      ],
+      "webhookId": "compact-buffer-wait"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3b8ad48b-27d0-4850-953d-51dcdade5d2d",
+              "leftValue": "={{ $json.payload.hasMedia }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "57aef5b5-805a-4b34-8e77-7b8b958ebf61",
+              "leftValue": "={{ $json.payload.body || ''}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -240,
+        2000
+      ],
+      "id": "0d0bf189-f6af-4f89-b892-649f0d668ed2",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "content": "# Основной логический блок",
+        "height": 512,
+        "width": 2784,
+        "color": "#1B2E14"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        2096
+      ],
+      "typeVersion": 1,
+      "id": "8322c074-fb51-4ee4-b108-48e04ae9efd6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "resource": "Contacts",
+        "operation": "Check Exists",
+        "session": "=default",
+        "phone": "={{ $json['Контакты'] }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        1216,
+        1312
+      ],
+      "id": "d6fe6185-9980-419a-b4c0-de0d4370d98e",
+      "name": "Check phone number is registered in WhatsApp.",
+      "credentials": {
+        "wahaApi": {
+          "id": "nKoHMSDIW4u9JBlV",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6da2ea0e-693b-4caa-937e-c51b4881d893",
+              "leftValue": "={{ $json.numberExists }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1408,
+        1312
+      ],
+      "id": "c28bd820-54bb-40fd-b7e3-b7845df63fbd",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Статус": "=FALSE",
+            "Контакты": "={{ $('Build First Message').first().json['Контакты'] }}"
+          },
+          "matchingColumns": [
+            "Контакты"
+          ],
+          "schema": [
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Статус",
+              "displayName": "Статус",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "296c3f83-6f74-4291-bf33-1fe426370192",
+      "name": "Update Sheet1 After First Message1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1760,
+        1344
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "Read Sheet1 Contacts": {
+      "main": [
+        [
+          {
+            "node": "Needs first contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs first contact": {
+      "main": [
+        [
+          {
+            "node": "Loop Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Contacts": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Build First Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build First Message": {
+      "main": [
+        [
+          {
+            "node": "Check phone number is registered in WhatsApp.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send First WAHA Message": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet1 After First Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet1 After First Message": {
+      "main": [
+        [
+          {
+            "node": "Continue Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize WAHA Payload": {
+      "main": [
+        [
+          {
+            "node": "Find Contact In Sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Find Contact In Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Incoming And Sheet1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Find Contact In Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Merge Incoming And Sheet1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge Incoming And Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Build Dialog Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Dialog Context": {
+      "main": [
+        [
+          {
+            "node": "Supplier Dialog Planner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Supplier Dialog Planner",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supplier Dialog Planner": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sheet1 Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sheet1 Progress": {
+      "main": [
+        [
+          {
+            "node": "Catalog File Attached",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Catalog File Attached": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redis Delete Buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Catalog To Drive": {
+      "main": [
+        [
+          {
+            "node": "Share Catalog File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share Catalog File": {
+      "main": [
+        [
+          {
+            "node": "Add Drive Link To Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Drive Link To Progress": {
+      "main": [
+        [
+          {
+            "node": "Upsert Sheet1 Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Sheet1 Progress": {
+      "main": [
+        [
+          {
+            "node": "Full Package Ready",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reply Needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Full Package Ready": {
+      "main": [
+        [
+          {
+            "node": "Prepare Final Row For Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Final Row For Sheet2": {
+      "main": [
+        [
+          {
+            "node": "Upsert Final To Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Needed": {
+      "main": [
+        [
+          {
+            "node": "Send WAHA Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Supplier Dialog Planner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue Loop": {
+      "main": [
+        [
+          {
+            "node": "Loop Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Contact In Sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge Incoming And Sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WAHA Trigger": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Upload Catalog To Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Telegram payload": {
+      "main": [
+        [
+          {
+            "node": "Text exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text exists?": {
+      "main": [
+        [
+          {
+            "node": "Redis Get Buffer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge incoming and buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get Buffer": {
+      "main": [
+        [
+          {
+            "node": "Merge incoming and buffer",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge incoming and buffer": {
+      "main": [
+        [
+          {
+            "node": "Build buffer update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build buffer update": {
+      "main": [
+        [
+          {
+            "node": "Redis Set Buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Set Buffer": {
+      "main": [
+        [
+          {
+            "node": "Wait 10 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get Current Buffer": {
+      "main": [
+        [
+          {
+            "node": "Merge wait and current row",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge wait and current row": {
+      "main": [
+        [
+          {
+            "node": "Is latest batch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is latest batch?": {
+      "main": [
+        [
+          {
+            "node": "Build buffered output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build buffered output": {
+      "main": [
+        [
+          {
+            "node": "Normalize WAHA Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Delete Buffer": {
+      "main": [
+        [
+          {
+            "node": "Upsert Sheet1 Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10 seconds": {
+      "main": [
+        [
+          {
+            "node": "Redis Get Current Buffer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge wait and current row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Normalize Telegram payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize WAHA Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check phone number is registered in WhatsApp.": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Send First WAHA Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Sheet1 After First Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet1 After First Message1": {
+      "main": [
+        [
+          {
+            "node": "Continue Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "7e95e110-2847-4a07-a74d-63fb941199b3",
+  "activeVersionId": "7e95e110-2847-4a07-a74d-63fb941199b3",
+  "versionCounter": 660,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-04-23T09:58:08.932Z",
+      "createdAt": "2026-04-23T09:58:08.932Z",
+      "role": "workflow:owner",
+      "workflowId": "K1cTRtPzk2iPSANE",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-05-12T06:47:31.000Z",
+    "createdAt": "2026-05-12T06:47:29.650Z",
+    "versionId": "7e95e110-2847-4a07-a74d-63fb941199b3",
+    "workflowId": "K1cTRtPzk2iPSANE",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 59
+              }
+            ]
+          }
+        },
+        "id": "ca3ada6c-fb62-4540-a9b7-016789a9d65a",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "position": [
+          96,
+          1312
+        ],
+        "typeVersion": 1.2
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "mode": "list",
+            "cachedResultName": "Тест общения с поставщиками исходящие",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Лист1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Статус"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "01032ada-703f-4224-9d63-d925750188a5",
+        "name": "Read Sheet1 Contacts",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          336,
+          1312
+        ],
+        "typeVersion": 4.6,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "c5V2Tj04TILmCSts",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "a1",
+                "leftValue": "={{ ($json['Контакты'] || '').toString() }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              },
+              {
+                "id": "a2",
+                "leftValue": "={{ ($json['First Contact Sent'] || '').toString() }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "empty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "3562ee88-9248-4b87-90ca-e2008f218e9e",
+        "name": "Needs first contact",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          560,
+          1312
+        ],
+        "typeVersion": 2.2
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "31aef3b5-8b70-45b9-b6f8-01cdbccaa707",
+        "name": "Loop Contacts",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          784,
+          1296
+        ],
+        "typeVersion": 3
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "b1",
+                "name": "Контакты",
+                "type": "string",
+                "value": "={{ $json['Контакты'].toString() }}"
+              },
+              {
+                "id": "b2",
+                "name": "First Contact Sent",
+                "type": "string",
+                "value": "Yes"
+              },
+              {
+                "id": "b3",
+                "name": "Stage",
+                "type": "string",
+                "value": "awaiting_catalog"
+              },
+              {
+                "id": "b4",
+                "name": "Название компании временно",
+                "type": "string",
+                "value": "={{ $json['Название компании временно'] || '' }}"
+              },
+              {
+                "id": "b5",
+                "name": "Деятельность компании временно",
+                "type": "string",
+                "value": "={{ $json['Деятельность компании временно'] || '' }}"
+              },
+              {
+                "id": "b6",
+                "name": "Ссылка на каталог временно",
+                "type": "string",
+                "value": "={{ $json['Ссылка на каталог временно'] || '' }}"
+              },
+              {
+                "id": "b7",
+                "name": "Полный пакет получен",
+                "type": "string",
+                "value": "={{ $json['Полный пакет получен'] || '' }}"
+              },
+              {
+                "id": "b8",
+                "name": "Last Reply",
+                "type": "string",
+                "value": "={{ `Hello! My name is Ilyas, I am a purchasing manager from Kazakhstan.\n\nWe are a wholesale and retail company developing our own brands (electronics and other categories), and we are currently expanding into the sports equipment segment (website: https://15kg.net) \n\nWe met at the Shanghai Sports Expo (March 13–15) and discussed potential cooperation.\n\nAt this stage, we are interested in the following products:\ndumbbells, resistance bands, workout mats, shakers, ankle/wrist weights, foldable hoops, jump ropes, Pilates platforms, foam rollers, and similar items.\n\nCould you please share:\n* your latest product catalog\n* MOQ for trial order\n* private label options (logo printing) and MOQ for branding\n* price range for key products\n\nWe are planning to build a long-term partnership and scale volumes if quality and pricing meet our expectations.\n\nLooking forward to your reply.` }}"
+              },
+              {
+                "id": "b9",
+                "name": "Updated At",
+                "type": "string",
+                "value": "={{ $now }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "85df9ceb-da14-4b43-9625-085e4ebdb376",
+        "name": "Build First Message",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1008,
+          1312
+        ],
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "resource": "Chatting",
+          "operation": "Send Text",
+          "session": "=default",
+          "chatId": "={{ $('Build First Message').item.json['Контакты'] }}@s.whatsapp.net",
+          "text": "={{ $('Build First Message').item.json['Last Reply'] }}",
+          "requestOptions": {}
+        },
+        "id": "7b5e4dab-8434-4873-a35c-b97b27def157",
+        "name": "Send First WAHA Message",
+        "type": "n8n-nodes-waha.WAHA",
+        "position": [
+          1664,
+          1232
+        ],
+        "typeVersion": 202411,
+        "credentials": {
+          "wahaApi": {
+            "id": "nKoHMSDIW4u9JBlV",
+            "name": "WAHA account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "mode": "list",
+            "cachedResultName": "Тест общения с поставщиками исходящие",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Лист1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Статус": "={{ $json.key.fromMe }}",
+              "Контакты": "={{ $('Read Sheet1 Contacts').item.json['Контакты'] }}"
+            },
+            "matchingColumns": [
+              "Контакты"
+            ],
+            "schema": [
+              {
+                "id": "Контакты",
+                "displayName": "Контакты",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Статус",
+                "displayName": "Статус",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "f7697f65-a98d-4a21-9832-c7aafa83f7be",
+        "name": "Update Sheet1 After First Message",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1856,
+          1232
+        ],
+        "typeVersion": 4.6,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "c5V2Tj04TILmCSts",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "8845e43b-1314-498c-a9ca-d9eba89fbc31",
+        "name": "Continue Loop",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          2032,
+          1312
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {},
+        "id": "ba16c2e0-ffd2-4c3d-a025-01afe0bd717b",
+        "name": "WAHA Trigger",
+        "type": "n8n-nodes-waha.wahaTrigger",
+        "position": [
+          -672,
+          2000
+        ],
+        "typeVersion": 202411,
+        "webhookId": "e5b05539-f429-4c9d-b3e4-157d5f06f5a2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "value": "={{ $('WAHA Trigger').item.json.payload._data.key.remoteJidAlt.split('@')[0] }}",
+                "name": "Контакты",
+                "id": "c1",
+                "type": "string"
+              },
+              {
+                "value": "={{ $json.merged_message || ''}}",
+                "name": "supplier_message",
+                "id": "c2",
+                "type": "string"
+              },
+              {
+                "value": "={{ !!$('WAHA Trigger').item.json.payload.hasMedia }}",
+                "name": "has_media",
+                "id": "c3",
+                "type": "boolean"
+              },
+              {
+                "value": "={{ ($('WAHA Trigger').item.json.payload.media && $('WAHA Trigger').item.json.payload.media.url) ? $('WAHA Trigger').item.json.payload.media.url : '' }}",
+                "name": "media_url",
+                "id": "c4",
+                "type": "string"
+              },
+              {
+                "value": "={{ ($('WAHA Trigger').item.json.payload.media && $('WAHA Trigger').item.json.payload.media.filename) ? $('WAHA Trigger').item.json.payload.media.filename : '' }}",
+                "name": "file_name",
+                "id": "c5",
+                "type": "string"
+              },
+              {
+                "value": "={{ ($('WAHA Trigger').item.json.payload.media && $('WAHA Trigger').item.json.payload.media.mimetype) ? $('WAHA Trigger').item.json.payload.media.mimetype : '' }}",
+                "name": "mime_type",
+                "id": "c6",
+                "type": "string"
+              },
+              {
+                "value": "={{ $('WAHA Trigger').item.json.session || 'default' }}",
+                "name": "session",
+                "id": "c7",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "ef991a12-0c2a-476f-8167-7b2d8328e528",
+        "name": "Normalize WAHA Payload",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          64,
+          2256
+        ],
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "mode": "list",
+            "cachedResultName": "Тест общения с поставщиками исходящие",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 487056885,
+            "mode": "list",
+            "cachedResultName": "Временно",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=487056885"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Контакты",
+                "lookupValue": "={{ $('Normalize WAHA Payload').item.json['Контакты'] }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "64ab1ccd-be0f-4dc8-ad22-d7875a9badcb",
+        "name": "Find Contact In Sheet1",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          240,
+          2352
+        ],
+        "typeVersion": 4.6,
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "c5V2Tj04TILmCSts",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByPosition",
+          "numberInputs": 3,
+          "options": {}
+        },
+        "id": "f2803aa9-4714-430b-b728-7d474e7e199c",
+        "name": "Merge Incoming And Sheet1",
+        "type": "n8n-nodes-base.merge",
+        "position": [
+          416,
+          2240
+        ],
+        "typeVersion": 3.2
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const incoming = $('Normalize WAHA Payload').item.json;\nconst row = $json || {};\nreturn {\n  json: {\n    contact: incoming['Контакты'],\n    supplier_message: incoming.supplier_message,\n    has_media: incoming.has_media,\n    media_url: incoming.media_url || '',\n    file_name: incoming.file_name || '',\n    mime_type: incoming.mime_type || '',\n    session: incoming.session || 'default',\n    current_stage: row['Stage'] || 'new',\n    known_company_name: row['Название компании временно'] || '',\n    known_activity: row['Деятельность компании временно'] || '',\n    known_catalog: row['Ссылка на каталог временно'] || '',\n    package_done: row['Полный пакет получен'] || '',\n    first_contact_sent: row['First Contact Sent'] || '',\n    status_chat: row['Статус'] || ''\n  }\n};"
+        },
+        "id": "8407ab2a-2e3a-42e4-9df5-24b13405e628",
+        "name": "Build Dialog Context",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          576,
+          2256
+        ],
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ JSON.stringify($json, null, 2) }}",
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=You communicate with the supplier as a real purchasing manager named Ilyas.\n\nIf someone asks you your name, you must tell them that your name is Ilyas.\n\nYour goal is to collect the full package of data:\n1. company name\n2. business activity / what the company manufactures\n3. catalog\n\nMain language rule:\n- reply_text must always be written only in English.\n- Never write reply_text in Russian.\n- Never mix English and Russian in reply_text.\n\nData extraction language rule:\n- company_name must be kept in the original form provided by the supplier.\n- business_activity must always be written in Russian.\n- catalog_reference must be returned exactly as received, without translation if it is a link, file reference, or filename.\n- Do not translate company_name unless the supplier explicitly provides a translated version.\n- Do not translate catalog_reference.\n\nDialogue rules:\n- Keep messages short, polite, and natural.\n- Do not ask more than 1–2 related questions at a time.\n- If the company name is missing, ask for the company name.\n- If the business activity is missing, ask what the company manufactures.\n- If the catalog is missing, ask for the catalog in PDF format.\n- If a file is received, treat it as the catalog being received.\n- If the user asks a question, answer it directly.\n- Return only JSON according to the required schema.\n\nGreeting rule:\n- If status_chat = true, reply_text must begin directly with the main point, without a greeting.\n- If status_chat is empty, null, false, or missing, reply_text must begin with a polite greeting in English.\n- If status_chat is empty, null, false, or missing, do not start immediately with a question without a greeting.\n\nAllowed greetings when status_chat is empty:\n- \"Hello,\"\n- \"Hello!\"\n- \"Hi,\"\n- \"Good day,\"\n\nCompletion rules:\n- If all three elements have been collected and stage is not \"completed\", you may send the final confirmation once:\n  \"Thank you, I have forwarded your information to our procurement department. They will contact you.\"\n- After that, stage must become \"completed\".\n\nCritically important:\n- If stage = \"completed\", do not repeat the final confirmation.\n- Do not repeat phrases like:\n  - \"Thank you, I have forwarded your information...\"\n  - \"They will contact you\"\n- If stage = \"completed\" and the user asks a new question, answer only the question itself.\n- If stage = \"completed\" and the user sends a meaningful message that requires a response, reply appropriately.\n- If stage = \"completed\" and the user asks whether the catalog was reviewed or when they will be contacted, reply with:\n  \"Your catalog has been forwarded to our procurement department. Please wait for further contact. Thank you for your understanding.\"\n\nRule for thanks and short reactions:\n- If the user sends thanks, a short confirmation, an emoji, a sticker, or a short reaction, reply_text must be:\n  \"Glad to cooperate! Stay in touch!\"\n- This rule applies both before and after completion.\n\nExamples of thanks and short reactions:\n- \"Thank you\"\n- \"Thanks\"\n- \"Got it\"\n- \"Okay\"\n- \"Understood\"\n- \"👍\"\n- \"🙂\"\n- a sticker\n\nExamples:\n1.\nstage = \"new\"\nstatus_chat = \"\"\nsupplier_message = \"Hello\"\ncompany_name = \"\"\nbusiness_activity = \"\"\ncatalog_reference = \"\"\nreply_text = \"Hello! Could you please tell me your company name?\"\nstage = \"awaiting_company_name\"\n\n2.\nstage = \"new\"\nstatus_chat = true\nsupplier_message = \"Hello\"\ncompany_name = \"\"\nbusiness_activity = \"\"\ncatalog_reference = \"\"\nreply_text = \"Could you please tell me your company name?\"\nstage = \"awaiting_company_name\"\n\n3.\nstage = \"awaiting_company_name\"\nsupplier_message = \"We are Polisonik\"\ncompany_name = \"Polisonik\"\nbusiness_activity = \"\"\ncatalog_reference = \"\"\nreply_text = \"Could you please tell me what your company manufactures?\"\nstage = \"awaiting_activity\"\n\n4.\nstage = \"awaiting_activity\"\nsupplier_message = \"We manufacture air conditioners\"\ncompany_name = \"Polisonik\"\nbusiness_activity = \"производство кондиционеров\"\ncatalog_reference = \"\"\nreply_text = \"Please send your catalog in PDF format.\"\nstage = \"awaiting_catalog\"\n\n5.\nstage = \"awaiting_activity\"\nsupplier_message = \"We produce plastic kitchen containers\"\ncompany_name = \"Polisonik\"\nbusiness_activity = \"производство пластиковых кухонных контейнеров\"\ncatalog_reference = \"\"\nreply_text = \"Please send your catalog in PDF format.\"\nstage = \"awaiting_catalog\"\n\n6.\nstage = \"awaiting_catalog\"\nsupplier_message = \"\"\nhas_media = true\ncompany_name = \"Polisonik\"\nbusiness_activity = \"производство кондиционеров\"\ncatalog_received = true\nreply_text = \"Thank you, I have forwarded your information to our procurement department. They will contact you.\"\nstage = \"completed\"\n\n7.\nstage = \"completed\"\nsupplier_message = \"Thank you\"\nreply_text = \"Glad to cooperate! Stay in touch!\"\nstage = \"completed\"\n\n8.\nstage = \"completed\"\nsupplier_message = \"👍\"\nreply_text = \"Glad to cooperate! Stay in touch!\"\nstage = \"completed\"\n\n9.\nstage = \"completed\"\nsupplier_message = \"When will I be contacted?\"\nreply_text = \"Your catalog has been forwarded to our procurement department. Please wait for further contact. Thank you for your understanding.\"\nstage = \"completed\"\n\n10.\nstage = \"completed\"\nsupplier_message = \"Who are you?\"\nreply_text = \"I am a procurement manager. Your company information and catalog have already been forwarded to our procurement department.\"\nstage = \"completed\"\n\n11.\nstage = \"completed\"\nsupplier_message = \"What do you know about my company?\"\nreply_text = \"You provided your company name, your business activity, and your catalog. These details have already been forwarded to our procurement department.\"\nstage = \"completed\"\n\n12.\nsupplier_message = \"We are Polisonik\"\ncompany_name = \"Polisonik\"\n\n13.\nsupplier_message = \"We manufacture compressors and air conditioners\"\nbusiness_activity = \"производство компрессоров и кондиционеров\"\n\n14.\nsupplier_message = \"Catalog: https://example.com/catalog.pdf\"\ncatalog_reference = \"https://example.com/catalog.pdf\"\n\nSelf-check before returning the answer:\n1. reply_text must always be only in English.\n2. business_activity must always be in Russian.\n3. company_name must remain in the supplier’s original form.\n4. If stage = \"completed\", do not repeat the final confirmation.\n5. If the user sent thanks, a short confirmation, an emoji, or a sticker, reply_text must be:\n   \"Glad to cooperate! Stay in touch!\"\n6. If status_chat = true, reply_text must not start with a greeting.\n7. If status_chat is empty, null, false, or missing, reply_text must start with a polite greeting in English.\n8. If the user asked a question, reply_text must not be empty.\n"
+              }
+            ]
+          }
+        },
+        "id": "601116ca-14ed-445f-a572-932e77e54335",
+        "name": "Supplier Dialog Planner",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "position": [
+          736,
+          2256
+        ],
+        "typeVersion": 1.5
+      },
+      {
+        "parameters": {
+          "schemaType": "manual",
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company_name\": { \"type\": \"string\" },\n    \"business_activity\": { \"type\": \"string\" },\n    \"catalog_received\": { \"type\": \"boolean\" },\n    \"catalog_reference\": { \"type\": \"string\" },\n    \"stage\": { \"type\": \"string\", \"enum\": [\"new\", \"awaiting_catalog\", \"awaiting_company_name\", \"awaiting_activity\", \"in_progress\", \"completed\"] },\n    \"reply_text\": { \"type\": \"string\" }\n  },\n  \"required\": [\"company_name\", \"business_activity\", \"catalog_received\", \"catalog_reference\", \"stage\", \"reply_text\"]\n}"
+        },
+        "id": "5bd668a1-6956-44ca-824f-625aff9146a8",
+        "name": "Structured Output Parser",
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "position": [
+          880,
+          2416
+        ],
+        "typeVersion": 1.2
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d1",
+                "name": "Контакты",
+                "type": "string",
+                "value": "={{ $('Build Dialog Context').item.json.contact }}"
+              },
+              {
+                "id": "d2",
+                "name": "First Contact Sent",
+                "type": "string",
+                "value": "={{ $('Build Dialog Context').item.json.first_contact_sent || 'Yes' }}"
+              },
+              {
+                "id": "d3",
+                "name": "Stage",
+                "type": "string",
+                "value": "={{ $json.output.stage }}"
+              },
+              {
+                "id": "d4",
+                "name": "Название компании временно",
+                "type": "string",
+                "value": "={{ $json.output.company_name || $('Build Dialog Context').item.json.known_company_name }}"
+              },
+              {
+                "id": "d5",
+                "name": "Деятельность компании временно",
+                "type": "string",
+                "value": "={{ $json.output.business_activity || $('Build Dialog Context').item.json.known_activity }}"
+              },
+              {
+                "id": "d6",
+                "name": "Ссылка на каталог временно",
+                "type": "string",
+                "value": "={{ $json.output.catalog_reference || $('Build Dialog Context').item.json.known_catalog }}"
+              },
+              {
+                "id": "d7",
+                "name": "Полный пакет получен",
+                "type": "string",
+                "value": "={{ (($json.output.company_name || $('Build Dialog Context').item.json.known_company_name) && ($json.output.business_activity || $('Build Dialog Context').item.json.known_activity) && (($json.output.catalog_reference || $('Build Dialog Context').item.json.known_catalog) || $json.output.catalog_received)) ? 'Yes' : '' }}"
+              },
+              {
+                "id": "d8",
+                "name": "Last Reply",
+                "type": "string",
+                "value": "={{ $json.output.reply_text }}"
+              },
+              {
+                "id": "d9",
+                "name": "Updated At",
+                "type": "string",
+                "value": "={{ $now }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "646e9a28-f3df-4cab-8273-f917c41cba28",
+        "name": "Prepare Sheet1 Progress",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1024,
+          2256
+        ],
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "e1",
+                "leftValue": "={{ $('Build Dialog Context').item.json.has_media ? 'true' : 'false' }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "38b138d7-1b4b-439f-aef6-648e7f64f2d7",
+        "name": "Catalog File Attached",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          1200,
+          2256
+        ],
+        "typeVersion": 2.2
+      },
+      {
+        "parameters": {
+          "name": "={{ $binary.data.fileName || ('catalog_' + $('Build Dialog Context').item.json.contact + '.bin') }}",
+          "driveId": {
+            "__rl": true,
+            "value": "My Drive",
+            "mode": "list",
+            "cachedResultName": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1ms3xo_xQiNfNby4GY9q_oJQu-Wo_fe93",
+            "mode": "list",
+            "cachedResultName": "База исходящих",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1ms3xo_xQiNfNby4GY9q_oJQu-Wo_fe93"
+          },
+          "options": {
+            "simplifyOutput": false
+          }
+        },
+        "id": "32b0aa6b-437d-4325-8aec-b6c9e6766eb5",
+        "name": "Upload Catalog To Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          1488,
+          2144
+        ],
+        "typeVersion": 3,
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "qTPk8OIS7ZoIqkpz",
+            "name": "Google Drive vkitae"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "share",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          },
+          "permissionsUi": {
+            "permissionsValues": {
+              "role": "reader",
+              "type": "anyone"
+            }
+          },
+          "options": {}
+        },
+        "id": "417ccbbd-7293-49ac-bbe7-01b81fa0405c",
+        "name": "Share Catalog File",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          1616,
+          2144
+        ],
+        "typeVersion": 3,
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "qTPk8OIS7ZoIqkpz",
+            "name": "Google Drive vkitae"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f1",
+                "name": "Контакты",
+                "type": "string",
+                "value": "={{ $('Prepare Sheet1 Progress').item.json['Контакты'] }}"
+              },
+              {
+                "id": "f2",
+                "name": "First Contact Sent",
+                "type": "string",
+                "value": "={{ $('Prepare Sheet1 Progress').item.json['First Contact Sent'] }}"
+              },
+              {
+                "id": "f3",
+                "name": "Stage",
+                "type": "string",
+                "value": "={{ $('Prepare Sheet1 Progress').item.json['Stage'] }}"
+              },
+              {
+                "id": "f4",
+                "name": "Название компании временно",
+                "type": "string",
+                "value": "={{ $('Prepare Sheet1 Progress').item.json['Название компании временно'] }}"
+              },
+              {
+                "id": "f5",
+                "name": "Деятельность компании временно",
+                "type": "string",
+                "value": "={{ $('Prepare Sheet1 Progress').item.json['Деятельность компании временно'] }}"
+              },
+              {
+                "id": "f6",
+                "name": "Ссылка на каталог временно",
+                "type": "string",
+                "value": "={{ 'https://drive.google.com/file/d/' + ($json.id || $json.fileId) + '/view' }}"
+              },
+              {
+                "id": "f7",
+                "name": "Полный пакет получен",
+                "type": "string",
+                "value": "={{ ($('Prepare Sheet1 Progress').item.json['Название компании временно'] && $('Prepare Sheet1 Progress').item.json['Деятельность компании временно']) ? 'Yes' : '' }}"
+              },
+              {
+                "id": "f8",
+                "name": "Last Reply",
+                "type": "string",
+                "value": "={{ $('Prepare Sheet1 Progress').item.json['Last Reply'] }}"
+              },
+              {
+                "id": "f9",
+                "name": "Updated At",
+                "type": "string",
+                "value": "={{ $('Prepare Sheet1 Progress').item.json['Updated At'] }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "880c4de0-81cf-4582-98e8-0ada61408d2f",
+        "name": "Add Drive Link To Progress",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          1760,
+          2144
+        ],
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "mode": "list",
+            "cachedResultName": "Тест общения с поставщиками исходящие",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 487056885,
+            "mode": "list",
+            "cachedResultName": "Временно",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=487056885"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Контакты": "={{ $json['Контакты'] }}",
+              "First Contact Sent": "={{ $json['First Contact Sent'] }}",
+              "Stage": "={{ $json.Stage }}",
+              "Название компании временно": "={{ $json['Название компании временно'] }}",
+              "Деятельность компании временно": "={{ $json['Деятельность компании временно'] }}",
+              "Ссылка на каталог временно": "={{ $json['Ссылка на каталог временно'] }}",
+              "Полный пакет получен": "={{ $json['Полный пакет получен'] }}",
+              "Last Reply": "={{ $json['Last Reply'] }}",
+              "Updated At": "={{ $json['Updated At'] }}"
+            },
+            "matchingColumns": [
+              "Контакты"
+            ],
+            "schema": [
+              {
+                "id": "Контакты",
+                "displayName": "Контакты",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "First Contact Sent",
+                "displayName": "First Contact Sent",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Stage",
+                "displayName": "Stage",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Название компании временно",
+                "displayName": "Название компании временно",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Деятельность компании временно",
+                "displayName": "Деятельность компании временно",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Ссылка на каталог временно",
+                "displayName": "Ссылка на каталог временно",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Полный пакет получен",
+                "displayName": "Полный пакет получен",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Last Reply",
+                "displayName": "Last Reply",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Updated At",
+                "displayName": "Updated At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "8074a335-b3eb-4a4d-89f8-29aec62ab293",
+        "name": "Upsert Sheet1 Progress",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1888,
+          2272
+        ],
+        "typeVersion": 4.6,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "c5V2Tj04TILmCSts",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "g1",
+                "leftValue": "={{ ($json['Название компании временно'] || '').toString() }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              },
+              {
+                "id": "g2",
+                "leftValue": "={{ ($json['Деятельность компании временно'] || '').toString() }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              },
+              {
+                "id": "g3",
+                "leftValue": "={{ ($json['Ссылка на каталог временно'] || '').toString() }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "9ff799ff-b5b1-4d52-807d-2fc162f9d532",
+        "name": "Full Package Ready",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          2096,
+          2160
+        ],
+        "typeVersion": 2.2
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "h1",
+                "name": "Название компании",
+                "type": "string",
+                "value": "={{ $json['Название компании временно'] }}"
+              },
+              {
+                "id": "h2",
+                "name": "ссылка на каталог",
+                "type": "string",
+                "value": "={{ $json['Ссылка на каталог временно'] }}"
+              },
+              {
+                "id": "h3",
+                "name": "Номер телефона",
+                "type": "string",
+                "value": "={{ $json['Контакты'] }}"
+              },
+              {
+                "id": "h4",
+                "name": "Деятельность компании",
+                "type": "string",
+                "value": "={{ $json['Деятельность компании временно'] }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "33a62715-98b8-4ed9-9a75-a70d6fd3e9ee",
+        "name": "Prepare Final Row For Sheet2",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          2320,
+          2144
+        ],
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "mode": "list",
+            "cachedResultName": "Тест общения с поставщиками исходящие",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 2142687821,
+            "mode": "list",
+            "cachedResultName": "Лист2",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=2142687821"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Название компании ": "={{ $json['Название компании'] }}",
+              "ссылка на каталог": "={{ $json['ссылка на каталог'] }}",
+              "Номер телефона": "={{ $json['Номер телефона'] }}",
+              "Деятельность компании ": "={{ $json['Деятельность компании'] }}"
+            },
+            "matchingColumns": [
+              "Номер телефона"
+            ],
+            "schema": [
+              {
+                "id": "Название компании ",
+                "displayName": "Название компании ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ссылка на каталог",
+                "displayName": "ссылка на каталог",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Номер телефона",
+                "displayName": "Номер телефона",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Деятельность компании ",
+                "displayName": "Деятельность компании ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "6a174d7d-c3b5-44f8-a6ec-c5ddf653edd4",
+        "name": "Upsert Final To Sheet2",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          2512,
+          2144
+        ],
+        "typeVersion": 4.6,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "c5V2Tj04TILmCSts",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "i1",
+                "leftValue": "={{ ($json['Last Reply'] || '').toString() }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "ab827ecd-e222-471f-b41e-1549efa241f6",
+        "name": "Reply Needed",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          2096,
+          2352
+        ],
+        "typeVersion": 2.2
+      },
+      {
+        "parameters": {
+          "resource": "Chatting",
+          "operation": "Send Text",
+          "session": "=default",
+          "chatId": "={{ $json['Контакты'] }}",
+          "text": "={{ $json['Last Reply'] }}",
+          "requestOptions": {}
+        },
+        "id": "00225c2f-fd07-475b-99ea-ae3f3265315b",
+        "name": "Send WAHA Reply",
+        "type": "n8n-nodes-waha.WAHA",
+        "position": [
+          2320,
+          2336
+        ],
+        "typeVersion": 202411,
+        "credentials": {
+          "wahaApi": {
+            "id": "nKoHMSDIW4u9JBlV",
+            "name": "WAHA account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "modelName": "models/gemini-2.5-flash-lite",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1,
+        "position": [
+          736,
+          2416
+        ],
+        "id": "9910a330-91dc-4166-954f-8d97718a4d78",
+        "name": "Google Gemini Chat Model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "H8XIEwmjn0GuMnGK",
+            "name": "Google Gemini(PaLM) Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "mode": "list",
+            "cachedResultName": "Тест общения с поставщиками исходящие",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Лист1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Контакты",
+                "lookupValue": "={{ $json['Контакты'] }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "b1906723-5bec-4da7-b154-b7cd3e03878d",
+        "name": "Find Contact In Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          240,
+          2160
+        ],
+        "typeVersion": 4.6,
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "c5V2Tj04TILmCSts",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "86b8fd43-c423-484c-8d57-dbd037d148a2",
+                "leftValue": "={{ $json.payload._data.key.remoteJidAlt }}",
+                "rightValue": "77075536107@s.whatsapp.net",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          -480,
+          1648
+        ],
+        "id": "d85ef816-8352-44a4-8332-2bfc04dc2e99",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "url": "={{ $('WAHA Trigger').item.json.payload.media.url.replace('http://localhost:3000', 'https://waha.lux.kz') }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Api-Key",
+                "value": "a3f8c2d1e4b5a6f7c8d9e0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1360,
+          2144
+        ],
+        "id": "646d9cf5-1470-422c-af23-5c441c3d7bc1",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "d8344a63-4c80-461e-a5eb-d6e769235c02",
+                "leftValue": "={{ $json.event === 'message' }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "18b32efe-4a7d-426d-ba48-646c7b3899c1",
+                "leftValue": "={{ $json.payload && $json.payload.fromMe === false }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "f490fd12-8bcd-4d2c-a1e3-42d4586ba8a4",
+                "leftValue": "={{ (Date.now() / 1000) - Number($json.payload.timestamp || 0) < 120 }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -448,
+          2016
+        ],
+        "id": "bbf88463-f3af-467f-9f31-94468fad42b7",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "n1",
+                "name": "chat_id",
+                "type": "string",
+                "value": "={{ String($json.payload.from || '') }}\n"
+              },
+              {
+                "id": "n2",
+                "name": "message_text",
+                "type": "string",
+                "value": "={{ ($json.payload.body || '').trim() }}"
+              },
+              {
+                "id": "n3",
+                "name": "message_id",
+                "type": "string",
+                "value": "={{ String($json.payload.id || '') }}"
+              },
+              {
+                "id": "n4",
+                "name": "timestamp",
+                "type": "string",
+                "value": "={{ String($json.payload.timestamp || '') }}"
+              },
+              {
+                "id": "n5",
+                "name": "sender_name",
+                "type": "string",
+                "value": "={{ $json.payload.notifyName || $json.payload.from || '' }}"
+              },
+              {
+                "id": "n6",
+                "name": "username",
+                "type": "string",
+                "value": "={{ '' }}"
+              },
+              {
+                "id": "n7",
+                "name": "pending_token",
+                "type": "string",
+                "value": "={{ String($json.payload.from || '') + '_' + String($json.payload.timestamp || '') + '_' + String($json.payload.id || '') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "73397ef5-f773-4580-b94b-592e30dd1f72",
+        "name": "Normalize Telegram payload",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          32,
+          1744
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "tx1",
+                "leftValue": "={{ $json.message_text }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "159ee5d1-130c-4963-a2a0-07656e8c90d8",
+        "name": "Text exists?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          256,
+          1744
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "propertyName": "buffer_state",
+          "key": "=tg_buffer:{{ $json.chat_id }}",
+          "options": {}
+        },
+        "id": "9330772d-cfb6-4ae1-9956-0c069e92d6b3",
+        "name": "Redis Get Buffer",
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          496,
+          1872
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByPosition",
+          "options": {}
+        },
+        "id": "283fbeb8-0b65-41d8-8c54-b4a8c8a63010",
+        "name": "Merge incoming and buffer",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          720,
+          1744
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const incoming = $('Normalize Telegram payload').item.json;\nconst raw = String($json.buffer_state || '').trim();\nlet row = {};\nif (raw) {\n  try {\n    row = JSON.parse(raw);\n  } catch (e) {\n    row = {};\n  }\n}\nconst existingBuffer = String(row.Buffer || '').trim();\nconst currentPart = String(incoming.message_text || '').trim();\nconst mergedBuffer = [existingBuffer, currentPart].filter(Boolean).join(' ').replace(/\\s+/g, ' ').trim();\nconst state = {\n  'Chat ID': incoming.chat_id,\n  'Buffer': mergedBuffer,\n  'Pending Token': incoming.pending_token,\n  'Last Message At': incoming.timestamp,\n  'Sender Name': incoming.sender_name,\n  'Username': incoming.username,\n  'Last Reply': row['Last Reply'] || '',\n  'Updated At': $now\n};\nreturn {\n  json: {\n    ...state,\n    redis_key: `tg_buffer:${incoming.chat_id}`,\n    redis_value: JSON.stringify(state)\n  }\n};"
+        },
+        "id": "d604e831-9c95-454d-8a9a-5ffa97b52f79",
+        "name": "Build buffer update",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          944,
+          1744
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "set",
+          "key": "={{ $json.redis_key }}",
+          "value": "={{ $json.redis_value }}",
+          "expire": true,
+          "ttl": "={{ 300 }}"
+        },
+        "id": "29aa5cc8-9967-4b47-8213-41f21a4dbbae",
+        "name": "Redis Set Buffer",
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          1136,
+          1744
+        ],
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "propertyName": "buffer_state",
+          "key": "={{ $('Build buffer update').item.json.redis_key }}",
+          "options": {}
+        },
+        "id": "3736d707-6775-4376-a912-4c5ac470f634",
+        "name": "Redis Get Current Buffer",
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          1600,
+          1872
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByPosition",
+          "options": {}
+        },
+        "id": "54ea3837-50da-49f2-85c8-37e70f5b76d1",
+        "name": "Merge wait and current row",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1808,
+          1760
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "lt1",
+                "leftValue": "={{ (() => { try { return JSON.parse($json.buffer_state || '{}')['Pending Token'] || ''; } catch (e) { return ''; } })() }}",
+                "rightValue": "={{ $('Build buffer update').item.json['Pending Token'] }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "lt2",
+                "leftValue": "={{ (() => { try { return JSON.parse($json.buffer_state || '{}').Buffer || ''; } catch (e) { return ''; } })() }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "90457828-c17d-4d51-8245-244e279a426f",
+        "name": "Is latest batch?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          2032,
+          1760
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "let row = {};\ntry {\n  row = JSON.parse(String($json.buffer_state || '{}'));\n} catch (e) {\n  row = {};\n}\nreturn {\n  json: {\n    chat_id: row['Chat ID'] || '',\n    merged_message: row['Buffer'] || '',\n    sender_name: row['Sender Name'] || '',\n    username: row['Username'] || '',\n    pending_token: row['Pending Token'] || '',\n    last_message_at: row['Last Message At'] || '',\n    last_reply: row['Last Reply'] || '',\n    redis_key: $('Build buffer update').item.json.redis_key\n  }\n};"
+        },
+        "id": "ceec5de1-ba1f-462d-a8f2-54ce97601326",
+        "name": "Build buffered output",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2240,
+          1744
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "key": "={{ $('Redis Set Buffer').item.json.redis_key || ''}}"
+        },
+        "id": "5d7583a8-9c2e-4ebc-8712-d8124535959f",
+        "name": "Redis Delete Buffer",
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          1472,
+          2272
+        ],
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "# Блок памяти для ответа на массив сообщений ",
+          "height": 416,
+          "width": 2432
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -32,
+          1616
+        ],
+        "id": "a4e41b4a-9eef-40ab-b3ee-d09578f5df30",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "# Блок первого письма поставщикам по номеру ",
+          "height": 320,
+          "width": 2228,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -32,
+          1216
+        ],
+        "id": "10df6aa7-94a2-4c2c-8f65-f524f59bcd49",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "amount": 10
+        },
+        "id": "b69e23a5-b9f9-4f8d-a021-c7b7fd9081f9",
+        "name": "Wait 10 seconds",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          1376,
+          1744
+        ],
+        "webhookId": "compact-buffer-wait"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "3b8ad48b-27d0-4850-953d-51dcdade5d2d",
+                "leftValue": "={{ $json.payload.hasMedia }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "57aef5b5-805a-4b34-8e77-7b8b958ebf61",
+                "leftValue": "={{ $json.payload.body || ''}}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -240,
+          2000
+        ],
+        "id": "0d0bf189-f6af-4f89-b892-649f0d668ed2",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "content": "# Основной логический блок",
+          "height": 512,
+          "width": 2784,
+          "color": "#1B2E14"
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -32,
+          2096
+        ],
+        "typeVersion": 1,
+        "id": "8322c074-fb51-4ee4-b108-48e04ae9efd6",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "resource": "Contacts",
+          "operation": "Check Exists",
+          "session": "=default",
+          "phone": "={{ $json['Контакты'] }}",
+          "requestOptions": {}
+        },
+        "type": "n8n-nodes-waha.WAHA",
+        "typeVersion": 202411,
+        "position": [
+          1216,
+          1312
+        ],
+        "id": "d6fe6185-9980-419a-b4c0-de0d4370d98e",
+        "name": "Check phone number is registered in WhatsApp.",
+        "credentials": {
+          "wahaApi": {
+            "id": "nKoHMSDIW4u9JBlV",
+            "name": "WAHA account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6da2ea0e-693b-4caa-937e-c51b4881d893",
+                "leftValue": "={{ $json.numberExists }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1408,
+          1312
+        ],
+        "id": "c28bd820-54bb-40fd-b7e3-b7845df63fbd",
+        "name": "If2"
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "mode": "list",
+            "cachedResultName": "Тест общения с поставщиками исходящие",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Лист1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Статус": "=FALSE",
+              "Контакты": "={{ $('Build First Message').first().json['Контакты'] }}"
+            },
+            "matchingColumns": [
+              "Контакты"
+            ],
+            "schema": [
+              {
+                "id": "Контакты",
+                "displayName": "Контакты",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Статус",
+                "displayName": "Статус",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "296c3f83-6f74-4291-bf33-1fe426370192",
+        "name": "Update Sheet1 After First Message1",
+        "type": "n8n-nodes-base.googleSheets",
+        "position": [
+          1760,
+          1344
+        ],
+        "typeVersion": 4.6,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "c5V2Tj04TILmCSts",
+            "name": "Google Sheets account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          []
+        ]
+      },
+      "Read Sheet1 Contacts": {
+        "main": [
+          [
+            {
+              "node": "Needs first contact",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Needs first contact": {
+        "main": [
+          [
+            {
+              "node": "Loop Contacts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Contacts": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Build First Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build First Message": {
+        "main": [
+          [
+            {
+              "node": "Check phone number is registered in WhatsApp.",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send First WAHA Message": {
+        "main": [
+          [
+            {
+              "node": "Update Sheet1 After First Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Sheet1 After First Message": {
+        "main": [
+          [
+            {
+              "node": "Continue Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize WAHA Payload": {
+        "main": [
+          [
+            {
+              "node": "Find Contact In Sheet1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Find Contact In Sheet",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge Incoming And Sheet1",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Find Contact In Sheet1": {
+        "main": [
+          [
+            {
+              "node": "Merge Incoming And Sheet1",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "Merge Incoming And Sheet1": {
+        "main": [
+          [
+            {
+              "node": "Build Dialog Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Dialog Context": {
+        "main": [
+          [
+            {
+              "node": "Supplier Dialog Planner",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Supplier Dialog Planner",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supplier Dialog Planner": {
+        "main": [
+          [
+            {
+              "node": "Prepare Sheet1 Progress",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Sheet1 Progress": {
+        "main": [
+          [
+            {
+              "node": "Catalog File Attached",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Catalog File Attached": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Redis Delete Buffer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload Catalog To Drive": {
+        "main": [
+          [
+            {
+              "node": "Share Catalog File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Share Catalog File": {
+        "main": [
+          [
+            {
+              "node": "Add Drive Link To Progress",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Add Drive Link To Progress": {
+        "main": [
+          [
+            {
+              "node": "Upsert Sheet1 Progress",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upsert Sheet1 Progress": {
+        "main": [
+          [
+            {
+              "node": "Full Package Ready",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Reply Needed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Full Package Ready": {
+        "main": [
+          [
+            {
+              "node": "Prepare Final Row For Sheet2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Final Row For Sheet2": {
+        "main": [
+          [
+            {
+              "node": "Upsert Final To Sheet2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reply Needed": {
+        "main": [
+          [
+            {
+              "node": "Send WAHA Reply",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Supplier Dialog Planner",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Continue Loop": {
+        "main": [
+          [
+            {
+              "node": "Loop Contacts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Find Contact In Sheet": {
+        "main": [
+          [
+            {
+              "node": "Merge Incoming And Sheet1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WAHA Trigger": {
+        "main": [
+          [],
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          []
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Upload Catalog To Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Telegram payload": {
+        "main": [
+          [
+            {
+              "node": "Text exists?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Text exists?": {
+        "main": [
+          [
+            {
+              "node": "Redis Get Buffer",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge incoming and buffer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis Get Buffer": {
+        "main": [
+          [
+            {
+              "node": "Merge incoming and buffer",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge incoming and buffer": {
+        "main": [
+          [
+            {
+              "node": "Build buffer update",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build buffer update": {
+        "main": [
+          [
+            {
+              "node": "Redis Set Buffer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis Set Buffer": {
+        "main": [
+          [
+            {
+              "node": "Wait 10 seconds",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis Get Current Buffer": {
+        "main": [
+          [
+            {
+              "node": "Merge wait and current row",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge wait and current row": {
+        "main": [
+          [
+            {
+              "node": "Is latest batch?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is latest batch?": {
+        "main": [
+          [
+            {
+              "node": "Build buffered output",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build buffered output": {
+        "main": [
+          [
+            {
+              "node": "Normalize WAHA Payload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis Delete Buffer": {
+        "main": [
+          [
+            {
+              "node": "Upsert Sheet1 Progress",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 10 seconds": {
+        "main": [
+          [
+            {
+              "node": "Redis Get Current Buffer",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge wait and current row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Normalize Telegram payload",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Normalize WAHA Payload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check phone number is registered in WhatsApp.": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "Send First WAHA Message",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Update Sheet1 After First Message1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Sheet1 After First Message1": {
+        "main": [
+          [
+            {
+              "node": "Continue Loop",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Святослав it@mail6.luxkz.kz",
+    "name": "Version 7e95e110",
+    "description": "",
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-05-12T06:47:31.022Z",
+        "id": 512,
+        "workflowId": "K1cTRtPzk2iPSANE",
+        "versionId": "7e95e110-2847-4a07-a74d-63fb941199b3",
+        "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    ]
+  }
+}
