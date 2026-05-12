@@ -1,0 +1,500 @@
+{
+  "updatedAt": "2026-04-21T09:54:11.000Z",
+  "createdAt": "2026-04-01T11:44:30.683Z",
+  "id": "OuYrsh6DIf3ALgo3",
+  "name": "Запрос Прайса(Первый контакт)",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n    const data = item.json;\n    \n    // 1. Извлекаем номер из указанной тобой переменной\n    // Путь: data.payload._data.key.remoteJidAlt\n    const rawRemoteJid = data.payload?._data?.key?.remoteJidAlt || \"\";\n    \n    // Форматируем: убираем @s.whatsapp.net и добавляем + в начало\n    const formattedPhone = rawRemoteJid \n        ? '+' + rawRemoteJid.split('@')[0] \n        : \"Unknown Number\";\n\n    // 2. Логика работы с файлами (оставляем для работы AI Agent)\n    const payload = data.payload || {};\n    const message = data.message || {};\n    \n    const rawUrl = message?.documentMessage?.url \n                   || payload?.media?.url \n                   || payload?.url \n                   || null;\n    \n    const hasFile = !!rawUrl; \n    const fileUrl = hasFile \n        ? rawUrl.replace('http://localhost:3000', 'https://waha.lux.kz') \n        : false;\n\n    const fileName = message?.documentMessage?.fileName \n                     || payload?.media?.filename \n                     || payload?.filename\n                     || \"document.pdf\";\n\n    const messageText = payload.body || payload.caption || data.text || \"Пустое сообщение\";\n\n    return {\n        json: {\n            phone: formattedPhone,      // Результат: +77755334210\n            hasFile: hasFile,           // Наличие файла (true/false)\n            fileUrl: fileUrl,           // Ссылка на файл\n            fileName: fileName,\n            sender: payload.from || data._data?.key?.remoteJid || \"Unknown\",\n            fullMessage: messageText,\n            receivedAt: payload.timestamp || new Date().getTime()\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        144
+      ],
+      "id": "10265700-2c1b-42b9-9e35-d67ae7b72987",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=### ТЕКУЩЕЕ СООБЩЕНИЕ:\n- Текст: {{ $node[\"Code in JavaScript\"].json.fullMessage }}\n- Есть файл: {{ $node[\"Code in JavaScript\"].json.hasAttachment }}\n- Ссылка на файл: {{ $if($(\"Upload file\").isExecuted, $(\"Upload file\").item.json.webViewLink, \"нет\") }}\n- Телефон отправителя: {{ $node[\"Code in JavaScript\"].json.phone }}\n\n### ДЕЙСТВУЙ по алгоритму из системного сообщения.\nПроверь историю (Redis), определи чего не хватает, задай один вопрос или вызови инструмент.\n\n### КРИТИЧЕСКИ ВАЖНО \n- ОТВЕЧАЙ ТОЛЬКО НА ЯЗЫКЕ ПОЛЬЗОВАТЕЛЯ\n- НЕ МЕНЯЙ ЯЗЫК В ПРОЦЕССЕ ДИОЛОГА \n- ЕЛИ ПОЛЬЗОВАТЕЛЬ НАЧАЛ ЧАТ НА АНГЛИЙСКОМ ОТВЕЧАЙ НА АНГЛИЙСКОМ \n- ЕЛИ ПОЛЬЗОВАТЕЛЬ НАЧАЛ ЧАТ НА РУССКОМ ОТВЕЧАЙ НА РУССКОМ\n",
+        "options": {
+          "systemMessage": "=LANGUAGE LOCK: Detect the language of the user's FIRST text message. \nUse ONLY that language for ALL responses. NEVER switch. \nWhen user sends a file without text — keep the previously detected language.\n\nYou are a procurement manager named Alexey. Short, businesslike, no templates.\n\nGOAL: Collect 3 elements and call add_to_supplier_database.\n\nELEMENTS:\n1. company — company name (from dialog text only, NEVER from PDF content)\n2. company_activities — what the company does (from dialog text)\n3. catalog_link — file link (from variable \"Ссылка на файл\")\n\nDIFFERENCE: \"We are furniture factory\" = activity, NOT a company name.\n\n\"Hi\" or \"Hello\" = English. Always respond in English.\n\"Привет\" or \"Здравствуйте\" = Russian.\n\"Сәлем\" or \"Сәлеметсіз бе\" = Kazakh.\n\nSTRICT ORDER:\n1. Get company name first.\n2. Get activity (if not said together with name).\n3. Only then ask for catalog.\nFORBIDDEN: Ask for catalog if company name is unknown.\nFORBIDDEN: Call tool if any of 3 elements is missing.\n\nTOOL CALL — add_to_supplier_database:\n- company: [from dialog]\n- company_activities: [translate to Russian before saving]\n- catalog_link: [from variable]\n- phone_number: [from message metadata]\n- message_date: [current date]\n\nRULES:\n- ONE question per message maximum.\n- NEVER re-ask what's already in history.\n- End every message with a period.\n\nRESPONSES BY LANGUAGE:\n\nRU:\n- Приветствие → \"Здравствуйте. Как называется ваша компания и чем занимаетесь?\"\n- Деятельность есть, названия нет → \"Понял. А как называется компания?\"\n- Название есть, файла нет → \"Хорошо. Пришлите каталог в PDF или Excel.\"\n- Всё получено → \"Каталог получил, передал закупщикам. На связи.\"\n\nEN:\n- Greeting → \"Hello. What is your company name and what do you do?\"\n- Activity given, no name → \"Got it. What is your company name?\"\n- Have name, no file → \"Got it. Please send your catalog in PDF or Excel.\"\n- All received → \"Got the catalog, passed it to the team. Talk soon.\"\n\nKZ:\n- Сәлем → \"Сәлеметсіз бе. Компанияңыздың атауы қандай және не істейсіз?\"\n- Қызмет бар, атау жоқ → \"Түсіндім. Компанияңыздың атауы қандай?\"\n- Атау бар, файл жоқ → \"Каталогты PDF немесе Excel форматында жіберіңіз.\"\n- Бәрі бар → \"Каталогты алдым, сатып алушыларға бердім. Байланыста боламын.\"",
+          "maxIterations": 3,
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        240,
+        160
+      ],
+      "id": "17ccb93c-0204-49ef-8c8f-f9c6140ff0c6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Code in JavaScript').item.json.sender }}",
+        "sessionTTL": 604800
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        304,
+        464
+      ],
+      "id": "2861bdf0-1532-4339-8ce8-3d2f2aeddfe0",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "IDPGnSSkmIHW0reW",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Используй этот инструмент для записи данных. Ты ОБЯЗАН передать:\n\n'Компания' (возьми из текста письма),\n\n'Ссылка на прайс' (возьми из своего контекста как webViewLink),\n\n'Контакты' (email отправителя),\n\n'Дата' (текущая дата из письма)",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM",
+          "mode": "list",
+          "cachedResultName": "База поставщиков",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YVY2POhmGDGPeMQsWdiTO92KEHHXn33bmMvDU6YL2WM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Контакты": "={{ $fromAI('phone_number') }}",
+            "Компания": "={{ $fromAI('company') }}",
+            "Ссылка на прайс": "={{ $fromAI('catalog_link') }}",
+            "Дата": "={{ $now.toFormat('dd.MM.yyyy HH:mm') }}",
+            "Деятельность компании": "={{ $fromAI('company_activities') }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "Компания",
+              "displayName": "Компания",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ссылка на прайс",
+              "displayName": "Ссылка на прайс",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Контакты",
+              "displayName": "Контакты",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Дата",
+              "displayName": "Дата",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Деятельность компании",
+              "displayName": "Деятельность компании",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        464
+      ],
+      "id": "8175d7b5-dcc7-416b-ba8b-5c9a6a16277d",
+      "name": "add_to_supplier_database",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "59c8ebe6-bbe7-4a24-aa6d-f1c9a5e8aad5",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "qTPk8OIS7ZoIqkpz",
+          "name": "Google Drive vkitae"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-waha.wahaTrigger",
+      "typeVersion": 202411,
+      "position": [
+        -1008,
+        128
+      ],
+      "id": "fc9a38ac-f454-459c-a98d-f991c91bc7a5",
+      "name": "WAHA Trigger",
+      "webhookId": "0a8704bb-f87a-4a3b-9b61-7f505554af8d"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        464
+      ],
+      "id": "7e5abd21-0372-4a8c-84e8-e4a75f02a4ad",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "349cVczzg4DqlA1N",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.fileUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "a3f8c2d1e4b5a6f7c8d9e0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -144,
+        -16
+      ],
+      "id": "55ffafbd-ad49-4d14-bb0a-e160fca9c7e7",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "default",
+        "chatId": "={{ $('Code in JavaScript').first().json.sender }}",
+        "reply_to": "=",
+        "text": "={{ $json.output }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        832,
+        160
+      ],
+      "id": "d45b3598-26b6-4d68-bc0b-82224a5693c7",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "nKoHMSDIW4u9JBlV",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.hasFile }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    },
+                    "id": "628dee66-3fde-429d-98af-921712c8f7a8"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "27daafaf-7f76-4337-96c9-a5e6e46d89d8",
+                    "leftValue": "={{ $json.hasFile }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -336,
+        144
+      ],
+      "id": "59b7d38c-f021-4236-8ffe-c1b53c60e6c8",
+      "name": "Switch"
+    }
+  ],
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_to_supplier_database": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WAHA Trigger": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Almaty",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3b89325f-f969-4e99-bcf6-0d295e51c238",
+  "activeVersionId": null,
+  "versionCounter": 731,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-01T11:44:30.684Z",
+      "createdAt": "2026-04-01T11:44:30.684Z",
+      "role": "workflow:owner",
+      "workflowId": "OuYrsh6DIf3ALgo3",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
