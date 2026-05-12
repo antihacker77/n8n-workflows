@@ -1,0 +1,138 @@
+{
+  "updatedAt": "2026-04-30T07:36:05.293Z",
+  "createdAt": "2026-04-29T07:48:40.004Z",
+  "id": "QpJBAyVwhwDeRnkW",
+  "name": "Test analiz QR",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a4f795ff-7129-439b-bb92-79c2118d7f02",
+      "name": "Telegram Trigger",
+      "webhookId": "3eca19ec-674a-4a54-bd72-f14b3f97cfa5",
+      "credentials": {
+        "telegramApi": {
+          "id": "odq9pxm2ScmzGYUH",
+          "name": "Бот API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://telegram-bot-api:8081/bot8736303217:AAHZs98phyD3xL65H8vaeaugxxmBgecsitg/getFile?file_id={{ $json.message.voice.file_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "78c76050-5ba0-49a2-a6be-4b945f53b70a",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/home/node/.n8n-files/tg-files/{{ $json.result.file_path.replace('/var/lib/telegram-bot-api/', '') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        0
+      ],
+      "id": "7eec1c6e-f025-405d-8534-00b27d0b22c5",
+      "name": "Read/Write Files from Disk"
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5519c251-3324-4747-a199-7f93bc62b0cd",
+  "activeVersionId": null,
+  "versionCounter": 113,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-29T07:48:40.008Z",
+      "createdAt": "2026-04-29T07:48:40.008Z",
+      "role": "workflow:owner",
+      "workflowId": "QpJBAyVwhwDeRnkW",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:53:47.995Z",
+      "createdAt": "2026-04-27T06:53:47.995Z",
+      "id": "qNK3oWM9JMr79pUP",
+      "name": "testing"
+    },
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": null
+}
