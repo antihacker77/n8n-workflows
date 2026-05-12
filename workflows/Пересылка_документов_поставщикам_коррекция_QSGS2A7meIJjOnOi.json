@@ -1,0 +1,477 @@
+{
+  "updatedAt": "2026-05-04T05:01:25.437Z",
+  "createdAt": "2026-04-24T06:16:29.276Z",
+  "id": "QSGS2A7meIJjOnOi",
+  "name": "Пересылка документов поставщикам коррекция",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "mailbox": "Доки налоговая",
+        "format": "resolved",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        592,
+        64
+      ],
+      "id": "2bc41abb-ee79-4ec5-a911-2c6e45846675",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "NRgRgfp372Ylb9gO",
+          "name": "Света Закуп"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Z_zLmNiNkqWjYE7g9mBwV_y07mbMR7i9EJvDZcgSLRo",
+          "mode": "list",
+          "cachedResultName": "Пересылка",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Z_zLmNiNkqWjYE7g9mBwV_y07mbMR7i9EJvDZcgSLRo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Z_zLmNiNkqWjYE7g9mBwV_y07mbMR7i9EJvDZcgSLRo/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        64
+      ],
+      "id": "db767647-535e-4c6b-99d4-08779cd61199",
+      "name": "Get supplier rows",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $('Get supplier rows').all();\nconst emails = $('Email Trigger (IMAP)').all();\nconst supervisorEmail = 'swetlanka.28@mail.ru';\n\nfunction normalize(value) {\n  return String(value || '')\n    .toLowerCase()\n    .replace(/<[^>]*>/g, ' ')\n    .replace(/[^\\p{L}\\p{N}@._-]+/gu, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\nfunction getEmailText(email) {\n  return [\n    email.json.subject || '',\n    email.json.textPlain || '',\n    email.json.textHtml || '',\n    email.json.snippet || '',\n    email.json.from?.text || ''\n  ].join(' ');\n}\n\nconst results = [];\n\nfor (const email of emails) {\n  const binaryKeys = Object.keys(email.binary || {});\n  if (!binaryKeys.length) continue;\n\n  const haystack = normalize(getEmailText(email));\n  if (!haystack) continue;\n\n  const matchedRow = rows.find((row) => {\n    const keywordRaw = row.json['Ключевые слова'] || '';\n    const keywordTokens = normalize(keywordRaw).split(' ').filter((w) => w.length > 2);\n    return keywordTokens.length > 0 && keywordTokens.every((token) => haystack.includes(token));\n  });\n\n  if (!matchedRow) continue;\n\n  const toEmail = String(matchedRow.json['Почта'] || '').trim();\n  if (!toEmail) continue;\n\n  results.push({\n    json: {\n      to_email: toEmail,\n      copy_email: supervisorEmail,\n      subject: email.json.subject || 'Документы',\n      company: matchedRow.json['Ключевые слова'] || '',\n      attachmentNames: binaryKeys,\n      source_from: email.json.from?.text || '',\n      source_date: email.json.date || '',\n      body_text: 'Добрый день, примите в работу документы.'\n    },\n    binary: email.binary\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        64
+      ],
+      "id": "5b0b8a98-11df-47fb-96d0-98e3a39f7561",
+      "name": "Prepare forwarding payloads"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        64
+      ],
+      "id": "f4eb12b2-ffbc-4333-a759-38a1ce6fa42a",
+      "name": "Wait 2 seconds",
+      "webhookId": "f55cea22-8e6b-4f4d-9d2f-b4c643e4b2b9"
+    },
+    {
+      "parameters": {
+        "fromEmail": "opt@lux.kz",
+        "toEmail": "={{ $json.to_email }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.body_text }}",
+        "options": {
+          "appendAttribution": false,
+          "attachments": "={{ $json.attachmentNames }}"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1168,
+        64
+      ],
+      "id": "ede580be-88bb-4253-8258-f0d13021c530",
+      "name": "Send to supplier",
+      "webhookId": "618c4068-c5e1-499d-ab7b-0c84f90431fb",
+      "credentials": {
+        "smtp": {
+          "id": "MlpwrPUWwfRPYD1g",
+          "name": "SMTP Света"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "opt@lux.kz",
+        "toEmail": "=swetlanka.28@mail.ru",
+        "subject": "={{ '[COPY] ' + $('Wait 2 seconds').item.json.subject }}",
+        "emailFormat": "text",
+        "text": "=Готово",
+        "options": {
+          "appendAttribution": false,
+          "attachments": "={{ $('Wait 2 seconds').item.json.attachmentNames }}"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1312,
+        64
+      ],
+      "id": "b023cba8-00ff-46ff-b8e4-6511b63e7566",
+      "name": "Send copy to Svetlana",
+      "webhookId": "4e99fe62-cb97-4772-9876-776e0e7a3557",
+      "credentials": {
+        "smtp": {
+          "id": "MlpwrPUWwfRPYD1g",
+          "name": "SMTP Света"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Get supplier rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get supplier rows": {
+      "main": [
+        [
+          {
+            "node": "Prepare forwarding payloads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare forwarding payloads": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 seconds": {
+      "main": [
+        [
+          {
+            "node": "Send to supplier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to supplier": {
+      "main": [
+        [
+          {
+            "node": "Send copy to Svetlana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Email Trigger (IMAP)": {
+      "lastMessageUid": 696
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "f684543f-2421-4b61-bd1e-ed9c8cf07a7c",
+  "activeVersionId": "f684543f-2421-4b61-bd1e-ed9c8cf07a7c",
+  "versionCounter": 4001,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-24T06:16:29.279Z",
+      "createdAt": "2026-04-24T06:16:29.279Z",
+      "role": "workflow:owner",
+      "workflowId": "QSGS2A7meIJjOnOi",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:53:47.995Z",
+      "createdAt": "2026-04-27T06:53:47.995Z",
+      "id": "qNK3oWM9JMr79pUP",
+      "name": "testing"
+    },
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-05-04T05:01:48.000Z",
+    "createdAt": "2026-05-04T05:01:25.437Z",
+    "versionId": "f684543f-2421-4b61-bd1e-ed9c8cf07a7c",
+    "workflowId": "QSGS2A7meIJjOnOi",
+    "nodes": [
+      {
+        "parameters": {
+          "mailbox": "Доки налоговая",
+          "format": "resolved",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.emailReadImap",
+        "typeVersion": 2.1,
+        "position": [
+          592,
+          64
+        ],
+        "id": "2bc41abb-ee79-4ec5-a911-2c6e45846675",
+        "name": "Email Trigger (IMAP)",
+        "credentials": {
+          "imap": {
+            "id": "NRgRgfp372Ylb9gO",
+            "name": "Света Закуп"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1Z_zLmNiNkqWjYE7g9mBwV_y07mbMR7i9EJvDZcgSLRo",
+            "mode": "list",
+            "cachedResultName": "Пересылка",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Z_zLmNiNkqWjYE7g9mBwV_y07mbMR7i9EJvDZcgSLRo/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Лист1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Z_zLmNiNkqWjYE7g9mBwV_y07mbMR7i9EJvDZcgSLRo/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": []
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          736,
+          64
+        ],
+        "id": "db767647-535e-4c6b-99d4-08779cd61199",
+        "name": "Get supplier rows",
+        "executeOnce": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "c5V2Tj04TILmCSts",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const rows = $('Get supplier rows').all();\nconst emails = $('Email Trigger (IMAP)').all();\nconst supervisorEmail = 'swetlanka.28@mail.ru';\n\nfunction normalize(value) {\n  return String(value || '')\n    .toLowerCase()\n    .replace(/<[^>]*>/g, ' ')\n    .replace(/[^\\p{L}\\p{N}@._-]+/gu, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\nfunction getEmailText(email) {\n  return [\n    email.json.subject || '',\n    email.json.textPlain || '',\n    email.json.textHtml || '',\n    email.json.snippet || '',\n    email.json.from?.text || ''\n  ].join(' ');\n}\n\nconst results = [];\n\nfor (const email of emails) {\n  const binaryKeys = Object.keys(email.binary || {});\n  if (!binaryKeys.length) continue;\n\n  const haystack = normalize(getEmailText(email));\n  if (!haystack) continue;\n\n  const matchedRow = rows.find((row) => {\n    const keywordRaw = row.json['Ключевые слова'] || '';\n    const keywordTokens = normalize(keywordRaw).split(' ').filter((w) => w.length > 2);\n    return keywordTokens.length > 0 && keywordTokens.every((token) => haystack.includes(token));\n  });\n\n  if (!matchedRow) continue;\n\n  const toEmail = String(matchedRow.json['Почта'] || '').trim();\n  if (!toEmail) continue;\n\n  results.push({\n    json: {\n      to_email: toEmail,\n      copy_email: supervisorEmail,\n      subject: email.json.subject || 'Документы',\n      company: matchedRow.json['Ключевые слова'] || '',\n      attachmentNames: binaryKeys,\n      source_from: email.json.from?.text || '',\n      source_date: email.json.date || '',\n      body_text: 'Добрый день, примите в работу документы.'\n    },\n    binary: email.binary\n  });\n}\n\nreturn results;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          880,
+          64
+        ],
+        "id": "5b0b8a98-11df-47fb-96d0-98e3a39f7561",
+        "name": "Prepare forwarding payloads"
+      },
+      {
+        "parameters": {
+          "amount": 2
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          1024,
+          64
+        ],
+        "id": "f4eb12b2-ffbc-4333-a759-38a1ce6fa42a",
+        "name": "Wait 2 seconds",
+        "webhookId": "f55cea22-8e6b-4f4d-9d2f-b4c643e4b2b9"
+      },
+      {
+        "parameters": {
+          "fromEmail": "opt@lux.kz",
+          "toEmail": "={{ $json.to_email }}",
+          "subject": "={{ $json.subject }}",
+          "emailFormat": "text",
+          "text": "={{ $json.body_text }}",
+          "options": {
+            "appendAttribution": false,
+            "attachments": "={{ $json.attachmentNames }}"
+          }
+        },
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          1168,
+          64
+        ],
+        "id": "ede580be-88bb-4253-8258-f0d13021c530",
+        "name": "Send to supplier",
+        "webhookId": "618c4068-c5e1-499d-ab7b-0c84f90431fb",
+        "credentials": {
+          "smtp": {
+            "id": "MlpwrPUWwfRPYD1g",
+            "name": "SMTP Света"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fromEmail": "opt@lux.kz",
+          "toEmail": "=swetlanka.28@mail.ru",
+          "subject": "={{ '[COPY] ' + $('Wait 2 seconds').item.json.subject }}",
+          "emailFormat": "text",
+          "text": "=Готово",
+          "options": {
+            "appendAttribution": false,
+            "attachments": "={{ $('Wait 2 seconds').item.json.attachmentNames }}"
+          }
+        },
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          1312,
+          64
+        ],
+        "id": "b023cba8-00ff-46ff-b8e4-6511b63e7566",
+        "name": "Send copy to Svetlana",
+        "webhookId": "4e99fe62-cb97-4772-9876-776e0e7a3557",
+        "credentials": {
+          "smtp": {
+            "id": "MlpwrPUWwfRPYD1g",
+            "name": "SMTP Света"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Email Trigger (IMAP)": {
+        "main": [
+          [
+            {
+              "node": "Get supplier rows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get supplier rows": {
+        "main": [
+          [
+            {
+              "node": "Prepare forwarding payloads",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare forwarding payloads": {
+        "main": [
+          [
+            {
+              "node": "Wait 2 seconds",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 2 seconds": {
+        "main": [
+          [
+            {
+              "node": "Send to supplier",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send to supplier": {
+        "main": [
+          [
+            {
+              "node": "Send copy to Svetlana",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Святослав it@mail6.luxkz.kz",
+    "name": "Version f684543f",
+    "description": "",
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-05-04T05:01:48.110Z",
+        "id": 478,
+        "workflowId": "QSGS2A7meIJjOnOi",
+        "versionId": "f684543f-2421-4b61-bd1e-ed9c8cf07a7c",
+        "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    ]
+  }
+}
