@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-14T11:42:04.335Z",
+  "updatedAt": "2026-05-14T11:54:41.083Z",
   "createdAt": "2026-05-12T06:07:35.269Z",
   "id": "8gLw4HRHV2JFDaCc",
   "name": "Backup n8n workflows to GitHub",
@@ -458,7 +458,7 @@
   "pinData": {},
   "versionId": "d0291c53-c219-474e-b49f-d27018566d6b",
   "activeVersionId": null,
-  "versionCounter": 78,
+  "versionCounter": 80,
   "triggerCount": 0,
   "shared": [
     {
@@ -479,6 +479,13 @@
       }
     }
   ],
-  "tags": [],
+  "tags": [
+    {
+      "updatedAt": "2026-04-27T06:56:16.489Z",
+      "createdAt": "2026-04-27T06:56:16.489Z",
+      "id": "rGWgkar44aK49KYp",
+      "name": "Svyat Project"
+    }
+  ],
   "activeVersion": null
 }
