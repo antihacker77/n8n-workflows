@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-05T20:24:57.510Z",
+  "updatedAt": "2026-05-14T10:06:04.175Z",
   "createdAt": "2026-04-02T18:00:38.719Z",
   "id": "DwGkebnB5Wys44I1",
   "name": "Закрытия задач асаны Света",
@@ -18,8 +18,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        2672,
-        -64
+        2640,
+        -48
       ],
       "id": "855c08ea-0928-40c7-9c60-ab1da524d474",
       "name": "Update a task",
@@ -37,8 +37,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        928,
-        -48
+        944,
+        -32
       ],
       "id": "8439e6ae-f988-44d0-b8f5-fac5a19bac54",
       "name": "Code in JavaScript1"
@@ -53,8 +53,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1408,
-        -64
+        1376,
+        -48
       ],
       "id": "149e74b5-5cf6-4e41-ab9b-6f7b8955e7a8",
       "name": "HTTP Request",
@@ -72,8 +72,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1808,
-        -64
+        1776,
+        -48
       ],
       "id": "b9c46f88-4246-495b-83e0-468b1dadae0b",
       "name": "Loop Over Items"
@@ -88,8 +88,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        2096,
-        -48
+        2064,
+        -32
       ],
       "id": "0b258fa4-76c2-434c-9795-04e335632529",
       "name": "Get many tasks",
@@ -108,8 +108,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1600,
-        -64
+        1568,
+        -48
       ],
       "id": "5d5c7108-1517-4543-a313-170069589fae",
       "name": "Split Out"
@@ -141,8 +141,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2304,
-        -48
+        2272,
+        -32
       ],
       "id": "c344c0eb-1da7-4c53-ad89-8e1940ec5eea",
       "name": "If"
@@ -175,8 +175,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1136,
-        -48
+        1152,
+        -32
       ],
       "id": "2ab44236-c7b5-4145-9063-31a1dd8d9874",
       "name": "If1"
@@ -208,8 +208,8 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        2496,
-        -64
+        2464,
+        -48
       ],
       "id": "e66538e3-4c6b-4035-a427-1cd2c40f6f4d",
       "name": "Filter1"
@@ -228,8 +228,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        2832,
-        -64
+        2800,
+        -48
       ],
       "id": "787e1f8a-e4a5-439c-80f4-3f51a74eff8f",
       "name": "Send an Email",
@@ -250,8 +250,8 @@
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.1,
       "position": [
-        656,
-        112
+        528,
+        144
       ],
       "id": "12a0ab60-4f5e-4da8-ac59-1c17a5d95a76",
       "name": "Email Trigger (IMAP)",
@@ -276,8 +276,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        2768,
-        224
+        2896,
+        240
       ],
       "id": "56adaeaf-9041-4029-a77c-0fbc5913edc6",
       "name": "Create a subtask",
@@ -310,7 +310,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        3360,
+        3568,
         144
       ],
       "id": "11dd3e46-47da-418e-b975-702029ac668a",
@@ -327,7 +327,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        2928,
+        3136,
         128
       ],
       "id": "af6fe675-8a2f-4c91-a267-505b596280b8",
@@ -341,8 +341,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        2608,
-        224
+        2736,
+        240
       ],
       "id": "2b6234b1-b375-41e2-bb05-d532da480b80",
       "name": "Get a task",
@@ -380,8 +380,8 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        928,
-        112
+        944,
+        128
       ],
       "id": "dc73c7dd-78f1-4ab4-95c1-857f85c81ad2",
       "name": "Filter"
@@ -393,7 +393,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        3136,
+        3344,
         128
       ],
       "id": "f47c003f-0e7f-4504-8523-520f751c179d",
@@ -406,8 +406,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        928,
-        240
+        944,
+        256
       ],
       "id": "5375b6e2-f44f-4411-85ce-fddbe5b08263",
       "name": "Code in JavaScript"
@@ -422,8 +422,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1456,
-        224
+        1584,
+        240
       ],
       "id": "416f5b95-4d5a-42e3-ba64-a6bdedca4e8d",
       "name": "HTTP Request2",
@@ -441,8 +441,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1920,
-        224
+        2048,
+        240
       ],
       "id": "c46ea697-a7a6-4444-857f-bc2b88625de3",
       "name": "Loop Over Items2"
@@ -457,8 +457,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        2128,
-        240
+        2256,
+        256
       ],
       "id": "4a252d4d-f255-4e71-aa49-502c43b2e520",
       "name": "Get many tasks1",
@@ -477,8 +477,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1712,
-        224
+        1840,
+        240
       ],
       "id": "e82e0312-9713-48b2-96ab-a573808d62b4",
       "name": "Split Out1"
@@ -519,8 +519,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2416,
-        240
+        2544,
+        256
       ],
       "id": "f564bc4c-c6ca-401b-b32c-713f727e59a5",
       "name": "If2"
@@ -561,8 +561,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1184,
-        240
+        1104,
+        256
       ],
       "id": "1e79e13d-8e99-4b43-a419-9115da0a1a3b",
       "name": "If3"
@@ -581,7 +581,7 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        3520,
+        3728,
         144
       ],
       "id": "149c185c-0116-4ff3-b03d-1d5ab31948b8",
@@ -608,8 +608,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        2784,
-        480
+        2896,
+        448
       ],
       "id": "75191655-ab1e-49df-a29b-7c54f4cdd087",
       "name": "Create a subtask1",
@@ -628,8 +628,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        2624,
-        480
+        2736,
+        448
       ],
       "id": "902c3be1-8bfe-42ea-8cf7-cdb62e260a14",
       "name": "Get a task1",
@@ -650,8 +650,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1472,
-        480
+        1584,
+        448
       ],
       "id": "ec9fe8ee-cb56-44c3-9ed6-563ed308dce3",
       "name": "HTTP Request3",
@@ -669,8 +669,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1936,
-        480
+        2048,
+        448
       ],
       "id": "b899b7a9-0939-4e6a-b535-8f4b88758d12",
       "name": "Loop Over Items3"
@@ -685,8 +685,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        2144,
-        496
+        2256,
+        464
       ],
       "id": "22513aba-5e28-41eb-98da-016dfc94820f",
       "name": "Get many tasks2",
@@ -705,8 +705,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1728,
-        480
+        1840,
+        448
       ],
       "id": "c1309783-9578-4978-9211-0d4589f53176",
       "name": "Split Out2"
@@ -747,8 +747,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2432,
-        496
+        2544,
+        464
       ],
       "id": "ce2ab219-d7bd-4778-843e-191ec3cc9306",
       "name": "If4"
@@ -767,8 +767,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        2960,
-        480
+        3104,
+        448
       ],
       "id": "d1ae6219-3ac1-479d-8019-471ec9616261",
       "name": "Send an Email2",
@@ -779,6 +779,39 @@
           "name": "SMTP Света"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c03368c0-27f1-427d-8364-ac00c73ceae9",
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "Обращение:",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1440,
+        464
+      ],
+      "id": "e9cd9e4f-1073-45c1-b0ae-703decb9bce9",
+      "name": "If6"
     }
   ],
   "connections": {
@@ -864,7 +897,8 @@
             "type": "main",
             "index": 0
           }
-        ]
+        ],
+        []
       ]
     },
     "Filter1": {
@@ -1062,7 +1096,7 @@
         ],
         [
           {
-            "node": "HTTP Request3",
+            "node": "If6",
             "type": "main",
             "index": 0
           }
@@ -1153,6 +1187,17 @@
           }
         ]
       ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1168,9 +1213,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "2185f4cb-6de9-42ed-b700-92807d321cde",
-  "activeVersionId": "2185f4cb-6de9-42ed-b700-92807d321cde",
-  "versionCounter": 5191,
+  "versionId": "c69796ee-2543-48d6-bfa1-35fa128587cd",
+  "activeVersionId": "c69796ee-2543-48d6-bfa1-35fa128587cd",
+  "versionCounter": 5977,
   "triggerCount": 1,
   "shared": [
     {
@@ -1206,9 +1251,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-05T20:27:54.000Z",
-    "createdAt": "2026-05-05T20:24:57.511Z",
-    "versionId": "2185f4cb-6de9-42ed-b700-92807d321cde",
+    "updatedAt": "2026-05-14T10:06:08.000Z",
+    "createdAt": "2026-05-14T10:06:04.176Z",
+    "versionId": "c69796ee-2543-48d6-bfa1-35fa128587cd",
     "workflowId": "DwGkebnB5Wys44I1",
     "nodes": [
       {
@@ -1222,8 +1267,8 @@
         "type": "n8n-nodes-base.asana",
         "typeVersion": 1,
         "position": [
-          2672,
-          -64
+          2640,
+          -48
         ],
         "id": "855c08ea-0928-40c7-9c60-ab1da524d474",
         "name": "Update a task",
@@ -1241,8 +1286,8 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          928,
-          -48
+          944,
+          -32
         ],
         "id": "8439e6ae-f988-44d0-b8f5-fac5a19bac54",
         "name": "Code in JavaScript1"
@@ -1257,8 +1302,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4,
         "position": [
-          1408,
-          -64
+          1376,
+          -48
         ],
         "id": "149e74b5-5cf6-4e41-ab9b-6f7b8955e7a8",
         "name": "HTTP Request",
@@ -1276,8 +1321,8 @@
         "type": "n8n-nodes-base.splitInBatches",
         "typeVersion": 3,
         "position": [
-          1808,
-          -64
+          1776,
+          -48
         ],
         "id": "b9c46f88-4246-495b-83e0-468b1dadae0b",
         "name": "Loop Over Items"
@@ -1292,8 +1337,8 @@
         "type": "n8n-nodes-base.asana",
         "typeVersion": 1,
         "position": [
-          2096,
-          -48
+          2064,
+          -32
         ],
         "id": "0b258fa4-76c2-434c-9795-04e335632529",
         "name": "Get many tasks",
@@ -1312,8 +1357,8 @@
         "type": "n8n-nodes-base.splitOut",
         "typeVersion": 1,
         "position": [
-          1600,
-          -64
+          1568,
+          -48
         ],
         "id": "5d5c7108-1517-4543-a313-170069589fae",
         "name": "Split Out"
@@ -1345,8 +1390,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          2304,
-          -48
+          2272,
+          -32
         ],
         "id": "c344c0eb-1da7-4c53-ad89-8e1940ec5eea",
         "name": "If"
@@ -1379,8 +1424,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          1136,
-          -48
+          1152,
+          -32
         ],
         "id": "2ab44236-c7b5-4145-9063-31a1dd8d9874",
         "name": "If1"
@@ -1412,8 +1457,8 @@
         "type": "n8n-nodes-base.filter",
         "typeVersion": 2.3,
         "position": [
-          2496,
-          -64
+          2464,
+          -48
         ],
         "id": "e66538e3-4c6b-4035-a427-1cd2c40f6f4d",
         "name": "Filter1"
@@ -1432,8 +1477,8 @@
         "type": "n8n-nodes-base.emailSend",
         "typeVersion": 2.1,
         "position": [
-          2832,
-          -64
+          2800,
+          -48
         ],
         "id": "787e1f8a-e4a5-439c-80f4-3f51a74eff8f",
         "name": "Send an Email",
@@ -1454,8 +1499,8 @@
         "type": "n8n-nodes-base.emailReadImap",
         "typeVersion": 2.1,
         "position": [
-          656,
-          112
+          528,
+          144
         ],
         "id": "12a0ab60-4f5e-4da8-ac59-1c17a5d95a76",
         "name": "Email Trigger (IMAP)",
@@ -1480,8 +1525,8 @@
         "type": "n8n-nodes-base.asana",
         "typeVersion": 1,
         "position": [
-          2768,
-          224
+          2896,
+          240
         ],
         "id": "56adaeaf-9041-4029-a77c-0fbc5913edc6",
         "name": "Create a subtask",
@@ -1514,7 +1559,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4,
         "position": [
-          3360,
+          3568,
           144
         ],
         "id": "11dd3e46-47da-418e-b975-702029ac668a",
@@ -1531,7 +1576,7 @@
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.2,
         "position": [
-          2928,
+          3136,
           128
         ],
         "id": "af6fe675-8a2f-4c91-a267-505b596280b8",
@@ -1545,8 +1590,8 @@
         "type": "n8n-nodes-base.asana",
         "typeVersion": 1,
         "position": [
-          2608,
-          224
+          2736,
+          240
         ],
         "id": "2b6234b1-b375-41e2-bb05-d532da480b80",
         "name": "Get a task",
@@ -1584,8 +1629,8 @@
         "type": "n8n-nodes-base.filter",
         "typeVersion": 2.3,
         "position": [
-          928,
-          112
+          944,
+          128
         ],
         "id": "dc73c7dd-78f1-4ab4-95c1-857f85c81ad2",
         "name": "Filter"
@@ -1597,7 +1642,7 @@
         "type": "n8n-nodes-base.splitInBatches",
         "typeVersion": 3,
         "position": [
-          3136,
+          3344,
           128
         ],
         "id": "f47c003f-0e7f-4504-8523-520f751c179d",
@@ -1610,8 +1655,8 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          928,
-          240
+          944,
+          256
         ],
         "id": "5375b6e2-f44f-4411-85ce-fddbe5b08263",
         "name": "Code in JavaScript"
@@ -1626,8 +1671,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4,
         "position": [
-          1456,
-          224
+          1584,
+          240
         ],
         "id": "416f5b95-4d5a-42e3-ba64-a6bdedca4e8d",
         "name": "HTTP Request2",
@@ -1645,8 +1690,8 @@
         "type": "n8n-nodes-base.splitInBatches",
         "typeVersion": 3,
         "position": [
-          1920,
-          224
+          2048,
+          240
         ],
         "id": "c46ea697-a7a6-4444-857f-bc2b88625de3",
         "name": "Loop Over Items2"
@@ -1661,8 +1706,8 @@
         "type": "n8n-nodes-base.asana",
         "typeVersion": 1,
         "position": [
-          2128,
-          240
+          2256,
+          256
         ],
         "id": "4a252d4d-f255-4e71-aa49-502c43b2e520",
         "name": "Get many tasks1",
@@ -1681,8 +1726,8 @@
         "type": "n8n-nodes-base.splitOut",
         "typeVersion": 1,
         "position": [
-          1712,
-          224
+          1840,
+          240
         ],
         "id": "e82e0312-9713-48b2-96ab-a573808d62b4",
         "name": "Split Out1"
@@ -1723,8 +1768,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          2416,
-          240
+          2544,
+          256
         ],
         "id": "f564bc4c-c6ca-401b-b32c-713f727e59a5",
         "name": "If2"
@@ -1765,8 +1810,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          1184,
-          240
+          1104,
+          256
         ],
         "id": "1e79e13d-8e99-4b43-a419-9115da0a1a3b",
         "name": "If3"
@@ -1785,7 +1830,7 @@
         "type": "n8n-nodes-base.emailSend",
         "typeVersion": 2.1,
         "position": [
-          3520,
+          3728,
           144
         ],
         "id": "149c185c-0116-4ff3-b03d-1d5ab31948b8",
@@ -1812,8 +1857,8 @@
         "type": "n8n-nodes-base.asana",
         "typeVersion": 1,
         "position": [
-          2784,
-          480
+          2896,
+          448
         ],
         "id": "75191655-ab1e-49df-a29b-7c54f4cdd087",
         "name": "Create a subtask1",
@@ -1832,8 +1877,8 @@
         "type": "n8n-nodes-base.asana",
         "typeVersion": 1,
         "position": [
-          2624,
-          480
+          2736,
+          448
         ],
         "id": "902c3be1-8bfe-42ea-8cf7-cdb62e260a14",
         "name": "Get a task1",
@@ -1854,8 +1899,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4,
         "position": [
-          1472,
-          480
+          1584,
+          448
         ],
         "id": "ec9fe8ee-cb56-44c3-9ed6-563ed308dce3",
         "name": "HTTP Request3",
@@ -1873,8 +1918,8 @@
         "type": "n8n-nodes-base.splitInBatches",
         "typeVersion": 3,
         "position": [
-          1936,
-          480
+          2048,
+          448
         ],
         "id": "b899b7a9-0939-4e6a-b535-8f4b88758d12",
         "name": "Loop Over Items3"
@@ -1889,8 +1934,8 @@
         "type": "n8n-nodes-base.asana",
         "typeVersion": 1,
         "position": [
-          2144,
-          496
+          2256,
+          464
         ],
         "id": "22513aba-5e28-41eb-98da-016dfc94820f",
         "name": "Get many tasks2",
@@ -1909,8 +1954,8 @@
         "type": "n8n-nodes-base.splitOut",
         "typeVersion": 1,
         "position": [
-          1728,
-          480
+          1840,
+          448
         ],
         "id": "c1309783-9578-4978-9211-0d4589f53176",
         "name": "Split Out2"
@@ -1951,8 +1996,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          2432,
-          496
+          2544,
+          464
         ],
         "id": "ce2ab219-d7bd-4778-843e-191ec3cc9306",
         "name": "If4"
@@ -1971,8 +2016,8 @@
         "type": "n8n-nodes-base.emailSend",
         "typeVersion": 2.1,
         "position": [
-          2960,
-          480
+          3104,
+          448
         ],
         "id": "d1ae6219-3ac1-479d-8019-471ec9616261",
         "name": "Send an Email2",
@@ -1983,6 +2028,39 @@
             "name": "SMTP Света"
           }
         }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "c03368c0-27f1-427d-8364-ac00c73ceae9",
+                "leftValue": "={{ $json.subject }}",
+                "rightValue": "Обращение:",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1440,
+          464
+        ],
+        "id": "e9cd9e4f-1073-45c1-b0ae-703decb9bce9",
+        "name": "If6"
       }
     ],
     "connections": {
@@ -2068,7 +2146,8 @@
               "type": "main",
               "index": 0
             }
-          ]
+          ],
+          []
         ]
       },
       "Filter1": {
@@ -2266,7 +2345,7 @@
           ],
           [
             {
-              "node": "HTTP Request3",
+              "node": "If6",
               "type": "main",
               "index": 0
             }
@@ -2357,18 +2436,29 @@
             }
           ]
         ]
+      },
+      "If6": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version 2185f4cb",
+    "name": "Version c69796ee",
     "description": "",
     "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-05T20:27:54.468Z",
-        "id": 502,
+        "createdAt": "2026-05-14T10:06:07.985Z",
+        "id": 519,
         "workflowId": "DwGkebnB5Wys44I1",
-        "versionId": "2185f4cb-6de9-42ed-b700-92807d321cde",
+        "versionId": "c69796ee-2543-48d6-bfa1-35fa128587cd",
         "event": "activated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
