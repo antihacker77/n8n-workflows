@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-05-08T13:57:36.633Z",
+  "updatedAt": "2026-05-14T11:35:07.277Z",
   "createdAt": "2026-05-02T03:59:32.878Z",
   "id": "PwhaL2zq4ueiFqfw",
   "name": "ai seller RetailCRM",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -18,8 +18,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -160,
-        -352
+        64,
+        -704
       ],
       "id": "8ac7e047-51a9-4b95-a34c-7c5f16a62343",
       "name": "AI seller",
@@ -41,8 +41,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        16,
-        192
+        64,
+        -480
       ],
       "id": "0bd0c7a6-5e65-4f84-8b5e-5dd76b688a5d",
       "name": "OpenAI Chat Model",
@@ -60,8 +60,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
       "typeVersion": 1.1,
       "position": [
-        528,
-        -64
+        752,
+        -416
       ],
       "id": "5655f39e-b932-4d08-b287-33042c1704d1",
       "name": "Knowledge base"
@@ -80,8 +80,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        736,
-        368
+        960,
+        -192
       ],
       "id": "a1a36dd3-9ee6-4247-9bb0-2c1f1e5c96d5",
       "name": "OpenAI Chat Model1",
@@ -107,8 +107,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.3,
       "position": [
-        448,
-        192
+        672,
+        -160
       ],
       "id": "8ad59408-6b03-431c-b541-89ca53175dac",
       "name": "Pinecone Vector Store",
@@ -129,8 +129,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        448,
-        368
+        672,
+        16
       ],
       "id": "8e60c02f-3781-49c7-97a9-b4f998b4143d",
       "name": "Embeddings OpenAI",
@@ -152,8 +152,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        240,
-        -352
+        464,
+        -704
       ],
       "id": "6ac6d77c-5726-4c0f-8ad0-adb6060c60ff",
       "name": "Send a text message",
@@ -174,8 +174,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -64,
-        32
+        160,
+        -320
       ],
       "id": "7574465f-affe-45ce-aca1-28b0a1cbab6d",
       "name": "Simple Memory"
@@ -208,8 +208,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.4,
       "position": [
-        848,
-        -64
+        1072,
+        -416
       ],
       "id": "7b5f0388-1538-40c2-a360-f95cb37a9691",
       "name": "HTTP Request vkitae.kz"
@@ -235,7 +235,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -752,
+        -736,
         480
       ],
       "id": "f71c170c-d4be-4996-87e2-fe917d31a6a1",
@@ -313,7 +313,7 @@
     {
       "parameters": {
         "operation": "get",
-        "propertyName": "content",
+        "propertyName": "buffer_text",
         "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
         "keyType": "string",
         "options": {}
@@ -337,7 +337,7 @@
       "parameters": {
         "operation": "set",
         "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
-        "value": "={{ $json.body.message ?? \"\"}}{{ $json.content.parts[0].text ?? \"\"}}",
+        "value": "={{ ($json.body?.message ?? \"\") + \" \" + ($json.buffer_text ?? \"\") + \" \" + ($json.content?.parts[0]?.text ?? \"\") }}",
         "keyType": "string"
       },
       "type": "n8n-nodes-base.redis",
@@ -363,7 +363,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        -560,
+        -512,
         480
       ],
       "id": "7a2cdaf2-48cd-4d76-8599-fbe0ceac7acf",
@@ -383,7 +383,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        -352,
+        -304,
         480
       ],
       "id": "ae56d735-8a25-456f-9016-c1f7e265ce03",
@@ -435,28 +435,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        -160,
+        1152,
         -128
-      ],
-      "id": "a1b403eb-a13d-4eac-995a-ea670d5ff41c",
-      "name": "Google Gemini Chat Model",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "H8XIEwmjn0GuMnGK",
-          "name": "Google Gemini(PaLM) Api"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "modelName": "models/gemini-2.5-flash",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1.1,
-      "position": [
-        736,
-        192
       ],
       "id": "54e611b5-f68a-449d-bbb3-d8c66fc65597",
       "name": "Google Gemini Chat Model1",
@@ -762,7 +742,13 @@
   "connections": {
     "OpenAI Chat Model": {
       "ai_languageModel": [
-        []
+        [
+          {
+            "node": "AI seller",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
       ]
     },
     "Knowledge base": {
@@ -778,7 +764,13 @@
     },
     "OpenAI Chat Model1": {
       "ai_languageModel": [
-        []
+        [
+          {
+            "node": "Knowledge base",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
       ]
     },
     "AI seller": {
@@ -942,15 +934,10 @@
     },
     "Send a text message1": {
       "main": [
-        []
-      ]
-    },
-    "Google Gemini Chat Model": {
-      "ai_languageModel": [
         [
           {
             "node": "AI seller",
-            "type": "ai_languageModel",
+            "type": "main",
             "index": 0
           }
         ]
@@ -958,13 +945,7 @@
     },
     "Google Gemini Chat Model1": {
       "ai_languageModel": [
-        [
-          {
-            "node": "Knowledge base",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "save_message_date": {
@@ -1116,9 +1097,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "e37a6b1c-1361-4e08-98d2-74d5b66e7d26",
-  "activeVersionId": null,
-  "versionCounter": 344,
+  "versionId": "50efc015-8b93-4346-85ad-9e82b24fbd12",
+  "activeVersionId": "5ec3c929-3d4f-427e-8722-999dcdb9293c",
+  "versionCounter": 507,
   "triggerCount": 1,
   "shared": [
     {
@@ -1147,5 +1128,1128 @@
       "name": "yukor"
     }
   ],
-  "activeVersion": null
+  "activeVersion": {
+    "updatedAt": "2026-05-14T10:17:18.000Z",
+    "createdAt": "2026-05-14T10:17:15.994Z",
+    "versionId": "5ec3c929-3d4f-427e-8722-999dcdb9293c",
+    "workflowId": "PwhaL2zq4ueiFqfw",
+    "nodes": [
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Redis_get_message').item.json.Messages }}",
+          "options": {
+            "systemMessage": "## Роль\nТы — экспертный консультант-продавец интернет-магазина БАДов \"vkitae.kz\". Твоя цель — не просто ответить на вопрос, а продать клиенту тот товар, который подходит под его запрос и может решить его проблему.\n\n## Правила обработки запросов (Алгоритм \"Поиск — Альтернатива\"):\n\n1. ПРИОРИТЕТ БАЗЫ: Предлагай ТОЛЬКО товары, найденные в подключенной базе данных (Pinecone).\n2. ПОИСКА ТОВАРА В БАЗЕ:\n    - В подключенной базе данных (Pinecone) найди товар который запросил клиент. Если именно этого товара нет в подключенной базе данных (Pinecone), то найди все возможные товары в подключенной базе данных (Pinecone), которые решают ту же проблему, что и запрошенный клиентом товар.\n   - Все товары полученные из подключенной базы данных (Pinecone) проверь через tool Http request vkitae на наличие остатка больше 0 (quantity) и цену (price). Для проверке передавай в tool Http request vkitae переменную product_model со значением кода товара из базы.\n   - Выводи клиенту только те товары у которых остаток (quantity) больше 0, но не больше 5 разных этих товаров в одном сообщении.\n   - Если клиент хочет увидеть фот товара, то найди в подключенной базе данных (Pinecone) ссылку на фотографию нужного товара, скачай эту фотографию и отправь её клиенту.\n2. ЕСЛИ ТОВАР ЕСТЬ: Расскажи о его свойствах и преимуществах на основе данных из базы.\n3. ЕСЛИ КОНКРЕТНОГО ТОВАРА НЕТ: \n   - Не останавливайся на фразе \"товара нет\". \n   - Сформулируй ответ так: \"К сожалению, [Название] нет в наличии, но у нас есть проверенные аналоги:\"\n   - Найди в интернете назначение этого товара и сразу подбери в подключенной базе данных (Pinecone) подходящие аналоги.\n  \n4. АНАЛИЗ ПОТРЕБНОСТИ: Если клиент называет бренд или товар, который отсутствует, определи категорию этого товара (например, \"магний\", \"витамин С\", \"детокс\") и предложи доступные в подключенной базе (Pinecone) товары имеющие такое же назначение к применению или такой же состав которое требуется клиенту.\n\n## Ограничения:\n- Запрещено выдумывать товары. Если в подключенной базе данных (Pinecone) вообще нет ничего подходящего под категорию запроса (ни по названию, ни по назначению, на по составу), только тогда признай, что аналогов сейчас нет.\n- Запрещено отправлять клиенту информацию об точном количестве товара в наличии.\n- Стиль: Вежливый, экспертный, помогающий.\n- Обязательный дисклеймер: \"Перед применением проконсультируйтесь с врачом\".\n- Отвечай, без использования какой либо разметки, кроме разделения на абзацы.\n\n## Пример ответа (если товар есть):\n\"Для решения этой проблемы у нас есть следующие препараты:\n1. [Название товара из базы] ([Код товара из базы]) — [краткое свойство][цена].\n2. [Название товара из базы] ([Код товара из базы]) — [краткое свойство][цена].\nРассказать подробнее или оформим заказ?\n\n## Пример ответа (если товара нет):\n\"К сожалению, сейчас нет Магния фирмы Solgar. Однако есть отличные альтернативы:\n1. [Название товара из базы] ([Код товара из базы]) — [краткое свойство].\n2. [Название товара из базы] ([Код товара из базы]) — [краткое свойство].\nКакой из этих вариантов разобрать подробнее?\""
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          64,
+          -704
+        ],
+        "id": "8ac7e047-51a9-4b95-a34c-7c5f16a62343",
+        "name": "AI seller",
+        "retryOnFail": true,
+        "waitBetweenTries": 5000,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-5",
+            "mode": "list",
+            "cachedResultName": "gpt-5"
+          },
+          "responsesApiEnabled": false,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          240,
+          -160
+        ],
+        "id": "0bd0c7a6-5e65-4f84-8b5e-5dd76b688a5d",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "4Wc4ZV9IHsOkGHZa",
+            "name": "ai_seller_n8n"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "topK": 7
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+        "typeVersion": 1.1,
+        "position": [
+          752,
+          -416
+        ],
+        "id": "5655f39e-b932-4d08-b287-33042c1704d1",
+        "name": "Knowledge base"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-5",
+            "mode": "list",
+            "cachedResultName": "gpt-5"
+          },
+          "responsesApiEnabled": false,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          960,
+          16
+        ],
+        "id": "a1a36dd3-9ee6-4247-9bb0-2c1f1e5c96d5",
+        "name": "OpenAI Chat Model1",
+        "credentials": {
+          "openAiApi": {
+            "id": "4Wc4ZV9IHsOkGHZa",
+            "name": "ai_seller_n8n"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "pineconeIndex": {
+            "__rl": true,
+            "value": "vkitae-catalog",
+            "mode": "list",
+            "cachedResultName": "vkitae-catalog"
+          },
+          "options": {
+            "pineconeNamespace": "vkitae_db"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+        "typeVersion": 1.3,
+        "position": [
+          672,
+          -160
+        ],
+        "id": "8ad59408-6b03-431c-b541-89ca53175dac",
+        "name": "Pinecone Vector Store",
+        "credentials": {
+          "pineconeApi": {
+            "id": "w6Zr4WaCng8DOEnn",
+            "name": "ai_seller"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {
+            "dimensions": 1536,
+            "batchSize": 200
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          672,
+          16
+        ],
+        "id": "8e60c02f-3781-49c7-97a9-b4f998b4143d",
+        "name": "Embeddings OpenAI",
+        "credentials": {
+          "openAiApi": {
+            "id": "4Wc4ZV9IHsOkGHZa",
+            "name": "ai_seller_n8n"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "=236518567",
+          "text": "={{ $json.output }}",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          464,
+          -704
+        ],
+        "id": "6ac6d77c-5726-4c0f-8ad0-adb6060c60ff",
+        "name": "Send a text message",
+        "webhookId": "a990dfaa-44fc-49e3-b071-2afa4db35647",
+        "credentials": {
+          "telegramApi": {
+            "id": "yO2XgMSlvA23CyKY",
+            "name": "Telegram ai_seller09_bot"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Webhook').item.json.body.chatid }}",
+          "contextWindowLength": 10
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          160,
+          -320
+        ],
+        "id": "7574465f-affe-45ce-aca1-28b0a1cbab6d",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "url": "https://vkitae.kz/ai-seller-n8n",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "key",
+                "value": "EMPApjDier6V7mbl8IXlFFUUYVw5p3it"
+              },
+              {
+                "name": "product_model",
+                "value": "={{ $fromAI('product_model', ``, 'string') }}"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            }
+          },
+          "optimizeResponse": true
+        },
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4,
+        "position": [
+          1072,
+          -416
+        ],
+        "id": "7b5f0388-1538-40c2-a360-f95cb37a9691",
+        "name": "HTTP Request vkitae.kz"
+      },
+      {
+        "parameters": {
+          "amount": 10
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -1408,
+          480
+        ],
+        "id": "a105f42f-afb1-42f1-8e08-22a86d5cb902",
+        "name": "Wait",
+        "webhookId": "a0c0dea5-ec6d-433b-9e4b-b457522b5994"
+      },
+      {
+        "parameters": {
+          "jsCode": "const lastGlobalDate = $('Redis_get_date').first().json.last_date;\nconst messageDate = $('Webhook').first().json.body.date;\n\nif (String(lastGlobalDate) === String(messageDate)) {\n  // Это последнее сообщение! Пропускаем его к Агенту.\n  return $input.all();\n} else {\n  // Это сообщение уже \"устарело\", останавливаем этот поток.\n  return [];\n}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -752,
+          480
+        ],
+        "id": "f71c170c-d4be-4996-87e2-fe917d31a6a1",
+        "name": "JS_get_data"
+      },
+      {
+        "parameters": {
+          "chatId": "=236518567",
+          "text": "={{ $json.Messages }}",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          -80,
+          480
+        ],
+        "id": "3571eb4a-3c57-4c99-a991-2b567863d99b",
+        "name": "Send a text message1",
+        "webhookId": "4e4a933d-ce4a-46f0-a925-e49f325cbc2a",
+        "credentials": {
+          "telegramApi": {
+            "id": "yO2XgMSlvA23CyKY",
+            "name": "Telegram ai_seller09_bot"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "propertyName": "last_date",
+          "key": "=last_date:{{ $('Webhook').item.json.body.chatid }}",
+          "keyType": "string",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -1184,
+          480
+        ],
+        "id": "3c5e31fb-a37b-4aa5-8c42-efe19b111242",
+        "name": "Redis_get_date",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "propertyName": "Messages",
+          "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -960,
+          480
+        ],
+        "id": "6215b341-414b-40d8-bee0-e3969c540b35",
+        "name": "Redis_get_message",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "propertyName": "content",
+          "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
+          "keyType": "string",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -1104,
+          -608
+        ],
+        "id": "c5422935-abbb-48f4-8f40-31e979b0f7a3",
+        "name": "Redis",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "set",
+          "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
+          "value": "={{ $json.body.message ?? \"\"}}{{ $json.content.parts[0].text ?? \"\"}}",
+          "keyType": "string"
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -1632,
+          480
+        ],
+        "id": "5b465018-8196-42f9-a715-2e1bcba6687d",
+        "name": "Set_messages_to_buffer",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "key": "=messages:{{ $('Webhook').item.json.body.chatid }}"
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -560,
+          480
+        ],
+        "id": "7a2cdaf2-48cd-4d76-8599-fbe0ceac7acf",
+        "name": "Clean messages buffer",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "key": "=last_date:{{ $('Webhook').item.json.body.chatid }}"
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -352,
+          480
+        ],
+        "id": "ae56d735-8a25-456f-9016-c1f7e265ce03",
+        "name": "Clean messages date buffer",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "image",
+          "operation": "analyze",
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemini-2.5-pro",
+            "mode": "list",
+            "cachedResultName": "models/gemini-2.5-pro"
+          },
+          "text": "Опиши какой препарат или товар изображен на картинке и краткое его назначение. Размер ответа не более 3 предложений.",
+          "inputType": "=data",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1.2,
+        "position": [
+          -1408,
+          -608
+        ],
+        "id": "54af40fd-3a6a-4092-8c08-85f7faaae28d",
+        "name": "Analyze an image",
+        "retryOnFail": true,
+        "maxTries": 2,
+        "credentials": {
+          "googlePalmApi": {
+            "id": "H8XIEwmjn0GuMnGK",
+            "name": "Google Gemini(PaLM) Api"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "modelName": "models/gemini-2.5-flash",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1.1,
+        "position": [
+          64,
+          -480
+        ],
+        "id": "a1b403eb-a13d-4eac-995a-ea670d5ff41c",
+        "name": "Google Gemini Chat Model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "H8XIEwmjn0GuMnGK",
+            "name": "Google Gemini(PaLM) Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "modelName": "models/gemini-2.5-flash",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1.1,
+        "position": [
+          960,
+          -160
+        ],
+        "id": "54e611b5-f68a-449d-bbb3-d8c66fc65597",
+        "name": "Google Gemini Chat Model1",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "H8XIEwmjn0GuMnGK",
+            "name": "Google Gemini(PaLM) Api"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "set",
+          "key": "=last_date:{{ $json.body.chatid }}",
+          "value": "={{ $json.body.date }}",
+          "keyType": "string"
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -3136,
+          -336
+        ],
+        "id": "ca32eac2-e6ec-4d63-be59-1aee6fb372a7",
+        "name": "save_message_date",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "4bf5ef7d-8ff7-4a06-82cd-6890281dfc6e",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -3360,
+          -336
+        ],
+        "id": "042e690b-06c3-4237-82b2-956627a8397e",
+        "name": "Webhook",
+        "webhookId": "4bf5ef7d-8ff7-4a06-82cd-6890281dfc6e"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.body.attachment }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -1680,
+          -608
+        ],
+        "id": "c51c587e-0cae-4453-b597-4643824fbc0c",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "adb47759-2a03-45f9-9b6b-3bddcbbe42fd",
+                      "leftValue": "={{ $json.body.attachment_type }}",
+                      "rightValue": "image/jpeg",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "image"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "c3e317c7-0575-4ac9-8b65-b92d07521be5",
+                      "leftValue": "={{ $json.body.attachment_type }}",
+                      "rightValue": "application/pdf",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "document"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "ada89106-fe25-47d8-a5e3-b3ed2c9eaf23",
+                      "leftValue": "={{ $json.body.attachment_type }}",
+                      "rightValue": "audio/ogg; codecs=opus",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "audio"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4,
+        "position": [
+          -1808,
+          -352
+        ],
+        "id": "ccc3e177-8a03-4f71-8028-c5865bf36d14",
+        "name": "Switch"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "propertyName": "buffer_messages",
+          "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
+          "keyType": "string",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -2688,
+          -608
+        ],
+        "id": "3d8b7fd3-3786-4b43-b3fa-a23da1ebc169",
+        "name": "Redis1",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "3621f7e3-0524-4b75-98b0-cdbdc3e0b4be",
+                "leftValue": "={{ $json.body.message }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -2928,
+          -336
+        ],
+        "id": "ed439482-07ea-4e11-b498-272f994c2919",
+        "name": "check_message"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "3621f7e3-0524-4b75-98b0-cdbdc3e0b4be",
+                "leftValue": "={{ $json.body.attachment }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -2064,
+          -320
+        ],
+        "id": "fbdd02f8-5410-45b9-8e8b-295d1fbbc781",
+        "name": "check_attachment"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineAll",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -2448,
+          -592
+        ],
+        "id": "a2409cf8-fdd3-4a84-8e59-9f1982b4a7bb",
+        "name": "Merge_text_message"
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineAll",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          -944,
+          -336
+        ],
+        "id": "0d61e2fa-4dcb-4966-b37d-701dbe8bd63b",
+        "name": "Merge_image_message"
+      },
+      {
+        "parameters": {
+          "operation": "set",
+          "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
+          "value": "={{ $json.body.message }}",
+          "keyType": "string"
+        },
+        "type": "n8n-nodes-base.redis",
+        "typeVersion": 1,
+        "position": [
+          -2224,
+          -592
+        ],
+        "id": "fca1a91b-c2cd-4681-a348-65fad9bb92fe",
+        "name": "Set_text_messages_to_buffer",
+        "credentials": {
+          "redis": {
+            "id": "IDPGnSSkmIHW0reW",
+            "name": "Redis account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "Knowledge base": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI seller",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "AI seller": {
+        "main": [
+          [
+            {
+              "node": "Send a text message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Vector Store": {
+        "ai_vectorStore": [
+          [
+            {
+              "node": "Knowledge base",
+              "type": "ai_vectorStore",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Pinecone Vector Store",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI seller",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request vkitae.kz": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI seller",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Redis_get_date",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JS_get_data": {
+        "main": [
+          [
+            {
+              "node": "Clean messages buffer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis_get_date": {
+        "main": [
+          [
+            {
+              "node": "Redis_get_message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis_get_message": {
+        "main": [
+          [
+            {
+              "node": "JS_get_data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis": {
+        "main": [
+          [
+            {
+              "node": "Merge_image_message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set_messages_to_buffer": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean messages buffer": {
+        "main": [
+          [
+            {
+              "node": "Clean messages date buffer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean messages date buffer": {
+        "main": [
+          [
+            {
+              "node": "Send a text message1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Analyze an image": {
+        "main": [
+          [
+            {
+              "node": "Redis",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge_image_message",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Send a text message1": {
+        "main": [
+          [
+            {
+              "node": "AI seller",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI seller",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Knowledge base",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "save_message_date": {
+        "main": [
+          [
+            {
+              "node": "check_message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "save_message_date",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Analyze an image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send a text message": {
+        "main": [
+          []
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [],
+          []
+        ]
+      },
+      "Redis1": {
+        "main": [
+          [
+            {
+              "node": "Merge_text_message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "check_message": {
+        "main": [
+          [
+            {
+              "node": "Redis1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge_text_message",
+              "type": "main",
+              "index": 1
+            }
+          ],
+          [
+            {
+              "node": "check_attachment",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "check_attachment": {
+        "main": [
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set_messages_to_buffer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge_text_message": {
+        "main": [
+          [
+            {
+              "node": "Set_text_messages_to_buffer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge_image_message": {
+        "main": [
+          [
+            {
+              "node": "Set_messages_to_buffer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set_text_messages_to_buffer": {
+        "main": [
+          [
+            {
+              "node": "check_attachment",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Святослав it@mail6.luxkz.kz",
+    "name": "Version 5ec3c929",
+    "description": "",
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-05-14T10:17:18.583Z",
+        "id": 528,
+        "workflowId": "PwhaL2zq4ueiFqfw",
+        "versionId": "5ec3c929-3d4f-427e-8722-999dcdb9293c",
+        "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    ]
+  }
 }
