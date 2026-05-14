@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-14T10:06:04.175Z",
+  "updatedAt": "2026-05-14T12:27:09.282Z",
   "createdAt": "2026-04-02T18:00:38.719Z",
   "id": "DwGkebnB5Wys44I1",
   "name": "Закрытия задач асаны Света",
@@ -807,7 +807,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1440,
+        1344,
         464
       ],
       "id": "e9cd9e4f-1073-45c1-b0ae-703decb9bce9",
@@ -1213,9 +1213,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "c69796ee-2543-48d6-bfa1-35fa128587cd",
-  "activeVersionId": "c69796ee-2543-48d6-bfa1-35fa128587cd",
-  "versionCounter": 5977,
+  "versionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
+  "activeVersionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
+  "versionCounter": 5997,
   "triggerCount": 1,
   "shared": [
     {
@@ -1251,9 +1251,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-14T10:06:08.000Z",
-    "createdAt": "2026-05-14T10:06:04.176Z",
-    "versionId": "c69796ee-2543-48d6-bfa1-35fa128587cd",
+    "updatedAt": "2026-05-14T12:27:12.000Z",
+    "createdAt": "2026-05-14T12:27:09.282Z",
+    "versionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
     "workflowId": "DwGkebnB5Wys44I1",
     "nodes": [
       {
@@ -2056,7 +2056,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          1440,
+          1344,
           464
         ],
         "id": "e9cd9e4f-1073-45c1-b0ae-703decb9bce9",
@@ -2450,15 +2450,15 @@
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version c69796ee",
+    "name": "Version ad72fd65",
     "description": "",
     "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-14T10:06:07.985Z",
-        "id": 519,
+        "createdAt": "2026-05-14T12:27:12.423Z",
+        "id": 538,
         "workflowId": "DwGkebnB5Wys44I1",
-        "versionId": "c69796ee-2543-48d6-bfa1-35fa128587cd",
+        "versionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
         "event": "activated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
