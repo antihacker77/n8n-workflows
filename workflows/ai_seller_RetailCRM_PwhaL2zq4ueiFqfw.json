@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-14T11:35:07.277Z",
+  "updatedAt": "2026-05-14T12:19:59.228Z",
   "createdAt": "2026-05-02T03:59:32.878Z",
   "id": "PwhaL2zq4ueiFqfw",
   "name": "ai seller RetailCRM",
@@ -473,13 +473,12 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "4bf5ef7d-8ff7-4a06-82cd-6890281dfc6e",
-        "responseMode": "lastNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -3360,
+        -3392,
         -336
       ],
       "id": "042e690b-06c3-4237-82b2-956627a8397e",
@@ -1097,9 +1096,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "50efc015-8b93-4346-85ad-9e82b24fbd12",
-  "activeVersionId": "5ec3c929-3d4f-427e-8722-999dcdb9293c",
-  "versionCounter": 507,
+  "versionId": "dea5ba8b-1677-4dc7-9f1b-3e919c647d5e",
+  "activeVersionId": "dea5ba8b-1677-4dc7-9f1b-3e919c647d5e",
+  "versionCounter": 522,
   "triggerCount": 1,
   "shared": [
     {
@@ -1129,9 +1128,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-14T10:17:18.000Z",
-    "createdAt": "2026-05-14T10:17:15.994Z",
-    "versionId": "5ec3c929-3d4f-427e-8722-999dcdb9293c",
+    "updatedAt": "2026-05-14T12:20:46.000Z",
+    "createdAt": "2026-05-14T12:19:59.229Z",
+    "versionId": "dea5ba8b-1677-4dc7-9f1b-3e919c647d5e",
     "workflowId": "PwhaL2zq4ueiFqfw",
     "nodes": [
       {
@@ -1168,8 +1167,8 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          240,
-          -160
+          64,
+          -480
         ],
         "id": "0bd0c7a6-5e65-4f84-8b5e-5dd76b688a5d",
         "name": "OpenAI Chat Model",
@@ -1208,7 +1207,7 @@
         "typeVersion": 1.3,
         "position": [
           960,
-          16
+          -192
         ],
         "id": "a1a36dd3-9ee6-4247-9bb0-2c1f1e5c96d5",
         "name": "OpenAI Chat Model1",
@@ -1362,7 +1361,7 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          -752,
+          -736,
           480
         ],
         "id": "f71c170c-d4be-4996-87e2-fe917d31a6a1",
@@ -1440,7 +1439,7 @@
       {
         "parameters": {
           "operation": "get",
-          "propertyName": "content",
+          "propertyName": "buffer_text",
           "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
           "keyType": "string",
           "options": {}
@@ -1464,7 +1463,7 @@
         "parameters": {
           "operation": "set",
           "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
-          "value": "={{ $json.body.message ?? \"\"}}{{ $json.content.parts[0].text ?? \"\"}}",
+          "value": "={{ ($json.body?.message ?? \"\") + \" \" + ($json.buffer_text ?? \"\") + \" \" + ($json.content?.parts[0]?.text ?? \"\") }}",
           "keyType": "string"
         },
         "type": "n8n-nodes-base.redis",
@@ -1490,7 +1489,7 @@
         "type": "n8n-nodes-base.redis",
         "typeVersion": 1,
         "position": [
-          -560,
+          -512,
           480
         ],
         "id": "7a2cdaf2-48cd-4d76-8599-fbe0ceac7acf",
@@ -1510,7 +1509,7 @@
         "type": "n8n-nodes-base.redis",
         "typeVersion": 1,
         "position": [
-          -352,
+          -304,
           480
         ],
         "id": "ae56d735-8a25-456f-9016-c1f7e265ce03",
@@ -1562,28 +1561,8 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         "typeVersion": 1.1,
         "position": [
-          64,
-          -480
-        ],
-        "id": "a1b403eb-a13d-4eac-995a-ea670d5ff41c",
-        "name": "Google Gemini Chat Model",
-        "credentials": {
-          "googlePalmApi": {
-            "id": "H8XIEwmjn0GuMnGK",
-            "name": "Google Gemini(PaLM) Api"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "modelName": "models/gemini-2.5-flash",
-          "options": {}
-        },
-        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-        "typeVersion": 1.1,
-        "position": [
-          960,
-          -160
+          1152,
+          -128
         ],
         "id": "54e611b5-f68a-449d-bbb3-d8c66fc65597",
         "name": "Google Gemini Chat Model1",
@@ -1620,13 +1599,12 @@
         "parameters": {
           "httpMethod": "POST",
           "path": "4bf5ef7d-8ff7-4a06-82cd-6890281dfc6e",
-          "responseMode": "lastNode",
           "options": {}
         },
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2.1,
         "position": [
-          -3360,
+          -3392,
           -336
         ],
         "id": "042e690b-06c3-4237-82b2-956627a8397e",
@@ -1889,7 +1867,13 @@
     "connections": {
       "OpenAI Chat Model": {
         "ai_languageModel": [
-          []
+          [
+            {
+              "node": "AI seller",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
         ]
       },
       "Knowledge base": {
@@ -1905,7 +1889,13 @@
       },
       "OpenAI Chat Model1": {
         "ai_languageModel": [
-          []
+          [
+            {
+              "node": "Knowledge base",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
         ]
       },
       "AI seller": {
@@ -2078,26 +2068,9 @@
           ]
         ]
       },
-      "Google Gemini Chat Model": {
-        "ai_languageModel": [
-          [
-            {
-              "node": "AI seller",
-              "type": "ai_languageModel",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Google Gemini Chat Model1": {
         "ai_languageModel": [
-          [
-            {
-              "node": "Knowledge base",
-              "type": "ai_languageModel",
-              "index": 0
-            }
-          ]
+          []
         ]
       },
       "save_message_date": {
@@ -2238,15 +2211,15 @@
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version 5ec3c929",
+    "name": "Version dea5ba8b",
     "description": "",
     "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-14T10:17:18.583Z",
-        "id": 528,
+        "createdAt": "2026-05-14T12:20:46.862Z",
+        "id": 536,
         "workflowId": "PwhaL2zq4ueiFqfw",
-        "versionId": "5ec3c929-3d4f-427e-8722-999dcdb9293c",
+        "versionId": "dea5ba8b-1677-4dc7-9f1b-3e919c647d5e",
         "event": "activated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
