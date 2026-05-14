@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-12T06:47:29.649Z",
+  "updatedAt": "2026-05-14T10:48:01.856Z",
   "createdAt": "2026-04-23T09:58:08.928Z",
   "id": "K1cTRtPzk2iPSANE",
   "name": "Диалоги с поставщиками Исходящие/Входящие",
@@ -459,19 +459,23 @@
         736,
         2256
       ],
-      "typeVersion": 1.5
+      "typeVersion": 1.5,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company_name\": { \"type\": \"string\" },\n    \"business_activity\": { \"type\": \"string\" },\n    \"catalog_received\": { \"type\": \"boolean\" },\n    \"catalog_reference\": { \"type\": \"string\" },\n    \"stage\": { \"type\": \"string\", \"enum\": [\"new\", \"awaiting_catalog\", \"awaiting_company_name\", \"awaiting_activity\", \"in_progress\", \"completed\"] },\n    \"reply_text\": { \"type\": \"string\" }\n  },\n  \"required\": [\"company_name\", \"business_activity\", \"catalog_received\", \"catalog_reference\", \"stage\", \"reply_text\"]\n}"
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company_name\": { \"type\": \"string\" },\n    \"business_activity\": { \"type\": \"string\" },\n    \"catalog_received\": { \"type\": \"boolean\" },\n    \"catalog_reference\": { \"type\": \"string\" },\n    \"stage\": { \"type\": \"string\", \"enum\": [\"new\", \"awaiting_catalog\", \"awaiting_company_name\", \"awaiting_activity\", \"in_progress\", \"completed\"] },\n    \"reply_text\": { \"type\": \"string\" }\n  },\n  \"required\": [\"company_name\", \"business_activity\", \"catalog_received\", \"catalog_reference\", \"stage\", \"reply_text\"]\n}",
+        "autoFix": true
       },
       "id": "5bd668a1-6956-44ca-824f-625aff9146a8",
       "name": "Structured Output Parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "position": [
-        880,
-        2416
+        848,
+        2432
       ],
       "typeVersion": 1.2
     },
@@ -1784,6 +1788,26 @@
           "name": "Google Sheets account"
         }
       }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        2416
+      ],
+      "id": "6f4fc097-e4da-4cfd-8e8a-83a9637ff599",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H8XIEwmjn0GuMnGK",
+          "name": "Google Gemini(PaLM) Api"
+        }
+      }
     }
   ],
   "connections": {
@@ -2317,6 +2341,17 @@
           }
         ]
       ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2333,9 +2368,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "7e95e110-2847-4a07-a74d-63fb941199b3",
-  "activeVersionId": "7e95e110-2847-4a07-a74d-63fb941199b3",
-  "versionCounter": 660,
+  "versionId": "b30bc84c-28c8-4ab6-8fdd-85ab5e48aefd",
+  "activeVersionId": "b30bc84c-28c8-4ab6-8fdd-85ab5e48aefd",
+  "versionCounter": 677,
   "triggerCount": 2,
   "shared": [
     {
@@ -2365,9 +2400,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-12T06:47:31.000Z",
-    "createdAt": "2026-05-12T06:47:29.650Z",
-    "versionId": "7e95e110-2847-4a07-a74d-63fb941199b3",
+    "updatedAt": "2026-05-14T10:48:09.000Z",
+    "createdAt": "2026-05-14T10:48:01.858Z",
+    "versionId": "b30bc84c-28c8-4ab6-8fdd-85ab5e48aefd",
     "workflowId": "K1cTRtPzk2iPSANE",
     "nodes": [
       {
@@ -2822,19 +2857,23 @@
           736,
           2256
         ],
-        "typeVersion": 1.5
+        "typeVersion": 1.5,
+        "retryOnFail": true,
+        "maxTries": 5,
+        "waitBetweenTries": 5000
       },
       {
         "parameters": {
           "schemaType": "manual",
-          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company_name\": { \"type\": \"string\" },\n    \"business_activity\": { \"type\": \"string\" },\n    \"catalog_received\": { \"type\": \"boolean\" },\n    \"catalog_reference\": { \"type\": \"string\" },\n    \"stage\": { \"type\": \"string\", \"enum\": [\"new\", \"awaiting_catalog\", \"awaiting_company_name\", \"awaiting_activity\", \"in_progress\", \"completed\"] },\n    \"reply_text\": { \"type\": \"string\" }\n  },\n  \"required\": [\"company_name\", \"business_activity\", \"catalog_received\", \"catalog_reference\", \"stage\", \"reply_text\"]\n}"
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company_name\": { \"type\": \"string\" },\n    \"business_activity\": { \"type\": \"string\" },\n    \"catalog_received\": { \"type\": \"boolean\" },\n    \"catalog_reference\": { \"type\": \"string\" },\n    \"stage\": { \"type\": \"string\", \"enum\": [\"new\", \"awaiting_catalog\", \"awaiting_company_name\", \"awaiting_activity\", \"in_progress\", \"completed\"] },\n    \"reply_text\": { \"type\": \"string\" }\n  },\n  \"required\": [\"company_name\", \"business_activity\", \"catalog_received\", \"catalog_reference\", \"stage\", \"reply_text\"]\n}",
+          "autoFix": true
         },
         "id": "5bd668a1-6956-44ca-824f-625aff9146a8",
         "name": "Structured Output Parser",
         "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
         "position": [
-          880,
-          2416
+          848,
+          2432
         ],
         "typeVersion": 1.2
       },
@@ -4147,6 +4186,26 @@
             "name": "Google Sheets account"
           }
         }
+      },
+      {
+        "parameters": {
+          "modelName": "models/gemini-2.5-flash-lite",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1.1,
+        "position": [
+          1152,
+          2416
+        ],
+        "id": "6f4fc097-e4da-4cfd-8e8a-83a9637ff599",
+        "name": "Google Gemini Chat Model1",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "H8XIEwmjn0GuMnGK",
+            "name": "Google Gemini(PaLM) Api"
+          }
+        }
       }
     ],
     "connections": {
@@ -4680,18 +4739,29 @@
             }
           ]
         ]
+      },
+      "Google Gemini Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Structured Output Parser",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version 7e95e110",
+    "name": "Version b30bc84c",
     "description": "",
-    "autosaved": false,
+    "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-12T06:47:31.022Z",
-        "id": 512,
+        "createdAt": "2026-05-14T10:48:09.418Z",
+        "id": 530,
         "workflowId": "K1cTRtPzk2iPSANE",
-        "versionId": "7e95e110-2847-4a07-a74d-63fb941199b3",
+        "versionId": "b30bc84c-28c8-4ab6-8fdd-85ab5e48aefd",
         "event": "activated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
