@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-15T10:59:47.571Z",
+  "updatedAt": "2026-05-15T12:29:19.143Z",
   "createdAt": "2026-05-02T03:59:32.878Z",
   "id": "PwhaL2zq4ueiFqfw",
   "name": "ai seller RetailCRM",
@@ -747,9 +747,12 @@
           "parameters": [
             {
               "name": "code",
-              "value": "message"
+              "value": "=message"
             },
-            {}
+            {
+              "name": "params",
+              "value": "={{[{\"otvet\":\"response n8n\"}]}}"
+            }
           ]
         },
         "options": {}
@@ -1122,9 +1125,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "64f76b60-e8d3-402d-96c3-fdbd1d0e6f77",
+  "versionId": "97726852-a91b-44d2-a49f-18d5c18d8a5b",
   "activeVersionId": null,
-  "versionCounter": 585,
+  "versionCounter": 635,
   "triggerCount": 1,
   "shared": [
     {
