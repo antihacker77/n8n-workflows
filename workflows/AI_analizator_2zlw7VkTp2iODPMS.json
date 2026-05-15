@@ -1,0 +1,708 @@
+{
+  "updatedAt": "2026-05-15T06:57:02.096Z",
+  "createdAt": "2026-05-15T04:33:06.249Z",
+  "id": "2zlw7VkTp2iODPMS",
+  "name": "AI_analizator",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "id": "7ce6d27d-ee15-4839-8488-9d534c9f106e",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1920,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "project": "1208416404561297"
+        }
+      },
+      "id": "0ef7aad1-4810-4fad-84a9-403b25657ffe",
+      "name": "Asana — Get Tasks",
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        1520
+      ],
+      "credentials": {
+        "asanaApi": {
+          "id": "k1vPpQ0691WvWhhw",
+          "name": "Asana Svyat"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.gid }}",
+              "rightValue": "1213916174812928",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "id": "a4ab73a5-f09f-43ae-ae0a-6c5584c1c790"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cf6b18b8-401f-4582-b122-6536f5d3da4a",
+      "name": "IF — New Tasks?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1504,
+        1520
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Получаем все входящие элементы правильно\nconst items = $input.all();\nconst results = [];\n\n// Проходимся по каждому элементу\nfor (const item of items) {\n  // В n8n данные лежат внутри свойства .json\n  const task = item.json; \n  \n  const name = task.name || '';\n  const notes = task.notes || '';\n  const product = name.replace(/^новый товар[:\\s]*/i, '').trim() || name.trim();\n  const certMatch = notes.match(/(GMP|ISO|HACCP|FDA|CE|SGS|Halal|Kosher)/gi);\n  const moqMatch = notes.match(/MOQ[:\\s]*(\\d+)/i);\n  results.push({\n    taskId: task.gid,\n    product,\n    notes,\n    requiredCerts: certMatch ? [...new Set(certMatch)].join(', ') : 'не указаны',\n    moq: moqMatch ? moqMatch[1] : 'не указано',\n    assignee: task.assignee?.name || 'не назначен',\n    searchDate: new Date().toLocaleDateString('ru-RU')\n  });\n}\nreturn results;"
+      },
+      "id": "31ce88a1-0c04-44b4-979c-a871ae5c86e5",
+      "name": "Parse ТЗ",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ты — эксперт по B2B-закупкам в Китае. Найди фабрики-производители для товара: **{{ $json.product }}**\n\nТребования:\n- Сертификаты: {{ $json.requiredCerts }}\n- MOQ: {{ $json.moq }}\n\nЗадача: найти 4–5 реальных китайских фабрик (не перекупщиков) через 1688, Alibaba, Baidu, выставочные базы.\n\nДля каждой фабрики верни JSON-объект с полями:\n- factoryName (string)\n- platform (string): 1688 / Alibaba / Exhibition / Direct\n- location (string): город, провинция\n- yearsOnMarket (number)\n- Phone number\n- specialization (string)\n- categoryCount (number)\n- isLikelyReseller (boolean): true если categoryCount > 5 и категории несвязаны\n- exportExperience (boolean)\n- exportCountries (array of strings)\n- availableCerts (array of strings)\n- fobPricePerKg (string): цена FOB в USD/кг\n- moq (string)\n- leadTimeDays (string)\n- oemAvailable (boolean)\n- accepts30Prepayment (boolean)\n- maxDiscount (string)\n- rating (number): рейтинг из 5\n- reviewCount (number)\n- riskFlags (array of strings)\n- notes (string)\n\nВерни ТОЛЬКО валидный JSON-массив. Без markdown, без пояснений.",
+        "options": {
+          "systemMessage": "Ты — старший sourcing-аналитик. Всегда возвращаешь строго валидный JSON-массив без лишнего текста."
+        }
+      },
+      "id": "4f061b4f-da2d-4b5f-93e4-467a0b5ac741",
+      "name": "AI Agent — Search Factories",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1088,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-pro-preview",
+        "options": {}
+      },
+      "id": "51e3ebd4-e078-4cf5-a2b3-70982e78e8d9",
+      "name": "Gemini 1.5 Pro",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1136,
+        1600
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H8XIEwmjn0GuMnGK",
+          "name": "Google Gemini(PaLM) Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "parametersQuery": {
+          "values": [
+            {
+              "name": "q"
+            }
+          ]
+        }
+      },
+      "id": "9efff147-4dc4-429a-9090-e52625a8fe8d",
+      "name": "Tool — Web Search",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        -928,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output || '';\nconst cleaned = raw.replace(/```json/gi,'').replace(/```/g,'').trim();\nlet factories;\ntry { factories = JSON.parse(cleaned); }\ncatch(e) {\n  const m = cleaned.match(/\\[.*\\]/s);\n  if(m) factories = JSON.parse(m[0]);\n  else throw new Error('Cannot parse factory list: ' + cleaned.substring(0,200));\n}\nif(!Array.isArray(factories)) factories = [factories];\nconst ctx = $('Parse ТЗ').first().json;\nreturn [{ json: { ...ctx, factories, factoryCount: factories.length } }];"
+      },
+      "id": "8749168c-2540-4c8f-99cd-d2df558ab0c8",
+      "name": "Parse Factory List",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ты — аналитик по закупкам. Сравни фабрики для товара **{{ $json.product }}** и выбери лучшую.\n\nДанные:\n{{ JSON.stringify($json.factories, null, 2) }}\n\nОценка по 5 критериям (каждый 0–20 баллов):\n1. Цена — конкурентность FOB-цены\n2. Надёжность — рейтинг, отзывы, возраст\n3. Экспорт — опыт, сертификаты, страны\n4. Условия — OEM, 30% предоплата, скидка\n5. Специализация — монопрофиль хорошо, перекупщик плохо\n\nВерни JSON-объект:\n- rankedFactories: массив с полями rank, factoryName, location, fobPricePerKg, moq, leadTimeDays, rating, availableCerts, oemAvailable, accepts30Prepayment, exportCountries, isLikelyReseller, scoreTotal, scoreBreakdown{price,reliability,exportReadiness,terms,specialization}, recommendation\n- topPick: название #1\n- topPickReason: 2-3 предложения\n- eliminatedFactories: [{name, reason}]\n- comparisonSummary: 3-4 предложения\n- nextSteps: массив 4-5 действий\n- warningsAndRisks: массив рисков\n\nБез markdown. Только JSON.",
+        "options": {
+          "systemMessage": "Ты — эксперт по китайским поставщикам. Возвращаешь строго валидный JSON."
+        }
+      },
+      "id": "d947a283-77e1-499a-92ab-e1e6a08ade5c",
+      "name": "AI Agent — Compare & Rank",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -640,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "id": "9b525e27-98d7-4569-a110-d510ed1bdc6d",
+      "name": "Gemini 1.5 Pro (Compare)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        1600
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H8XIEwmjn0GuMnGK",
+          "name": "Google Gemini(PaLM) Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=fgsdsfd"
+      },
+      "id": "d6fd019b-3846-4439-9511-d49629e8d8a9",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -560,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output || '';\nconst cleaned = raw.replace(/```json/gi,'').replace(/```/g,'').trim();\nlet analysis;\ntry { analysis = JSON.parse(cleaned); }\ncatch(e) {\n  const m = cleaned.match(/\\{.*\\}/s);\n  if(m) analysis = JSON.parse(m[0]);\n  else throw new Error('Cannot parse analysis: ' + cleaned.substring(0,200));\n}\n\nconst ctx = $('Parse Factory List').first().json;\nconst topPick = analysis.topPick || analysis.rankedFactories?.[0]?.factoryName || 'N/A';\nconst ranked = analysis.rankedFactories || [];\n\n// === TELEGRAM MESSAGE ===\nlet tg = `🏭 *Поиск фабрик завершён*\\n`;\ntg += `📦 Товар: *${ctx.product}*\\n`;\ntg += `📅 Дата: ${ctx.searchDate}\\n`;\ntg += `🔍 Найдено фабрик: ${ctx.factoryCount}\\n\\n`;\n\ntg += `✅ *Рекомендация: ${topPick}*\\n`;\ntg += `${analysis.topPickReason || ''}\\n\\n`;\n\ntg += `📊 *Рейтинг фабрик:*\\n`;\n\nfor(const f of ranked) {\n  const reseller = f.isLikelyReseller ? ' ⚠️ перекупщик' : '';\n  // Берём телефон из объекта фабрики f\n  // Предполагаем, что ключ называется 'Phone number' или 'phone'\n  const phone = f['Phone number'] || f.phone || 'не указан';\n\n  tg += `${f.rank}\\. *${f.factoryName}* — ${f.scoreTotal}/100${reseller}\\n`;\n  tg += `    📞 Тел: ${phone}\\n`; // Добавили строку с номером\n  tg += `    💰 ${f.fobPricePerKg} | ⏱ ${f.leadTimeDays} | ${f.recommendation || ''}\\n\\n`;\n}\n\nif(analysis.eliminatedFactories?.length) {\n  tg += `\\n❌ *Исключены:*\\n`;\n  for(const e of analysis.eliminatedFactories) {\n    tg += `• ${e.name}: ${e.reason}\\n`;\n  }\n}\n\nif(analysis.warningsAndRisks?.length) {\n  tg += `\\n⚠️ *Риски:*\\n`;\n  for(const w of analysis.warningsAndRisks) tg += `• ${w}\\n`;\n}\n\nif(analysis.nextSteps?.length) {\n  tg += `\\n📋 *Следующие шаги:*\\n`;\n  analysis.nextSteps.forEach((s,i) => { tg += `${i+1}\\. ${s}\\n`; });\n}\n\n// === GOOGLE SHEETS ROWS — one row per factory ===\nconst sheetRows = ranked.map(f => ({\n  date: ctx.searchDate,\n  product: ctx.product,\n  taskId: ctx.taskId,\n  rank: f.rank,\n  factoryName: f.factoryName,\n  location: f.location || '',\n  platform: f.platform || '',\n  scoreTotal: f.scoreTotal,\n  scorePrice: f.scoreBreakdown?.price || '',\n  scoreReliability: f.scoreBreakdown?.reliability || '',\n  scoreExport: f.scoreBreakdown?.exportReadiness || '',\n  scoreTerms: f.scoreBreakdown?.terms || '',\n  scoreSpecialization: f.scoreBreakdown?.specialization || '',\n  fobPricePerKg: f.fobPricePerKg || '',\n  moq: f.moq || '',\n  leadTimeDays: f.leadTimeDays || '',\n  rating: f.rating || '',\n  oemAvailable: f.oemAvailable ? 'Да' : 'Нет',\n  accepts30Prepayment: f.accepts30Prepayment ? 'Да' : 'Нет',\n  availableCerts: (f.availableCerts || []).join(', '),\n  exportCountries: (f.exportCountries || []).join(', '),\n  isLikelyReseller: f.isLikelyReseller ? 'Да' : 'Нет',\n  recommendation: f.recommendation || '',\n  riskFlags: (f.riskFlags || []).join('; '),\n  isTopPick: f.rank === 1 ? 'ДА' : ''\n}));\n\nreturn [{\n  json: {\n    ...ctx,\n    analysis,\n    topPick,\n    telegramMessage: tg,\n    sheetRows\n  }\n}];"
+      },
+      "id": "c07cabe5-4754-4e2e-9c37-b5660b862525",
+      "name": "Build Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -352,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "8910e565-fe1f-4096-b745-478dd60ae5f1",
+      "name": "Split Sheet Rows",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        208,
+        1968
+      ],
+      "notes": "Splits sheetRows array so each factory gets its own Google Sheets append call"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Unpack sheetRows array into individual items for SplitInBatches\nconst rows = $input.first().json.sheetRows;\nconst base = $input.first().json;\nreturn rows.map(row => ({ json: { ...base, currentRow: row } }));"
+      },
+      "id": "4b5b4898-a233-435e-a2fc-47e97e073ac5",
+      "name": "Unpack Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10HpZ6ovxlMiMU_H4fL5A6C44NBon_8aKggX_WauT7hg",
+          "mode": "list",
+          "cachedResultName": "Авто поиск",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10HpZ6ovxlMiMU_H4fL5A6C44NBon_8aKggX_WauT7hg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10HpZ6ovxlMiMU_H4fL5A6C44NBon_8aKggX_WauT7hg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "taskId",
+              "displayName": "taskId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "product",
+              "displayName": "product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "requiredCerts",
+              "displayName": "requiredCerts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "moq",
+              "displayName": "moq",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "assignee",
+              "displayName": "assignee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "searchDate",
+              "displayName": "searchDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "factories",
+              "displayName": "factories",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "factoryCount",
+              "displayName": "factoryCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "analysis",
+              "displayName": "analysis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "topPick",
+              "displayName": "topPick",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telegramMessage",
+              "displayName": "telegramMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sheetRows",
+              "displayName": "sheetRows",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "currentRow",
+              "displayName": "currentRow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "182b5468-af95-49d8-94cc-b11deb52530f",
+      "name": "Google Sheets — Append Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        0,
+        1440
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "Appends one row per factory. Sheet name: 'Фабрики'. Create this sheet manually first with the column headers."
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Build Output').first().json.telegramMessage }} {{ $('Build Output').item.json.factories[0]['Phone number'] }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "3c31d165-ca4b-4ac3-a3dc-69d775d70ae3",
+      "name": "Telegram — Send Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        1440
+      ],
+      "webhookId": "c18327c1-2ea2-4d59-b1b1-3e9c61add879",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends Markdown-formatted report to Telegram chat/group. Set TELEGRAM_CHAT_ID in Variables."
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log('[Factory Search] No tasks at', new Date().toISOString());\nreturn [{ json: { status: 'no_tasks' } }];"
+      },
+      "id": "9dea8b5c-e0b7-4dd1-9e14-8e7ca4b8c144",
+      "name": "No Tasks — Skip",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        1648
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1936,
+        1520
+      ],
+      "id": "7292548b-8ae2-4c06-847e-0ed8abfc33d5",
+      "name": "Telegram Trigger",
+      "webhookId": "090b3b90-74d8-4b39-bd71-792a1c882eb0",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "Asana — Get Tasks": {
+      "main": [
+        [
+          {
+            "node": "IF — New Tasks?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF — New Tasks?": {
+      "main": [
+        [
+          {
+            "node": "Parse ТЗ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Tasks — Skip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse ТЗ": {
+      "main": [
+        [
+          {
+            "node": "AI Agent — Search Factories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 1.5 Pro": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent — Search Factories",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool — Web Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent — Search Factories",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent — Search Factories": {
+      "main": [
+        [
+          {
+            "node": "Parse Factory List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Factory List": {
+      "main": [
+        [
+          {
+            "node": "AI Agent — Compare & Rank",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 1.5 Pro (Compare)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent — Compare & Rank",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent — Compare & Rank",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent — Compare & Rank": {
+      "main": [
+        [
+          {
+            "node": "Build Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Output": {
+      "main": [
+        [
+          {
+            "node": "Unpack Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unpack Rows": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets — Append Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets — Append Row": {
+      "main": [
+        [
+          {
+            "node": "Telegram — Send Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Asana — Get Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3d873561-a8cc-44de-94ec-fccae2077cf5",
+  "activeVersionId": null,
+  "versionCounter": 111,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-05-15T04:33:06.252Z",
+      "createdAt": "2026-05-15T04:33:06.252Z",
+      "role": "workflow:owner",
+      "workflowId": "2zlw7VkTp2iODPMS",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
