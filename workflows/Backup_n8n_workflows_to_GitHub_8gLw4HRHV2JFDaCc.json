@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-05-14T11:54:41.083Z",
+  "updatedAt": "2026-05-15T04:23:17.174Z",
   "createdAt": "2026-05-12T06:07:35.269Z",
   "id": "8gLw4HRHV2JFDaCc",
   "name": "Backup n8n workflows to GitHub",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -449,17 +449,25 @@
   },
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Almaty",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "staticData": null,
+  "staticData": {
+    "node:Every day at 2:00": {
+      "recurrenceRules": []
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
   "versionId": "d0291c53-c219-474e-b49f-d27018566d6b",
-  "activeVersionId": null,
-  "versionCounter": 80,
-  "triggerCount": 0,
+  "activeVersionId": "d0291c53-c219-474e-b49f-d27018566d6b",
+  "versionCounter": 84,
+  "triggerCount": 1,
   "shared": [
     {
       "updatedAt": "2026-05-12T06:07:35.274Z",
@@ -487,5 +495,465 @@
       "name": "Svyat Project"
     }
   ],
-  "activeVersion": null
+  "activeVersion": {
+    "updatedAt": "2026-05-15T04:23:20.000Z",
+    "createdAt": "2026-05-14T11:42:04.336Z",
+    "versionId": "d0291c53-c219-474e-b49f-d27018566d6b",
+    "workflowId": "8gLw4HRHV2JFDaCc",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "hoursInterval": 4
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -2512,
+          1104
+        ],
+        "id": "4ea3f234-439f-49fb-a7ff-9af7fac4b824",
+        "name": "Every day at 2:00"
+      },
+      {
+        "parameters": {
+          "filters": {},
+          "requestOptions": {}
+        },
+        "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1,
+        "position": [
+          -2272,
+          1104
+        ],
+        "id": "26f6aa80-686b-4781-bad6-476beddffd32",
+        "name": "Get all workflows",
+        "credentials": {
+          "n8nApi": {
+            "id": "PVFaiOWrpbp1emTx",
+            "name": "Save Project"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "workflowId": "={{ $json.id }}",
+          "requestOptions": {}
+        },
+        "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1,
+        "position": [
+          -2032,
+          1104
+        ],
+        "id": "325cc82c-b713-418a-8ecd-93627ba03842",
+        "name": "Get workflow detail",
+        "credentials": {
+          "n8nApi": {
+            "id": "PVFaiOWrpbp1emTx",
+            "name": "Save Project"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const workflow = $input.first().json;\n\n// Безопасное имя файла\nconst safeName = (workflow.name || 'unnamed')\n  .replace(/[/\\\\?%*:|\"<>]/g, '')\n  .replace(/\\s+/g, '_')\n  .trim();\n\nconst fileName = `${safeName}_${workflow.id}.json`;\nconst content = JSON.stringify(workflow, null, 2);\n\n// SHA1 без crypto модуля\nfunction sha1(buffer) {\n  function rotate(n, s) { return (n << s) | (n >>> (32 - s)); }\n  const bytes = Array.from(buffer);\n  const len = bytes.length;\n  const words = new Array(Math.ceil((len + 9) / 64) * 16).fill(0);\n  for (let i = 0; i < len; i++) words[i >> 2] |= bytes[i] << (24 - (i % 4) * 8);\n  words[len >> 2] |= 0x80 << (24 - (len % 4) * 8);\n  words[words.length - 1] = len * 8;\n  let [a0, b0, c0, d0, e0] = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0];\n  for (let i = 0; i < words.length; i += 16) {\n    let [a, b, c, d, e] = [a0, b0, c0, d0, e0];\n    const W = [];\n    for (let j = 0; j < 80; j++) {\n      W[j] = j < 16 ? (words[i + j] || 0) : rotate(W[j-3] ^ W[j-8] ^ W[j-14] ^ W[j-16], 1);\n      let f, k;\n      if (j < 20)      { f = (b & c) | (~b & d); k = 0x5A827999; }\n      else if (j < 40) { f = b ^ c ^ d;           k = 0x6ED9EBA1; }\n      else if (j < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }\n      else             { f = b ^ c ^ d;           k = 0xCA62C1D6; }\n      const T = (rotate(a, 5) + f + e + k + W[j]) >>> 0;\n      [e, d, c, b, a] = [d, c, rotate(b, 30), a, T];\n    }\n    a0 = (a0 + a) >>> 0; b0 = (b0 + b) >>> 0;\n    c0 = (c0 + c) >>> 0; d0 = (d0 + d) >>> 0;\n    e0 = (e0 + e) >>> 0;\n  }\n  return [a0, b0, c0, d0, e0].map(h => h.toString(16).padStart(8, '0')).join('');\n}\n\nconst contentBuffer = Buffer.from(content, 'utf-8');\nconst header = `blob ${contentBuffer.length}\\0`;\nconst headerBuffer = Buffer.from(header, 'utf-8');\nconst combined = Buffer.concat([headerBuffer, contentBuffer]);\nconst localSha = sha1(combined);\n\nreturn [{\n  json: {\n    fileName,\n    content,\n    localSha,\n    workflowId: workflow.id,\n    workflowName: workflow.name,\n    updatedAt: workflow.updatedAt\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1584,
+          1120
+        ],
+        "id": "d008d3f5-1aa9-4946-9437-52239aca462b",
+        "name": "Prepare file"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "get",
+          "owner": {
+            "__rl": true,
+            "value": "antihacker77",
+            "mode": "list",
+            "cachedResultName": "antihacker77",
+            "cachedResultUrl": "https://github.com/antihacker77"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "n8n-workflows",
+            "mode": "list",
+            "cachedResultName": "n8n-workflows",
+            "cachedResultUrl": "https://github.com/antihacker77/n8n-workflows"
+          },
+          "filePath": "=workflows/{{ $json.fileName }}",
+          "additionalParameters": {}
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "position": [
+          -1344,
+          1120
+        ],
+        "id": "350042c0-ab83-4cd8-80cf-0b950f129fda",
+        "name": "Get existing file",
+        "webhookId": "32992ff0-b0ce-40c2-8754-27364efef7e8",
+        "credentials": {
+          "githubApi": {
+            "id": "9DiboGN2G2cv56sz",
+            "name": "GitHub account"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Файл существует на GitHub\n// Сравниваем SHA — если совпадает, контент не изменился\nconst fileInfo = $input.first().json;\nconst prepareNode = $('Prepare file').first().json;\n\nconst remoteSha = fileInfo.sha || null;\nconst localSha = prepareNode.localSha;\nconst changed = remoteSha !== localSha;\n\nreturn [{\n  json: {\n    fileName: prepareNode.fileName,\n    content: prepareNode.content,\n    workflowId: prepareNode.workflowId,\n    workflowName: prepareNode.workflowName,\n    updatedAt: prepareNode.updatedAt,\n    sha: remoteSha,\n    localSha,\n    changed,\n    isNew: false\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1104,
+          1024
+        ],
+        "id": "361724cb-6573-4fc1-84cf-4937b9bddd5b",
+        "name": "Check existing file"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Файла нет на GitHub — новый воркфлоу\nconst prepareNode = $('Prepare file').first().json;\n\nreturn [{\n  json: {\n    fileName: prepareNode.fileName,\n    content: prepareNode.content,\n    workflowId: prepareNode.workflowId,\n    workflowName: prepareNode.workflowName,\n    updatedAt: prepareNode.updatedAt,\n    sha: null,\n    localSha: prepareNode.localSha,\n    changed: true,\n    isNew: true\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1104,
+          1216
+        ],
+        "id": "c98a512b-d777-45e2-8310-5f6427e59ea1",
+        "name": "Mark as new"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "changed-condition",
+                "leftValue": "={{ $json.changed }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -816,
+          1120
+        ],
+        "id": "7b6ed96f-4fd5-4bf3-9fed-c3d3267d3f3e",
+        "name": "Changed or new?"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "isnew-condition",
+                "leftValue": "={{ $json.isNew }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -576,
+          1104
+        ],
+        "id": "d83337f4-8dc3-4a22-a1b0-dbce0b082d21",
+        "name": "New or updated?"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "edit",
+          "owner": {
+            "__rl": true,
+            "value": "antihacker77",
+            "mode": "list",
+            "cachedResultName": "antihacker77",
+            "cachedResultUrl": "https://github.com/antihacker77"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "n8n-workflows",
+            "mode": "list",
+            "cachedResultName": "n8n-workflows",
+            "cachedResultUrl": "https://github.com/antihacker77/n8n-workflows"
+          },
+          "filePath": "=workflows/{{ $json.fileName }}",
+          "fileContent": "={{ $json.content }}",
+          "commitMessage": "=update: {{ $json.workflowName }} ({{ $now.toISO().split('T')[0] }})"
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "position": [
+          -848,
+          1344
+        ],
+        "id": "08e2ede5-f38c-4ca8-ba64-7680612db227",
+        "name": "Update file",
+        "webhookId": "4594a8d3-8cb4-4d99-985f-adbc5459113e",
+        "credentials": {
+          "githubApi": {
+            "id": "9DiboGN2G2cv56sz",
+            "name": "GitHub account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "owner": {
+            "__rl": true,
+            "value": "antihacker77",
+            "mode": "list"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "n8n-workflows",
+            "mode": "list",
+            "cachedResultName": "n8n-workflows",
+            "cachedResultUrl": "https://github.com/antihacker77/n8n-workflows"
+          },
+          "filePath": "=workflows/{{ $json.fileName }}",
+          "fileContent": "={{ $json.content }}",
+          "commitMessage": "=add: {{ $json.workflowName }} ({{ $now.toISO().split('T')[0] }})"
+        },
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "position": [
+          -848,
+          784
+        ],
+        "id": "d15e57de-fd71-40be-b977-cc406d858b92",
+        "name": "Create file",
+        "webhookId": "d1cae965-cdab-4fa4-a657-67296cb92b21",
+        "credentials": {
+          "githubApi": {
+            "id": "9DiboGN2G2cv56sz",
+            "name": "GitHub account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -1824,
+          1104
+        ],
+        "id": "ee36472f-853b-4deb-bc26-fe2090147c38",
+        "name": "Loop Over Items"
+      }
+    ],
+    "connections": {
+      "Every day at 2:00": {
+        "main": [
+          [
+            {
+              "node": "Get all workflows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get all workflows": {
+        "main": [
+          [
+            {
+              "node": "Get workflow detail",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get workflow detail": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare file": {
+        "main": [
+          [
+            {
+              "node": "Get existing file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get existing file": {
+        "main": [
+          [
+            {
+              "node": "Check existing file",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Mark as new",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check existing file": {
+        "main": [
+          [
+            {
+              "node": "Changed or new?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mark as new": {
+        "main": [
+          [
+            {
+              "node": "Changed or new?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Changed or new?": {
+        "main": [
+          [
+            {
+              "node": "New or updated?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "New or updated?": {
+        "main": [
+          [
+            {
+              "node": "Create file",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Update file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Prepare file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update file": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create file": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Святослав it@mail6.luxkz.kz",
+    "name": "Version d0291c53",
+    "description": "",
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-05-15T04:23:20.262Z",
+        "id": 539,
+        "workflowId": "8gLw4HRHV2JFDaCc",
+        "versionId": "d0291c53-c219-474e-b49f-d27018566d6b",
+        "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    ]
+  }
 }
