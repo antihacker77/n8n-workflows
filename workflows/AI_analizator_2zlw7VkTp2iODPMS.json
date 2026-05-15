@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-15T06:57:02.096Z",
+  "updatedAt": "2026-05-15T08:58:06.950Z",
   "createdAt": "2026-05-15T04:33:06.249Z",
   "id": "2zlw7VkTp2iODPMS",
   "name": "AI_analizator",
@@ -91,13 +91,13 @@
       "typeVersion": 2,
       "position": [
         -1312,
-        1440
+        1456
       ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Ты — эксперт по B2B-закупкам в Китае. Найди фабрики-производители для товара: **{{ $json.product }}**\n\nТребования:\n- Сертификаты: {{ $json.requiredCerts }}\n- MOQ: {{ $json.moq }}\n\nЗадача: найти 4–5 реальных китайских фабрик (не перекупщиков) через 1688, Alibaba, Baidu, выставочные базы.\n\nДля каждой фабрики верни JSON-объект с полями:\n- factoryName (string)\n- platform (string): 1688 / Alibaba / Exhibition / Direct\n- location (string): город, провинция\n- yearsOnMarket (number)\n- Phone number\n- specialization (string)\n- categoryCount (number)\n- isLikelyReseller (boolean): true если categoryCount > 5 и категории несвязаны\n- exportExperience (boolean)\n- exportCountries (array of strings)\n- availableCerts (array of strings)\n- fobPricePerKg (string): цена FOB в USD/кг\n- moq (string)\n- leadTimeDays (string)\n- oemAvailable (boolean)\n- accepts30Prepayment (boolean)\n- maxDiscount (string)\n- rating (number): рейтинг из 5\n- reviewCount (number)\n- riskFlags (array of strings)\n- notes (string)\n\nВерни ТОЛЬКО валидный JSON-массив. Без markdown, без пояснений.",
+        "text": "=Ты — эксперт по B2B-закупкам в Китае. Найди фабрики-производители для товара: **{{ $json.product }}**\n\nТребования:\n- Сертификаты: {{ $json.requiredCerts }}\n- MOQ: {{ $json.moq }}\n\nЗадача: найти 4–5 реальных китайских фабрик (не перекупщиков) через 1688, Alibaba, Baidu, выставочные базы.\n\nДля каждой фабрики верни JSON-объект с полями:\n- factoryName (string)\n- platform (string): 1688 / Alibaba / Exhibition / Direct\n- location (string): город, провинция\n- yearsOnMarket (number)\n- Phone number (Ты должен узнать настоящий номер компании)\n- specialization (string)\n- categoryCount (number)\n- isLikelyReseller (boolean): true если categoryCount > 5 и категории несвязаны\n- exportExperience (boolean)\n- exportCountries (array of strings)\n- availableCerts (array of strings)\n- fobPricePerKg (string): цена FOB в USD/кг\n- moq (string)\n- leadTimeDays (string)\n- oemAvailable (boolean)\n- accepts30Prepayment (boolean)\n- maxDiscount (string)\n- rating (number): рейтинг из 5\n- reviewCount (number)\n- riskFlags (array of strings)\n- notes (string)\n\nВерни ТОЛЬКО валидный JSON-массив. Без markdown, без пояснений.",
         "options": {
           "systemMessage": "Ты — старший sourcing-аналитик. Всегда возвращаешь строго валидный JSON-массив без лишнего текста."
         }
@@ -121,8 +121,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -1136,
-        1600
+        -1088,
+        1648
       ],
       "credentials": {
         "googlePalmApi": {
@@ -148,8 +148,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
       "typeVersion": 1.1,
       "position": [
-        -928,
-        1632
+        -944,
+        1648
       ]
     },
     {
@@ -218,7 +218,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const raw = $input.first().json.output || '';\nconst cleaned = raw.replace(/```json/gi,'').replace(/```/g,'').trim();\nlet analysis;\ntry { analysis = JSON.parse(cleaned); }\ncatch(e) {\n  const m = cleaned.match(/\\{.*\\}/s);\n  if(m) analysis = JSON.parse(m[0]);\n  else throw new Error('Cannot parse analysis: ' + cleaned.substring(0,200));\n}\n\nconst ctx = $('Parse Factory List').first().json;\nconst topPick = analysis.topPick || analysis.rankedFactories?.[0]?.factoryName || 'N/A';\nconst ranked = analysis.rankedFactories || [];\n\n// === TELEGRAM MESSAGE ===\nlet tg = `🏭 *Поиск фабрик завершён*\\n`;\ntg += `📦 Товар: *${ctx.product}*\\n`;\ntg += `📅 Дата: ${ctx.searchDate}\\n`;\ntg += `🔍 Найдено фабрик: ${ctx.factoryCount}\\n\\n`;\n\ntg += `✅ *Рекомендация: ${topPick}*\\n`;\ntg += `${analysis.topPickReason || ''}\\n\\n`;\n\ntg += `📊 *Рейтинг фабрик:*\\n`;\n\nfor(const f of ranked) {\n  const reseller = f.isLikelyReseller ? ' ⚠️ перекупщик' : '';\n  // Берём телефон из объекта фабрики f\n  // Предполагаем, что ключ называется 'Phone number' или 'phone'\n  const phone = f['Phone number'] || f.phone || 'не указан';\n\n  tg += `${f.rank}\\. *${f.factoryName}* — ${f.scoreTotal}/100${reseller}\\n`;\n  tg += `    📞 Тел: ${phone}\\n`; // Добавили строку с номером\n  tg += `    💰 ${f.fobPricePerKg} | ⏱ ${f.leadTimeDays} | ${f.recommendation || ''}\\n\\n`;\n}\n\nif(analysis.eliminatedFactories?.length) {\n  tg += `\\n❌ *Исключены:*\\n`;\n  for(const e of analysis.eliminatedFactories) {\n    tg += `• ${e.name}: ${e.reason}\\n`;\n  }\n}\n\nif(analysis.warningsAndRisks?.length) {\n  tg += `\\n⚠️ *Риски:*\\n`;\n  for(const w of analysis.warningsAndRisks) tg += `• ${w}\\n`;\n}\n\nif(analysis.nextSteps?.length) {\n  tg += `\\n📋 *Следующие шаги:*\\n`;\n  analysis.nextSteps.forEach((s,i) => { tg += `${i+1}\\. ${s}\\n`; });\n}\n\n// === GOOGLE SHEETS ROWS — one row per factory ===\nconst sheetRows = ranked.map(f => ({\n  date: ctx.searchDate,\n  product: ctx.product,\n  taskId: ctx.taskId,\n  rank: f.rank,\n  factoryName: f.factoryName,\n  location: f.location || '',\n  platform: f.platform || '',\n  scoreTotal: f.scoreTotal,\n  scorePrice: f.scoreBreakdown?.price || '',\n  scoreReliability: f.scoreBreakdown?.reliability || '',\n  scoreExport: f.scoreBreakdown?.exportReadiness || '',\n  scoreTerms: f.scoreBreakdown?.terms || '',\n  scoreSpecialization: f.scoreBreakdown?.specialization || '',\n  fobPricePerKg: f.fobPricePerKg || '',\n  moq: f.moq || '',\n  leadTimeDays: f.leadTimeDays || '',\n  rating: f.rating || '',\n  oemAvailable: f.oemAvailable ? 'Да' : 'Нет',\n  accepts30Prepayment: f.accepts30Prepayment ? 'Да' : 'Нет',\n  availableCerts: (f.availableCerts || []).join(', '),\n  exportCountries: (f.exportCountries || []).join(', '),\n  isLikelyReseller: f.isLikelyReseller ? 'Да' : 'Нет',\n  recommendation: f.recommendation || '',\n  riskFlags: (f.riskFlags || []).join('; '),\n  isTopPick: f.rank === 1 ? 'ДА' : ''\n}));\n\nreturn [{\n  json: {\n    ...ctx,\n    analysis,\n    topPick,\n    telegramMessage: tg,\n    sheetRows\n  }\n}];"
+        "jsCode": "// 1. ПОЛУЧЕНИЕ ДАННЫХ\nconst mainData = $('Parse Factory List').first().json;\nconst aiNode = $('AI Agent — Compare & Rank').first().json;\n\n// Пытаемся распарсить JSON, если Агент вернул строку\nlet aiOutput;\ntry {\n  aiOutput = typeof aiNode.output === 'string' ? JSON.parse(aiNode.output) : aiNode.output;\n} catch (e) {\n  aiOutput = aiNode; \n}\n\n// 2. КАРТА ТЕЛЕФОНОВ (Ультра-нормализация)\nconst phoneMap = {};\nconst originalFactories = mainData.factories || [];\n\noriginalFactories.forEach(f => {\n  if (f.factoryName) {\n    const key = f.factoryName.replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n    phoneMap[key] = f['Phone number'] || f.phone || 'не указан';\n  }\n});\n\n// 3. РАНЖИРОВАНИЕ\nconst ranked = aiOutput.rankedFactories || [];\nconst topPick = aiOutput.topPick || (ranked[0] ? ranked[0].factoryName : 'Не определено');\n\n// 4. ГЕНЕРАЦИЯ СООБЩЕНИЯ\nlet tg = `🏭 *ОТЧЕТ ПО ФАБРИКАМ*\\n`;\ntg += `📦 Товар: *${mainData.product || 'Не указан'}*\\n`;\ntg += `📅 Дата: ${mainData.searchDate || ''}\\n\\n`;\n\nif (ranked.length === 0) {\n    tg += `⚠️ Список фабрик пуст. Проверьте формат вывода Агента.`;\n}\n\nfor (const f of ranked) {\n  const cleanSearchName = (f.factoryName || '').replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n  const phone = phoneMap[cleanSearchName] || 'не найден';\n  const reseller = f.isLikelyReseller ? ' ⚠️ перекупщик' : '';\n\n  tg += `${f.rank || '•'}\\. *${f.factoryName}* — ${f.scoreTotal || '?'}/100${reseller}\\n`;\n  tg += `    📞 Тел: \\`${phone}\\` \\n`;\n  tg += `    💰 ${f.fobPricePerKg || '?'} | ⏱ ${f.leadTimeDays || '?'}\\n`;\n  tg += `    📝 ${f.recommendation || ''}\\n\\n`;\n}\n\n// 5. ВЫХОД\nreturn {\n  telegramMessage: tg,\n  sheetRows: ranked.map(f => {\n    const cleanSearchName = (f.factoryName || '').replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n    return {\n      date: mainData.searchDate,\n      product: mainData.product,\n      factoryName: f.factoryName,\n      phone: phoneMap[cleanSearchName] || '',\n      score: f.scoreTotal,\n      price: f.fobPricePerKg,\n      moq: f.moq,\n      leadTime: f.leadTimeDays\n    };\n  })\n};"
       },
       "id": "c07cabe5-4754-4e2e-9c37-b5660b862525",
       "name": "Build Output",
@@ -277,148 +277,7 @@
           "mappingMode": "autoMapInputData",
           "value": {},
           "matchingColumns": [],
-          "schema": [
-            {
-              "id": "taskId",
-              "displayName": "taskId",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "product",
-              "displayName": "product",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "notes",
-              "displayName": "notes",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "requiredCerts",
-              "displayName": "requiredCerts",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "moq",
-              "displayName": "moq",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "assignee",
-              "displayName": "assignee",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "searchDate",
-              "displayName": "searchDate",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "factories",
-              "displayName": "factories",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "factoryCount",
-              "displayName": "factoryCount",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "analysis",
-              "displayName": "analysis",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "topPick",
-              "displayName": "topPick",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "telegramMessage",
-              "displayName": "telegramMessage",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "sheetRows",
-              "displayName": "sheetRows",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "currentRow",
-              "displayName": "currentRow",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            }
-          ],
+          "schema": [],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -443,7 +302,7 @@
     {
       "parameters": {
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "={{ $('Build Output').first().json.telegramMessage }} {{ $('Build Output').item.json.factories[0]['Phone number'] }}",
+        "text": "={{ $('Build Output').first().json.telegramMessage }} {{ $json.telegramMessage }}",
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "Markdown"
@@ -476,7 +335,7 @@
       "typeVersion": 2,
       "position": [
         -1312,
-        1648
+        1600
       ]
     },
     {
@@ -680,9 +539,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "3d873561-a8cc-44de-94ec-fccae2077cf5",
+  "versionId": "1c350b93-0ba6-4b4d-8d2b-9136f71ee202",
   "activeVersionId": null,
-  "versionCounter": 111,
+  "versionCounter": 161,
   "triggerCount": 0,
   "shared": [
     {
