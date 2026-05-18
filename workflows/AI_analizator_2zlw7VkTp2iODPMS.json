@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-15T08:58:06.950Z",
+  "updatedAt": "2026-05-18T06:57:03.761Z",
   "createdAt": "2026-05-15T04:33:06.249Z",
   "id": "2zlw7VkTp2iODPMS",
   "name": "AI_analizator",
@@ -7,47 +7,6 @@
   "active": false,
   "isArchived": false,
   "nodes": [
-    {
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "minutes"
-            }
-          ]
-        }
-      },
-      "id": "7ce6d27d-ee15-4839-8488-9d534c9f106e",
-      "name": "Schedule Trigger",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        -1920,
-        1328
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "getAll",
-        "filters": {
-          "project": "1208416404561297"
-        }
-      },
-      "id": "0ef7aad1-4810-4fad-84a9-403b25657ffe",
-      "name": "Asana — Get Tasks",
-      "type": "n8n-nodes-base.asana",
-      "typeVersion": 1,
-      "position": [
-        -1712,
-        1520
-      ],
-      "credentials": {
-        "asanaApi": {
-          "id": "k1vPpQ0691WvWhhw",
-          "name": "Asana Svyat"
-        }
-      }
-    },
     {
       "parameters": {
         "conditions": {
@@ -59,8 +18,8 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ $json.gid }}",
-              "rightValue": "1213916174812928",
+              "leftValue": "=",
+              "rightValue": "",
               "operator": {
                 "type": "string",
                 "operation": "contains"
@@ -77,13 +36,13 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1504,
-        1520
+        -1520,
+        1456
       ]
     },
     {
       "parameters": {
-        "jsCode": "// Получаем все входящие элементы правильно\nconst items = $input.all();\nconst results = [];\n\n// Проходимся по каждому элементу\nfor (const item of items) {\n  // В n8n данные лежат внутри свойства .json\n  const task = item.json; \n  \n  const name = task.name || '';\n  const notes = task.notes || '';\n  const product = name.replace(/^новый товар[:\\s]*/i, '').trim() || name.trim();\n  const certMatch = notes.match(/(GMP|ISO|HACCP|FDA|CE|SGS|Halal|Kosher)/gi);\n  const moqMatch = notes.match(/MOQ[:\\s]*(\\d+)/i);\n  results.push({\n    taskId: task.gid,\n    product,\n    notes,\n    requiredCerts: certMatch ? [...new Set(certMatch)].join(', ') : 'не указаны',\n    moq: moqMatch ? moqMatch[1] : 'не указано',\n    assignee: task.assignee?.name || 'не назначен',\n    searchDate: new Date().toLocaleDateString('ru-RU')\n  });\n}\nreturn results;"
+        "jsCode": "const items = $input.all();\nconst results = [];\n\n// Проходимся по каждому элементу\nfor (const item of items) {\n  const msg = item.json.message || {}; \n  \n  // Берем текст сообщения из Telegram\n  const text = msg.text || '';\n  \n  // Извлекаем название товара (очищаем от стартовых фраз, если они есть)\n  const product = text.replace(/^(найди производство|поиск фабрики|хочу найти|новый товар| найти| найди|)[:\\s]*/i, '').trim() || text.trim();\n  \n  // Ищем сертификаты и MOQ в тексте сообщения, если их там написали\n  const certMatch = text.match(/(GMP|ISO|HACCP|FDA|CE|SGS|Halal|Kosher)/gi);\n  const moqMatch = text.match(/MOQ[:\\s]*(\\d+)/i);\n\n  results.push({\n    // Идентификатором делаем ID сообщения или ID чата, чтобы n8n не ругался на отсутствие taskId\n    taskId: msg.message_id ? String(msg.message_id) : String(Date.now()), \n    product: product || 'Не указан',\n    notes: text, // Сам текст сообщения уходит в примечания\n    requiredCerts: certMatch ? [...new Set(certMatch)].join(', ') : 'не указаны',\n    moq: moqMatch ? moqMatch[1] : 'не указано',\n    // Имя пользователя из Telegram вместо исполнителя Asana\n    assignee: msg.from?.first_name || 'Telegram User', \n    searchDate: new Date().toLocaleDateString('ru-RU')\n  });\n}\n\nreturn results;"
       },
       "id": "31ce88a1-0c04-44b4-979c-a871ae5c86e5",
       "name": "Parse ТЗ",
@@ -91,13 +50,13 @@
       "typeVersion": 2,
       "position": [
         -1312,
-        1456
+        1440
       ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Ты — эксперт по B2B-закупкам в Китае. Найди фабрики-производители для товара: **{{ $json.product }}**\n\nТребования:\n- Сертификаты: {{ $json.requiredCerts }}\n- MOQ: {{ $json.moq }}\n\nЗадача: найти 4–5 реальных китайских фабрик (не перекупщиков) через 1688, Alibaba, Baidu, выставочные базы.\n\nДля каждой фабрики верни JSON-объект с полями:\n- factoryName (string)\n- platform (string): 1688 / Alibaba / Exhibition / Direct\n- location (string): город, провинция\n- yearsOnMarket (number)\n- Phone number (Ты должен узнать настоящий номер компании)\n- specialization (string)\n- categoryCount (number)\n- isLikelyReseller (boolean): true если categoryCount > 5 и категории несвязаны\n- exportExperience (boolean)\n- exportCountries (array of strings)\n- availableCerts (array of strings)\n- fobPricePerKg (string): цена FOB в USD/кг\n- moq (string)\n- leadTimeDays (string)\n- oemAvailable (boolean)\n- accepts30Prepayment (boolean)\n- maxDiscount (string)\n- rating (number): рейтинг из 5\n- reviewCount (number)\n- riskFlags (array of strings)\n- notes (string)\n\nВерни ТОЛЬКО валидный JSON-массив. Без markdown, без пояснений.",
+        "text": "=Ты — эксперт по B2B-закупкам в Китае и профессиональный OSINT-исследователь. Твоя задача — найти реальные фабрики-производители для товара: {{ $json.product }}\n\nТребования к фабрикам:\n- Сертификаты: {{ $json.requiredCerts }}\n- MOQ: {{ $json.moq }}\n\nЖЕСТКИЙ АЛГОРИТМ ПОИСКА И ПРОВЕРКИ НОМЕРОВ:\n1. Сделай первый поисковый запрос через инструмент веб-поиска, чтобы найти 4–5 названий крупных китайских фабрик-производителей на площадках Alibaba, Global Sources или в каталогах.\n2. Для КАЖДОЙ найденной фабрики сделай ОТДЕЛЬНЫЙ целевой поисковый запрос через инструмент, используя комбинации: \"[Название фабрики] contact number phone\", \"[Название фабрики] official website\", или \"[Название фабрики] 1688 phone\".\n3. Тщательно изучи сниппеты поисковой выдачи SerpAPI. Извлеки оттуда реальный номер телефона.\n\nКРИТИЧЕСКИЕ ПРАВИЛА ДЛЯ ТЕЛЕФОНОВ (+86 1...):\n1. Приоритет отдавай МОБИЛЬНЫМ номерам сотрудников или отделов продаж. В Китае они строго начинаются с префикса +86 1 (например: +86 138..., +86 150..., +86 189..., +86 177...). Эти номера привязаны к WeChat — основному каналу связи.\n2. Если на сайтах указано несколько телефонов, игнорируй городские стационарные номера (начинающиеся на +86 5..., +86 7..., +86 8...) и записывай мобильный номер на +86 1. Городской номер допускается писать только если мобильного нет вообще нигде в открытом доступе.\n3. ПРАВИЛО ПРОТИВ ГАЛЛЮЦИНАЦИЙ: Ты имеешь право писать номер телефона ТОЛЬКО если ты физически увидел его в тексте ответов поисковика SerpAPI. Если телефона в сниппетах нет — напиши в поле phoneNumber строго значение \"не найден\". Категорически ЗАПРЕЩЕНО генерировать случайные цифры или подставлять фейковые коды.\n\nДля каждой фабрики верни JSON-объект в массиве factories:\n- factoryName (string): полное официальное английское название компании\n- platform (string): где изначально найдена информация (Alibaba / Exhibition / Direct)\n- location (string): город, провинция Китая\n- phoneNumber (string): РЕАЛЬНЫЙ найденный мобильный телефон (начинающийся на +86 1) ИЛИ строка \"не найден\"\n- specialization (string): что конкретно производит завод\n- isLikelyReseller (boolean): true, если это торговый перекупщик, а не фабрика\n- fobPricePerKg (string): цена FOB, если найдешь в сети (иначе \"не найден\")\n- moq (string): минимальный заказ фабрики\n- leadTimeDays (string): сроки производства\n- rating (number): рейтинг из 5 (если есть, иначе 0)\n- scoreTotal (number): твоя предварительная базовая оценка надежности от 0 до 100\n- scoreBreakdown (string): краткий список плюсов и минусов фабрики, замеченных при поиске\n- recommendation (string): краткий первичный вердикт\n\nОтлай ТОЛЬКО валидный JSON-объект, содержащий структуру:\n{\n  \"factories\": [ ... ],\n  \"factoryCount\": 5\n}\nКатегорически запрещено использовать markdown-разметку (никаких ```json), не пиши никаких вступительных или финальных слов. Только чистый JSON.",
         "options": {
           "systemMessage": "Ты — старший sourcing-аналитик. Всегда возвращаешь строго валидный JSON-массив без лишнего текста."
         }
@@ -109,11 +68,13 @@
       "position": [
         -1088,
         1440
-      ]
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
-        "modelName": "models/gemini-3.1-pro-preview",
+        "modelName": "models/gemini-2.5-flash-lite",
         "options": {}
       },
       "id": "51e3ebd4-e078-4cf5-a2b3-70982e78e8d9",
@@ -139,6 +100,11 @@
           "values": [
             {
               "name": "q"
+            },
+            {
+              "name": "api_key",
+              "valueProvider": "fieldValue",
+              "value": "63a3ee7d43ed217a6ae1e3c3f44082915e8991bb6e2d4916f3cc09e3de4eee3e"
             }
           ]
         }
@@ -168,7 +134,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Ты — аналитик по закупкам. Сравни фабрики для товара **{{ $json.product }}** и выбери лучшую.\n\nДанные:\n{{ JSON.stringify($json.factories, null, 2) }}\n\nОценка по 5 критериям (каждый 0–20 баллов):\n1. Цена — конкурентность FOB-цены\n2. Надёжность — рейтинг, отзывы, возраст\n3. Экспорт — опыт, сертификаты, страны\n4. Условия — OEM, 30% предоплата, скидка\n5. Специализация — монопрофиль хорошо, перекупщик плохо\n\nВерни JSON-объект:\n- rankedFactories: массив с полями rank, factoryName, location, fobPricePerKg, moq, leadTimeDays, rating, availableCerts, oemAvailable, accepts30Prepayment, exportCountries, isLikelyReseller, scoreTotal, scoreBreakdown{price,reliability,exportReadiness,terms,specialization}, recommendation\n- topPick: название #1\n- topPickReason: 2-3 предложения\n- eliminatedFactories: [{name, reason}]\n- comparisonSummary: 3-4 предложения\n- nextSteps: массив 4-5 действий\n- warningsAndRisks: массив рисков\n\nБез markdown. Только JSON.",
+        "text": "=Ты — аналитик по закупкам. Сравни фабрики для товара **{{ $json.product }}** и выбери лучшую.\n\nДанные:\n{{ JSON.stringify($json.factories, null, 2) }}\n\nОценка по 5 критериям (каждый 0–20 баллов):\n1. Цена — конкурентность FOB-цены\n2. Надёжность — рейтинг, отзывы, возраст\n3. Экспорт — опыт, сертификаты, страны\n4. Условия — OEM, 30% предоплата, скидка\n5. Специализация — монопрофиль хорошо, перекупщик плохо\n\nКРИТИЧЕСКОЕ ПРАВИЛО:\nТы обязан СТРОГО сохранить и перенести поле \"phoneNumber\" (или \"phone\") из входящих данных для каждой фабрики в выходной JSON. Не удаляй, не изменяй и не выдумывай эти номера от себя. Если у фабрики во входящих данных нет телефона, запиши \"не найден\".\n\nВерни JSON-объект:\n- rankedFactories: массив с полями rank, factoryName, location, phoneNumber, fobPricePerKg, moq, leadTimeDays, rating, availableCerts, oemAvailable, accepts30Prepayment, exportCountries, isLikelyReseller, scoreTotal, scoreBreakdown{price,reliability,exportReadiness,terms,specialization}, recommendation\n- topPick: название #1\n- topPickReason: 2-3 предложения\n- eliminatedFactories: [{name, reason}]\n- comparisonSummary: 3-4 предложения\n- nextSteps: массив 4-5 действий\n- warningsAndRisks: массив рисков\n\nБез markdown. Только валидный JSON.",
         "options": {
           "systemMessage": "Ты — эксперт по китайским поставщикам. Возвращаешь строго валидный JSON."
         }
@@ -192,8 +158,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        -720,
-        1600
+        -640,
+        1664
       ],
       "credentials": {
         "googlePalmApi": {
@@ -212,13 +178,13 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -560,
-        1600
+        -544,
+        1664
       ]
     },
     {
       "parameters": {
-        "jsCode": "// 1. ПОЛУЧЕНИЕ ДАННЫХ\nconst mainData = $('Parse Factory List').first().json;\nconst aiNode = $('AI Agent — Compare & Rank').first().json;\n\n// Пытаемся распарсить JSON, если Агент вернул строку\nlet aiOutput;\ntry {\n  aiOutput = typeof aiNode.output === 'string' ? JSON.parse(aiNode.output) : aiNode.output;\n} catch (e) {\n  aiOutput = aiNode; \n}\n\n// 2. КАРТА ТЕЛЕФОНОВ (Ультра-нормализация)\nconst phoneMap = {};\nconst originalFactories = mainData.factories || [];\n\noriginalFactories.forEach(f => {\n  if (f.factoryName) {\n    const key = f.factoryName.replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n    phoneMap[key] = f['Phone number'] || f.phone || 'не указан';\n  }\n});\n\n// 3. РАНЖИРОВАНИЕ\nconst ranked = aiOutput.rankedFactories || [];\nconst topPick = aiOutput.topPick || (ranked[0] ? ranked[0].factoryName : 'Не определено');\n\n// 4. ГЕНЕРАЦИЯ СООБЩЕНИЯ\nlet tg = `🏭 *ОТЧЕТ ПО ФАБРИКАМ*\\n`;\ntg += `📦 Товар: *${mainData.product || 'Не указан'}*\\n`;\ntg += `📅 Дата: ${mainData.searchDate || ''}\\n\\n`;\n\nif (ranked.length === 0) {\n    tg += `⚠️ Список фабрик пуст. Проверьте формат вывода Агента.`;\n}\n\nfor (const f of ranked) {\n  const cleanSearchName = (f.factoryName || '').replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n  const phone = phoneMap[cleanSearchName] || 'не найден';\n  const reseller = f.isLikelyReseller ? ' ⚠️ перекупщик' : '';\n\n  tg += `${f.rank || '•'}\\. *${f.factoryName}* — ${f.scoreTotal || '?'}/100${reseller}\\n`;\n  tg += `    📞 Тел: \\`${phone}\\` \\n`;\n  tg += `    💰 ${f.fobPricePerKg || '?'} | ⏱ ${f.leadTimeDays || '?'}\\n`;\n  tg += `    📝 ${f.recommendation || ''}\\n\\n`;\n}\n\n// 5. ВЫХОД\nreturn {\n  telegramMessage: tg,\n  sheetRows: ranked.map(f => {\n    const cleanSearchName = (f.factoryName || '').replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n    return {\n      date: mainData.searchDate,\n      product: mainData.product,\n      factoryName: f.factoryName,\n      phone: phoneMap[cleanSearchName] || '',\n      score: f.scoreTotal,\n      price: f.fobPricePerKg,\n      moq: f.moq,\n      leadTime: f.leadTimeDays\n    };\n  })\n};"
+        "jsCode": "// 1. ПОЛУЧЕНИЕ ДАННЫХ ИЗ ПРЕДЫДУЩИХ НОД\nconst mainData = $('Parse Factory List').first().json;\nconst aiNode = $('AI Agent — Compare & Rank').first().json;\n\n// Пытаемся распарсить JSON, если Агент вернул строку\nlet aiOutput;\ntry {\n  aiOutput = typeof aiNode.output === 'string' ? JSON.parse(aiNode.output) : aiNode.output;\n} catch (e) {\n  // На случай, если ИИ вернул markdown-разметку ```json ... ```\n  try {\n    const cleanString = aiNode.output.replace(/```json/g, '').replace(/```/g, '').trim();\n    aiOutput = JSON.parse(cleanString);\n  } catch (err) {\n    aiOutput = aiNode; \n  }\n}\n\n// 2. КАРТА ТЕЛЕФОНОВ (Резервная копия из первой ноды)\nconst phoneMap = {};\nconst originalFactories = mainData.factories || [];\n\noriginalFactories.forEach(f => {\n  // Исправлено: ищем любые вариации ключа телефона в исходных данных\n  const originalPhone = f.phoneNumber || f['Phone number'] || f.phone;\n  if (originalPhone && f.factoryName) {\n    const key = f.factoryName.replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n    phoneMap[key] = originalPhone;\n  }\n});\n\n// 3. РАНЖИРОВАНИЕ\nconst ranked = aiOutput.rankedFactories || [];\n\n// 4. ГЕНЕРАЦИЯ ТЕКСТА ДЛЯ TELEGRAM\nlet tg = `🏭 *ОТЧЕТ ПО ФАБРИКАМ*\\n`;\ntg += `📦 Товар: *${mainData.product || 'Не указан'}*\\n`;\ntg += `📅 Дата: ${mainData.searchDate || ''}\\n\\n`;\n\nif (ranked.length === 0) {\n    tg += `⚠️ Список фабрик пуст. Проверьте формат вывода Агента.`;\n}\n\nfor (const f of ranked) {\n  const cleanSearchName = (f.factoryName || '').replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n  \n  // ПРИОРИТЕТ ТЕЛЕФОНА: \n  // 1. Из ответа 2-го агента (f.phoneNumber) \n  // 2. Из резервной карты старой ноды phoneMap\n  // 3. Если нигде нет — \"не найден\"\n  const phone = f.phoneNumber || f.phone || phoneMap[cleanSearchName] || 'не найден';\n  const reseller = f.isLikelyReseller ? ' ⚠️ перекупщик' : '';\n\n  tg += `${f.rank || '•'}. *${f.factoryName}* — ${f.scoreTotal || '?'}/100${reseller}\\n`;\n  tg += `    📞 Тел: \\`${phone}\\` \\n`;\n  tg += `    💰 ${f.fobPricePerKg || '?'} | ⏱ ${f.leadTimeDays || '?'}\\n`;\n  tg += `    📝 ${f.recommendation || ''}\\n\\n`;\n}\n\n// 5. ВЫХОД ДЛЯ СЛЕДУЮЩИХ НОД (Включая Google Sheets)\nreturn {\n  telegramMessage: tg,\n  sheetRows: ranked.map(f => {\n    const cleanSearchName = (f.factoryName || '').replace(/[^a-zа-я0-9]/gi, '').toLowerCase();\n    const phone = f.phoneNumber || f.phone || phoneMap[cleanSearchName] || 'не найден';\n    \n    return {\n      date: mainData.searchDate,\n      product: mainData.product,\n      factoryName: f.factoryName,\n      phone: phone,\n      score: f.scoreTotal || f.rating || 0,\n      price: f.fobPricePerKg || '',\n      moq: typeof f.moq === 'object' ? JSON.stringify(f.moq) : (f.moq || ''),\n      leadTime: f.leadTimeDays || ''\n    };\n  })\n};"
       },
       "id": "c07cabe5-4754-4e2e-9c37-b5660b862525",
       "name": "Build Output",
@@ -231,28 +197,14 @@
     },
     {
       "parameters": {
-        "options": {}
-      },
-      "id": "8910e565-fe1f-4096-b745-478dd60ae5f1",
-      "name": "Split Sheet Rows",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
-      "position": [
-        208,
-        1968
-      ],
-      "notes": "Splits sheetRows array so each factory gets its own Google Sheets append call"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Unpack sheetRows array into individual items for SplitInBatches\nconst rows = $input.first().json.sheetRows;\nconst base = $input.first().json;\nreturn rows.map(row => ({ json: { ...base, currentRow: row } }));"
+        "jsCode": "const base = $input.first().json;\nlet msg = (base.telegramMessage || '').trim();\n\n// Если текст случайно склеился сам с собой 2 раза подряд — убираем дубль\nconst normalized = msg.replace(/\\r\\n/g, '\\n');\nconst lines = normalized.split('\\n');\nconst half = lines.length / 2;\n\nif (\n  Number.isInteger(half) &&\n  lines.slice(0, half).join('\\n').trim() === lines.slice(half).join('\\n').trim()\n) {\n  msg = lines.slice(0, half).join('\\n').trim();\n}\n\nreturn [\n  {\n    json: {\n      telegramMessage: msg\n    }\n  }\n];"
       },
       "id": "4b5b4898-a233-435e-a2fc-47e97e073ac5",
       "name": "Unpack Rows",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -208,
+        -144,
         1440
       ]
     },
@@ -277,7 +229,38 @@
           "mappingMode": "autoMapInputData",
           "value": {},
           "matchingColumns": [],
-          "schema": [],
+          "schema": [
+            {
+              "id": "telegramMessage",
+              "displayName": "telegramMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sheetRows",
+              "displayName": "sheetRows",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "currentRow",
+              "displayName": "currentRow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -288,8 +271,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        1440
+        144,
+        1584
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -302,7 +285,7 @@
     {
       "parameters": {
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "={{ $('Build Output').first().json.telegramMessage }} {{ $json.telegramMessage }}",
+        "text": "={{ $json.telegramMessage }}",
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "Markdown"
@@ -313,7 +296,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        192,
+        144,
         1440
       ],
       "webhookId": "c18327c1-2ea2-4d59-b1b1-3e9c61add879",
@@ -327,19 +310,6 @@
     },
     {
       "parameters": {
-        "jsCode": "console.log('[Factory Search] No tasks at', new Date().toISOString());\nreturn [{ json: { status: 'no_tasks' } }];"
-      },
-      "id": "9dea8b5c-e0b7-4dd1-9e14-8e7ca4b8c144",
-      "name": "No Tasks — Skip",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1312,
-        1600
-      ]
-    },
-    {
-      "parameters": {
         "updates": [
           "message"
         ],
@@ -348,8 +318,8 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -1936,
-        1520
+        -1744,
+        1456
       ],
       "id": "7292548b-8ae2-4c06-847e-0ed8abfc33d5",
       "name": "Telegram Trigger",
@@ -360,25 +330,22 @@
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $input.first().json;\nconst rows = base.sheetRows || [];\n\nreturn rows.map(row => ({\n  json: {\n    searchDate: row.date || '',\n    product: row.product || base.product || '',\n    factoryName: row.factoryName || '',\n    phone: row.phone || '',\n    score: row.score || 0,\n    price: row.price || '',\n    moq: row.moq || '',\n    leadTime: row.leadTime || '',\n  }\n}));"
+      },
+      "id": "d4c0f582-d97c-400d-bedd-4d7940a0a714",
+      "name": "Unpack Rows1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        1584
+      ]
     }
   ],
   "connections": {
-    "Schedule Trigger": {
-      "main": [
-        []
-      ]
-    },
-    "Asana — Get Tasks": {
-      "main": [
-        [
-          {
-            "node": "IF — New Tasks?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "IF — New Tasks?": {
       "main": [
         [
@@ -388,13 +355,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "No Tasks — Skip",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Parse ТЗ": {
@@ -492,22 +453,16 @@
             "node": "Unpack Rows",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Unpack Rows": {
-      "main": [
-        [
+          },
           {
-            "node": "Google Sheets — Append Row",
+            "node": "Unpack Rows1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Google Sheets — Append Row": {
+    "Unpack Rows": {
       "main": [
         [
           {
@@ -518,11 +473,16 @@
         ]
       ]
     },
+    "Google Sheets — Append Row": {
+      "main": [
+        []
+      ]
+    },
     "Telegram Trigger": {
       "main": [
         [
           {
-            "node": "Asana — Get Tasks",
+            "node": "IF — New Tasks?",
             "type": "main",
             "index": 0
           }
@@ -539,9 +499,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "1c350b93-0ba6-4b4d-8d2b-9136f71ee202",
+  "versionId": "6985d346-84d9-4f9b-9117-ef49cab71c06",
   "activeVersionId": null,
-  "versionCounter": 161,
+  "versionCounter": 261,
   "triggerCount": 0,
   "shared": [
     {
