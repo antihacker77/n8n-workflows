@@ -382,7 +382,7 @@
   "staticData": {
     "node:Schedule Trigger": {
       "recurrenceRules": [
-        8
+        16
       ]
     }
   },
@@ -392,7 +392,7 @@
   "pinData": {},
   "versionId": "86f7c9d6-4c3b-4c99-bb17-ab88b6ee279a",
   "activeVersionId": "86f7c9d6-4c3b-4c99-bb17-ab88b6ee279a",
-  "versionCounter": 486,
+  "versionCounter": 487,
   "triggerCount": 1,
   "shared": [
     {
