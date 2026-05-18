@@ -1,0 +1,222 @@
+{
+  "updatedAt": "2026-05-18T10:12:18.626Z",
+  "createdAt": "2026-05-18T09:21:30.674Z",
+  "id": "f71UPRhquyCpjpYG",
+  "name": "Автоматизация OZON",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Расчёт показателей по каждому товару\nconst items = $input.all();\n\nreturn items.map(item => {\n  const d = item.json;\n\n  // Динамика продаж: текущая неделя vs предыдущая\n  const salesNow   = d.revenue_current  ?? d.revenue  ?? 0;\n  const salesPrev  = d.revenue_previous ?? salesNow;\n  const salesDelta = salesPrev > 0 ? ((salesNow - salesPrev) / salesPrev) * 100 : 0;\n\n  const ordersNow   = d.ordered_units_current  ?? d.ordered_units  ?? 0;\n  const ordersPrev  = d.ordered_units_previous ?? ordersNow;\n  const ordersDelta = ordersPrev > 0 ? ((ordersNow - ordersPrev) / ordersPrev) * 100 : 0;\n\n  // Конверсия\n  const views    = d.hits_view    ?? 1;\n  const sessions = d.session_view ?? 1;\n  const toCart   = d.hits_tocart  ?? 0;\n  const ctrToCart    = views    > 0 ? (toCart / views) * 100 : 0;\n  const convToCart   = sessions > 0 ? (toCart / sessions) * 100 : 0;\n\n  // Возвраты и отмены\n  const returns   = d.returns          ?? 0;\n  const cancelled = d.cancelled_units  ?? 0;\n  const returnRate = ordersNow > 0 ? (returns / ordersNow) * 100 : 0;\n\n  // Остатки — дни до out-of-stock\n  const stock     = d.stock_qty     ?? 0;\n  const dailySales = salesNow / 14;\n  const daysLeft  = dailySales > 0 ? Math.round(stock / dailySales) : 999;\n\n  // Маржа\n  const cogs      = d.cost_price  ?? 0;\n  const price     = d.price       ?? 0;\n  const commission = d.commission ?? 0;\n  const logistics  = d.logistics  ?? 0;\n  const adSpend    = d.ad_spend   ?? 0;\n  const margin     = price > 0 ? ((price - cogs - commission - logistics - adSpend) / price) * 100 : 0;\n\n  // ДРР (доля рекламных расходов)\n  const drr = salesNow > 0 ? (adSpend / salesNow) * 100 : 0;\n\n  // Приоритет задачи\n  let priority = 'low';\n  if (salesDelta <= -20 || ordersDelta <= -20 || daysLeft < 7) priority = 'high';\n  else if (salesDelta >= 15 || ordersDelta >= 15) priority = 'medium_grow';\n  else if (drr > 25 || returnRate > 15) priority = 'medium_problem';\n  else if (convToCart < 3) priority = 'medium_card';\n\n  return {\n    json: {\n      sku:          d.sku ?? d.article,\n      name:         d.name ?? d.product_name ?? 'Без названия',\n      salesNow:     Math.round(salesNow),\n      salesDelta:   Math.round(salesDelta),\n      ordersNow,\n      ordersDelta:  Math.round(ordersDelta),\n      convToCart:   Math.round(convToCart * 10) / 10,\n      returnRate:   Math.round(returnRate * 10) / 10,\n      daysLeft,\n      stock,\n      margin:       Math.round(margin),\n      drr:          Math.round(drr),\n      adSpend,\n      price,\n      priority\n    }\n  };\n});"
+      },
+      "id": "e3c6c01c-f461-4d56-b9ac-737273bd172c",
+      "name": "Code — расчёт показателей",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        -544
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Парсинг ответа Claude\nconst raw = $input.first().json;\nconst text = raw.content?.[0]?.text ?? '{\"tasks\":[]}';\n\nlet parsed;\ntry {\n  const clean = text.replace(/```json|```/g, '').trim();\n  parsed = JSON.parse(clean);\n} catch(e) {\n  parsed = { tasks: [], error: 'parse failed', raw: text };\n}\n\nconst tasks = parsed.tasks ?? [];\n\n// Сортировка: high → medium → low\nconst order = { high: 0, medium: 1, low: 2 };\ntasks.sort((a, b) => (order[a.priority] ?? 2) - (order[b.priority] ?? 2));\n\n// Форматируем текст для Telegram\nconst priorityEmoji = { high: '🔴', medium: '🟡', low: '🟢' };\nconst categoryLabel = {\n  restock: 'Допоставка',\n  price:   'Цена / скидка',\n  card:    'Карточка',\n  ads:     'Реклама',\n  returns: 'Возвраты',\n  scale:   'Масштабирование'\n};\n\nconst lines = tasks.map(t =>\n  `${priorityEmoji[t.priority] ?? '⚪'} *${t.name}* [${t.sku}]\\n` +\n  `📌 ${categoryLabel[t.category] ?? t.category}\\n` +\n  `✅ ${t.action}\\n` +\n  `💬 ${t.reason}\\n` +\n  `⏰ Срок: ${t.deadline}`\n).join('\\n\\n');\n\nconst telegramText = `📊 *Задачи по Ozon на сегодня* (${new Date().toLocaleDateString('ru-RU')})\\n\\n${lines || 'Нет срочных задач — всё в норме ✅'}`;\n\nreturn [{\n  json: {\n    tasks,\n    telegramText,\n    totalTasks: tasks.length,\n    highCount:  tasks.filter(t => t.priority === 'high').length\n  }\n}];"
+      },
+      "id": "99ef4b50-67b8-492f-a83e-79ade687b807",
+      "name": "Code — парсинг и форматирование",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1536,
+        -560
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $vars.TELEGRAM_CHAT_ID }}",
+        "text": "={{ $json.telegramText }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "5029585b-a5a1-4a5d-9dda-b6abf956e7cb",
+      "name": "Telegram — задачи менеджеру",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1888,
+        -368
+      ],
+      "webhookId": "2ad1fa22-efd0-45f1-9178-d9cdf41d259f"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "value": "={{ $vars.GSHEETS_SPREADSHEET_ID }}"
+        },
+        "sheetName": "AI-задачи",
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [
+            "sku"
+          ]
+        },
+        "options": {}
+      },
+      "id": "521b3d1a-c10a-4106-8185-01f667b605d7",
+      "name": "Google Sheets — лист Задачи",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1888,
+        -560
+      ]
+    },
+    {
+      "parameters": {
+        "workspace": {
+          "value": "={{ $vars.ASANA_WORKSPACE_ID }}"
+        },
+        "name": "=[{{ $json.priority.toUpperCase() }}] {{ $json.name }} — {{ $json.action }}",
+        "otherProperties": {}
+      },
+      "id": "584df19e-84fa-4854-a355-9a66a29c02ad",
+      "name": "Asana — создать задачи",
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        -544
+      ],
+      "id": "3517e680-efa0-48af-9e78-d2b868b29b47",
+      "name": "Telegram Trigger",
+      "webhookId": "b03a486c-3a9a-4bd8-893f-849e9e15a07f",
+      "credentials": {
+        "telegramApi": {
+          "id": "yO2XgMSlvA23CyKY",
+          "name": "Telegram ai_seller09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1056,
+        -544
+      ],
+      "id": "4d858ca0-7d3d-4d13-935a-edee783a3b88",
+      "name": "AI Agent"
+    }
+  ],
+  "connections": {
+    "Code — расчёт показателей": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — парсинг и форматирование": {
+      "main": [
+        [
+          {
+            "node": "Telegram — задачи менеджеру",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets — лист Задачи",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Asana — создать задачи",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code — расчёт показателей",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code — парсинг и форматирование",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c1835c1b-2040-4eef-a88c-a18398e882db",
+  "activeVersionId": null,
+  "versionCounter": 46,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-05-18T09:21:30.678Z",
+      "createdAt": "2026-05-18T09:21:30.678Z",
+      "role": "workflow:owner",
+      "workflowId": "f71UPRhquyCpjpYG",
+      "projectId": "wgXtWVNuQzeKqbNu",
+      "project": {
+        "updatedAt": "2026-04-01T11:39:36.468Z",
+        "createdAt": "2026-04-01T11:04:24.587Z",
+        "id": "wgXtWVNuQzeKqbNu",
+        "name": "Святослав it@mail6.luxkz.kz <it@mail6.luxkz.kz>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "18902431-99cf-4918-a77b-b66a93276e18"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
