@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-18T12:59:04.996Z",
+  "updatedAt": "2026-05-19T05:53:34.782Z",
   "createdAt": "2026-05-18T09:21:30.674Z",
   "id": "f71UPRhquyCpjpYG",
   "name": "Автоматизация OZON v2",
@@ -359,7 +359,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2192,
+        1936,
         480
       ]
     },
@@ -372,7 +372,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3264,
+        2704,
         480
       ]
     },
@@ -389,8 +389,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        3488,
-        352
+        2928,
+        400
       ],
       "webhookId": "d74b0ee7-af7f-40e8-8c09-8386cce8d26e",
       "credentials": {
@@ -416,8 +416,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        3712,
-        544
+        2160,
+        768
       ]
     },
     {
@@ -530,8 +530,8 @@
       "type": "n8n-nodes-base.spreadsheetFile",
       "typeVersion": 2,
       "position": [
-        2000,
-        288
+        1744,
+        384
       ]
     },
     {
@@ -556,7 +556,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2432,
+        2160,
         480
       ]
     },
@@ -570,8 +570,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3504,
-        544
+        2928,
+        576
       ]
     },
     {
@@ -586,7 +586,7 @@
       "typeVersion": 1.2,
       "position": [
         1376,
-        608
+        656
       ],
       "webhookId": "c885410d-28a8-4ed3-9544-6708b42d4bc3",
       "credentials": {
@@ -617,7 +617,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        2640,
+        2352,
         480
       ],
       "id": "3a1e4bc4-5f65-4709-a931-db7636a9fea2",
@@ -626,6 +626,293 @@
         "openAiApi": {
           "id": "3ArAyCEngveD0BDa",
           "name": "catalog"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json) }}",
+        "options": {
+          "systemMessage": "Assistant is a large language model trained by OpenAI.\n\nAssistant is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, Assistant is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.\n\nAssistant is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, Assistant is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.\n\nOverall, Assistant is a powerful system that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, Assistant is here to assist."
+        }
+      },
+      "id": "7349ff01-5f79-404c-934d-c9fa0d149c6f",
+      "name": "AI Agent — расчёт и анализ",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1872,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list"
+        },
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "2fb3128b-ba71-409c-96c4-2e6a4be4ea44",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1872,
+        1456
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "3ArAyCEngveD0BDa",
+          "name": "catalog"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        496,
+        1136
+      ],
+      "id": "5b07dad6-0141-4dfb-87ee-23b73f7aa164",
+      "name": "Telegram Trigger2",
+      "webhookId": "b03a486c-3a9a-4bd8-893f-849e9e15a07f",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Проверяем тип входящего сообщения\n// Поддерживаем: документ (CSV/Excel), текст с данными или команду /analyze\nconst msg = $input.first().json.message ?? {};\n\nconst hasDocument = !!msg.document;\nconst hasText = !!msg.text;\nconst chatId = msg.chat?.id ?? msg.from?.id;\n\nif (!hasDocument && !hasText) {\n  return [{ json: { skip: true, chatId, reason: 'no_content' } }];\n}\n\nreturn [{\n  json: {\n    skip: false,\n    chatId,\n    hasDocument,\n    hasText,\n    text: msg.text ?? '',\n    fileId: msg.document?.file_id ?? null,\n    fileName: msg.document?.file_name ?? null,\n    mimeType: msg.document?.mime_type ?? null\n  }\n}];"
+      },
+      "id": "85c4404e-75a9-4f86-8045-aef0ec2887c5",
+      "name": "Code — разбор входящего2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-skip",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "98a097b4-29df-4c6d-b050-2aac779ee940",
+      "name": "IF — есть контент?2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-doc",
+              "leftValue": "={{ $json.hasDocument }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7903acf3-d7fc-414d-a754-bb20e28d4be7",
+      "name": "IF — файл или текст?2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "3cf65692-10fd-434a-a1c4-f5d39791e3a1",
+      "name": "Spreadsheet — CSV/Excel → JSON2",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Парсинг текстовых данных из Telegram (если менеджер вставил текст/JSON вручную)\nconst raw = $input.first().json.text ?? '';\n\nlet rows = [];\n\n// Пробуем JSON\ntry {\n  const parsed = JSON.parse(raw);\n  rows = Array.isArray(parsed) ? parsed : [parsed];\n} catch(e) {\n  // Пробуем CSV (разделители: запятая или точка с запятой)\n  const lines = raw.trim().split('\\n').filter(Boolean);\n  if (lines.length >= 2) {\n    const sep = lines[0].includes(';') ? ';' : ',';\n    const headers = lines[0].split(sep).map(h => h.trim().replace(/^\"|\"$/g, ''));\n    rows = lines.slice(1).map(line => {\n      const vals = line.split(sep).map(v => v.trim().replace(/^\"|\"$/g, ''));\n      const obj = {};\n      headers.forEach((h, i) => { obj[h] = isNaN(vals[i]) ? vals[i] : Number(vals[i]); });\n      return obj;\n    });\n  }\n}\n\nif (rows.length === 0) {\n  return [{ json: { error: 'Не удалось распарсить данные', raw } }];\n}\n\nreturn rows.map(r => ({ json: r }));"
+      },
+      "id": "8c4e35ce-f0b4-44a5-be84-70ab33a8b911",
+      "name": "Code — парсинг текста/JSON2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Парсинг ответа Claude\nconst raw = $input.first().json;\nconst text = raw.output ?? raw.content?.[0]?.text ?? '{\"tasks\":[]}';\n\nlet parsed;\ntry {\n  const clean = text.replace(/```json|```/g, '').trim();\n  parsed = JSON.parse(clean);\n} catch(e) {\n  parsed = { tasks: [], error: 'parse failed', raw: text };\n}\n\nconst tasks = parsed.tasks ?? [];\n\n// Сортировка: high → medium → low\nconst order = { high: 0, medium: 1, low: 2 };\ntasks.sort((a, b) => (order[a.priority] ?? 2) - (order[b.priority] ?? 2));\n\n// Форматируем текст для Telegram\nconst priorityEmoji = { high: '🔴', medium: '🟡', low: '🟢' };\nconst categoryLabel = {\n  restock:   '📦 Допоставка',\n  price:     '💰 Цена / скидка',\n  card:      '🖼 Карточка',\n  ads_up:    '📈 Усилить рекламу',\n  ads_down:  '📉 Снизить рекламу',\n  returns:   '↩️ Возвраты',\n  scale:     '🚀 Масштабирование',\n  freeze:    '❄️ Заморозить закуп'\n};\n\nconst lines = tasks.map(t =>\n  `${priorityEmoji[t.priority] ?? '⚪'} *${t.name}* \\`[${t.sku}]\\`\\n` +\n  `${categoryLabel[t.category] ?? t.category}\\n` +\n  `✅ ${t.action}\\n` +\n  `💬 ${t.reason}\\n` +\n  `⏰ ${t.deadline}`\n).join('\\n\\n─────────────\\n\\n');\n\nconst date = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });\nconst highCount = tasks.filter(t => t.priority === 'high').length;\nconst header = `📊 *Задачи по Ozon — ${date}*\\n🔴 Срочных: ${highCount} | Всего: ${tasks.length}\\n`;\n\nconst telegramText = tasks.length > 0\n  ? header + '\\n' + lines\n  : `📊 *Задачи по Ozon — ${date}*\\n\\n✅ Нет срочных задач — все показатели в норме`;\n\nreturn [{\n  json: {\n    tasks,\n    telegramText,\n    totalTasks: tasks.length,\n    highCount\n  }\n}];"
+      },
+      "id": "82982475-cc5c-481d-a02b-0983b9de99f2",
+      "name": "Code — парсинг и форматирование2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Code — разбор входящего2').first().json.chatId }}",
+        "text": "={{ $json.telegramText }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "f3e829ed-b598-490f-a170-2f802e67ce43",
+      "name": "Telegram — задачи менеджеру2",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2640,
+        1136
+      ],
+      "webhookId": "03db2dab-80ea-46df-b1d5-787b180a1928",
+      "credentials": {
+        "telegramApi": {
+          "id": "yO2XgMSlvA23CyKY",
+          "name": "Telegram ai_seller09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "tasks",
+        "options": {}
+      },
+      "id": "2169ea2a-3891-4d70-9a81-09f6554e4c9a",
+      "name": "Split — разбить задачи2",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2656,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "workspace": {
+          "value": "={{ $vars.ASANA_WORKSPACE_ID }}"
+        },
+        "name": "=[{{ $json.priority.toUpperCase() }}] {{ $json.name }} ({{ $json.sku }}) — {{ $json.action }}",
+        "otherProperties": {
+          "due_on": "={{ $json.deadline === 'Сегодня' ? $now.format('yyyy-MM-dd') : $json.deadline === '1-2 дня' ? $now.plus(2, 'days').format('yyyy-MM-dd') : $now.plus(7, 'days').format('yyyy-MM-dd') }}",
+          "notes": "=Категория: {{ $json.category }}\nПричина: {{ $json.reason }}\nСрок: {{ $json.deadline }}\nАртикул: {{ $json.sku }}"
+        }
+      },
+      "id": "bb3670e1-6f73-4f53-a018-2814e0a4f96b",
+      "name": "Asana — создать задачи2",
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        3168,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Code — разбор входящего2').first().json.chatId }}",
+        "text": "❌ Не удалось обработать сообщение. Пожалуйста, отправь CSV или Excel файл с аналитикой, либо JSON с данными товаров.",
+        "additionalFields": {}
+      },
+      "id": "f2ad5ec5-8e03-4cc2-91c2-4af6977dc935",
+      "name": "Telegram — ошибка формата2",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1424,
+        1488
+      ],
+      "webhookId": "57fabced-2476-45e9-a6f1-cb42f8333e5b",
+      "credentials": {
+        "telegramApi": {
+          "id": "yO2XgMSlvA23CyKY",
+          "name": "Telegram ai_seller09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger2').item.json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "4ac38441-2faa-48b4-941a-38641b382e6c",
+      "name": "Telegram — получить файл1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        992
+      ],
+      "webhookId": "f8777d58-11dc-4454-ab0e-22f2a1eddd9c",
+      "credentials": {
+        "telegramApi": {
+          "id": "UN3cSWUbiewNKmox",
+          "name": "Telegram account"
         }
       }
     }
@@ -931,6 +1218,140 @@
           }
         ]
       ]
+    },
+    "AI Agent — расчёт и анализ": {
+      "main": [
+        [
+          {
+            "node": "Code — парсинг и форматирование2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent — расчёт и анализ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Code — разбор входящего2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — разбор входящего2": {
+      "main": [
+        [
+          {
+            "node": "IF — есть контент?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF — есть контент?2": {
+      "main": [
+        [
+          {
+            "node": "IF — файл или текст?2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram — ошибка формата2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF — файл или текст?2": {
+      "main": [
+        [
+          {
+            "node": "Telegram — получить файл1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code — парсинг текста/JSON2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet — CSV/Excel → JSON2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent — расчёт и анализ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — парсинг текста/JSON2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent — расчёт и анализ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — парсинг и форматирование2": {
+      "main": [
+        [
+          {
+            "node": "Telegram — задачи менеджеру2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split — разбить задачи2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split — разбить задачи2": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram — получить файл1": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet — CSV/Excel → JSON2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -942,9 +1363,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "b8962f76-4842-4839-a0d0-f655e2b4efb5",
+  "versionId": "006dc1e5-4841-4df9-bc49-0bd08d4eaab0",
   "activeVersionId": null,
-  "versionCounter": 82,
+  "versionCounter": 123,
   "triggerCount": 0,
   "shared": [
     {
