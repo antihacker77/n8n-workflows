@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-19T10:28:41.475Z",
+  "updatedAt": "2026-05-19T11:40:40.106Z",
   "createdAt": "2026-04-23T09:58:08.928Z",
   "id": "K1cTRtPzk2iPSANE",
   "name": "Диалоги с поставщиками Исходящие/Входящие",
@@ -38,10 +38,10 @@
         },
         "sheetName": {
           "__rl": true,
-          "value": 1698289197,
+          "value": 2019950400,
           "mode": "list",
-          "cachedResultName": "Supplier Accio",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=1698289197"
+          "cachedResultName": "China_Suppliers_30",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=2019950400"
         },
         "options": {}
       },
@@ -191,8 +191,8 @@
       "name": "Send First WAHA Message",
       "type": "n8n-nodes-waha.WAHA",
       "position": [
-        1920,
-        1184
+        1824,
+        1168
       ],
       "typeVersion": 202411,
       "credentials": {
@@ -214,10 +214,10 @@
         },
         "sheetName": {
           "__rl": true,
-          "value": 1698289197,
+          "value": 2019950400,
           "mode": "list",
-          "cachedResultName": "Supplier Accio",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=1698289197"
+          "cachedResultName": "China_Suppliers_30",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=2019950400"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -288,8 +288,8 @@
       "name": "Update Sheet1 After First Message",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        2080,
-        1184
+        2048,
+        1168
       ],
       "typeVersion": 4.6,
       "credentials": {
@@ -305,7 +305,7 @@
       "name": "Continue Loop",
       "type": "n8n-nodes-base.noOp",
       "position": [
-        2240,
+        2224,
         1312
       ],
       "typeVersion": 1
@@ -1690,7 +1690,7 @@
       "typeVersion": 202411,
       "position": [
         1440,
-        1312
+        1296
       ],
       "id": "d6fe6185-9980-419a-b4c0-de0d4370d98e",
       "name": "Check phone number is registered in WhatsApp.",
@@ -1730,7 +1730,7 @@
       "typeVersion": 2.3,
       "position": [
         1616,
-        1312
+        1296
       ],
       "id": "c28bd820-54bb-40fd-b7e3-b7845df63fbd",
       "name": "If2"
@@ -1747,16 +1747,16 @@
         },
         "sheetName": {
           "__rl": true,
-          "value": 1698289197,
+          "value": 2019950400,
           "mode": "list",
-          "cachedResultName": "Supplier Accio",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=1698289197"
+          "cachedResultName": "China_Suppliers_30",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=2019950400"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
             "Shipped": "={{ $json.numberExists }}",
-            "Column3": "={{ $('Read Sheet1 Contacts').item.json.Column3 }}"
+            "Column3": "={{ $('If3').item.json.Column3 }}"
           },
           "matchingColumns": [
             "Column3"
@@ -1821,8 +1821,8 @@
       "name": "Update Sheet1 After First Message1",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        1968,
-        1344
+        1920,
+        1440
       ],
       "typeVersion": 4.6,
       "credentials": {
@@ -1892,8 +1892,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1824,
-        1040
+        1792,
+        928
       ],
       "id": "44d97014-0007-4393-b3ea-c3c25f552855",
       "name": "Edit Fields"
@@ -1902,13 +1902,7 @@
   "connections": {
     "Schedule Trigger": {
       "main": [
-        [
-          {
-            "node": "Read Sheet1 Contacts",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Read Sheet1 Contacts": {
@@ -2567,9 +2561,9 @@
       }
     ]
   },
-  "versionId": "926d470a-3710-4e95-97bd-5c266d84a11e",
-  "activeVersionId": "d1c64f12-4dfe-4153-89b8-afeb48d26939",
-  "versionCounter": 789,
+  "versionId": "6b732e89-96e1-4fb5-a069-0cce9c605d62",
+  "activeVersionId": "6b732e89-96e1-4fb5-a069-0cce9c605d62",
+  "versionCounter": 804,
   "triggerCount": 2,
   "shared": [
     {
@@ -2599,9 +2593,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-19T06:54:29.000Z",
-    "createdAt": "2026-05-19T06:54:23.751Z",
-    "versionId": "d1c64f12-4dfe-4153-89b8-afeb48d26939",
+    "updatedAt": "2026-05-19T11:40:42.000Z",
+    "createdAt": "2026-05-19T11:40:40.107Z",
+    "versionId": "6b732e89-96e1-4fb5-a069-0cce9c605d62",
     "workflowId": "K1cTRtPzk2iPSANE",
     "nodes": [
       {
@@ -2619,7 +2613,7 @@
         "name": "Schedule Trigger",
         "type": "n8n-nodes-base.scheduleTrigger",
         "position": [
-          96,
+          112,
           1312
         ],
         "typeVersion": 1.2
@@ -2628,24 +2622,17 @@
         "parameters": {
           "documentId": {
             "__rl": true,
-            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "value": "1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ",
             "mode": "list",
-            "cachedResultName": "Тест общения с поставщиками исходящие",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+            "cachedResultName": "Gemini vs Assio",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
-            "value": "gid=0",
+            "value": 2019950400,
             "mode": "list",
-            "cachedResultName": "Лист1",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
-          },
-          "filtersUI": {
-            "values": [
-              {
-                "lookupColumn": "Статус"
-              }
-            ]
+            "cachedResultName": "China_Suppliers_30",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=2019950400"
           },
           "options": {}
         },
@@ -2676,20 +2663,12 @@
             "conditions": [
               {
                 "id": "a1",
-                "leftValue": "={{ ($json['Контакты'] || '').toString() }}",
+                "leftValue": "={{ ($json['Shipped']).toString() }}",
                 "rightValue": "",
                 "operator": {
                   "type": "string",
-                  "operation": "notEmpty"
-                }
-              },
-              {
-                "id": "a2",
-                "leftValue": "={{ ($json['First Contact Sent'] || '').toString() }}",
-                "rightValue": "",
-                "operator": {
-                  "type": "string",
-                  "operation": "empty"
+                  "operation": "empty",
+                  "singleValue": true
                 }
               }
             ],
@@ -2701,7 +2680,7 @@
         "name": "Needs first contact",
         "type": "n8n-nodes-base.if",
         "position": [
-          560,
+          544,
           1312
         ],
         "typeVersion": 2.2
@@ -2727,7 +2706,7 @@
                 "id": "b1",
                 "name": "Контакты",
                 "type": "string",
-                "value": "={{ $json['Контакты'].toString() }}"
+                "value": "={{ $json.Column3 }}"
               },
               {
                 "id": "b2",
@@ -2785,8 +2764,8 @@
         "name": "Build First Message",
         "type": "n8n-nodes-base.set",
         "position": [
-          1008,
-          1312
+          1264,
+          1296
         ],
         "typeVersion": 3.4
       },
@@ -2795,7 +2774,7 @@
           "resource": "Chatting",
           "operation": "Send Text",
           "session": "=default",
-          "chatId": "={{ $('Build First Message').item.json['Контакты'] }}@s.whatsapp.net",
+          "chatId": "={{ $json.chatId.split('@')[0] }}@s.whatsapp.net",
           "text": "={{ $('Build First Message').item.json['Last Reply'] }}",
           "requestOptions": {}
         },
@@ -2803,8 +2782,8 @@
         "name": "Send First WAHA Message",
         "type": "n8n-nodes-waha.WAHA",
         "position": [
-          1664,
-          1232
+          1824,
+          1168
         ],
         "typeVersion": 202411,
         "credentials": {
@@ -2819,31 +2798,51 @@
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
-            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "value": "1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ",
             "mode": "list",
-            "cachedResultName": "Тест общения с поставщиками исходящие",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+            "cachedResultName": "Gemini vs Assio",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
-            "value": "gid=0",
+            "value": 2019950400,
             "mode": "list",
-            "cachedResultName": "Лист1",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+            "cachedResultName": "China_Suppliers_30",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=2019950400"
           },
           "columns": {
             "mappingMode": "defineBelow",
             "value": {
-              "Статус": "={{ $json.key.fromMe }}",
-              "Контакты": "={{ $('Read Sheet1 Contacts').item.json['Контакты'] }}"
+              "Shipped": "={{ $('If2').item.json.numberExists }}",
+              "Column3": "={{ $('If3').item.json.Column3 }}"
             },
             "matchingColumns": [
-              "Контакты"
+              "Column3"
             ],
             "schema": [
               {
-                "id": "Контакты",
-                "displayName": "Контакты",
+                "id": "Column1",
+                "displayName": "Column1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Column2",
+                "displayName": "Column2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Column3",
+                "displayName": "Column3",
                 "required": false,
                 "defaultMatch": false,
                 "display": true,
@@ -2852,14 +2851,23 @@
                 "removed": false
               },
               {
-                "id": "Статус",
-                "displayName": "Статус",
+                "id": "Column4",
+                "displayName": "Column4",
                 "required": false,
                 "defaultMatch": false,
                 "display": true,
                 "type": "string",
                 "canBeUsedToMatch": true,
-                "removed": false
+                "removed": true
+              },
+              {
+                "id": "Shipped",
+                "displayName": "Shipped",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
               }
             ],
             "attemptToConvertTypes": false,
@@ -2871,8 +2879,8 @@
         "name": "Update Sheet1 After First Message",
         "type": "n8n-nodes-base.googleSheets",
         "position": [
-          1856,
-          1232
+          2048,
+          1168
         ],
         "typeVersion": 4.6,
         "credentials": {
@@ -2888,7 +2896,7 @@
         "name": "Continue Loop",
         "type": "n8n-nodes-base.noOp",
         "position": [
-          2032,
+          2224,
           1312
         ],
         "typeVersion": 1
@@ -4176,7 +4184,7 @@
         "parameters": {
           "content": "# Блок первого письма поставщикам по номеру ",
           "height": 320,
-          "width": 2228,
+          "width": 2388,
           "color": 3
         },
         "type": "n8n-nodes-base.stickyNote",
@@ -4272,8 +4280,8 @@
         "type": "n8n-nodes-waha.WAHA",
         "typeVersion": 202411,
         "position": [
-          1216,
-          1312
+          1440,
+          1296
         ],
         "id": "d6fe6185-9980-419a-b4c0-de0d4370d98e",
         "name": "Check phone number is registered in WhatsApp.",
@@ -4312,8 +4320,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          1408,
-          1312
+          1616,
+          1296
         ],
         "id": "c28bd820-54bb-40fd-b7e3-b7845df63fbd",
         "name": "If2"
@@ -4323,31 +4331,51 @@
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
-            "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+            "value": "1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ",
             "mode": "list",
-            "cachedResultName": "Тест общения с поставщиками исходящие",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+            "cachedResultName": "Gemini vs Assio",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
-            "value": "gid=0",
+            "value": 2019950400,
             "mode": "list",
-            "cachedResultName": "Лист1",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=0"
+            "cachedResultName": "China_Suppliers_30",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wWw4Wty-aUw5OLqbizzSPnV15Tfu3dB4LnLHSIAXXLQ/edit#gid=2019950400"
           },
           "columns": {
             "mappingMode": "defineBelow",
             "value": {
-              "Статус": "=FALSE",
-              "Контакты": "={{ $('Build First Message').first().json['Контакты'] }}"
+              "Shipped": "={{ $json.numberExists }}",
+              "Column3": "={{ $('If3').item.json.Column3 }}"
             },
             "matchingColumns": [
-              "Контакты"
+              "Column3"
             ],
             "schema": [
               {
-                "id": "Контакты",
-                "displayName": "Контакты",
+                "id": "Column1",
+                "displayName": "Column1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Column2",
+                "displayName": "Column2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Column3",
+                "displayName": "Column3",
                 "required": false,
                 "defaultMatch": false,
                 "display": true,
@@ -4356,14 +4384,23 @@
                 "removed": false
               },
               {
-                "id": "Статус",
-                "displayName": "Статус",
+                "id": "Column4",
+                "displayName": "Column4",
                 "required": false,
                 "defaultMatch": false,
                 "display": true,
                 "type": "string",
                 "canBeUsedToMatch": true,
-                "removed": false
+                "removed": true
+              },
+              {
+                "id": "Shipped",
+                "displayName": "Shipped",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
               }
             ],
             "attemptToConvertTypes": false,
@@ -4375,8 +4412,8 @@
         "name": "Update Sheet1 After First Message1",
         "type": "n8n-nodes-base.googleSheets",
         "position": [
-          1760,
-          1344
+          1920,
+          1440
         ],
         "typeVersion": 4.6,
         "credentials": {
@@ -4405,6 +4442,52 @@
             "name": "Google Gemini(PaLM) Api"
           }
         }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "07dc6188-ad03-4970-950b-be24c9702c2e",
+                "leftValue": "={{ $json.Column3.toString() }}",
+                "rightValue": "8",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          992,
+          1312
+        ],
+        "id": "a8cfe4f1-49d3-4aad-a7a8-cd822b2ba5f9",
+        "name": "If3"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1792,
+          928
+        ],
+        "id": "44d97014-0007-4393-b3ea-c3c25f552855",
+        "name": "Edit Fields"
       }
     ],
     "connections": {
@@ -4440,7 +4523,7 @@
           [],
           [
             {
-              "node": "Build First Message",
+              "node": "If3",
               "type": "main",
               "index": 0
             }
@@ -4949,18 +5032,36 @@
             }
           ]
         ]
+      },
+      "If3": {
+        "main": [
+          [
+            {
+              "node": "Build First Message",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Contacts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version d1c64f12",
+    "name": "Version 6b732e89",
     "description": "",
     "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-19T06:54:29.818Z",
-        "id": 559,
+        "createdAt": "2026-05-19T11:40:42.655Z",
+        "id": 562,
         "workflowId": "K1cTRtPzk2iPSANE",
-        "versionId": "d1c64f12-4dfe-4153-89b8-afeb48d26939",
+        "versionId": "6b732e89-96e1-4fb5-a069-0cce9c605d62",
         "event": "activated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
