@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-18T11:32:16.192Z",
+  "updatedAt": "2026-05-19T05:58:44.642Z",
   "createdAt": "2026-05-02T03:59:32.878Z",
   "id": "PwhaL2zq4ueiFqfw",
   "name": "ai seller RetailCRM",
@@ -597,7 +597,7 @@
     {
       "parameters": {
         "operation": "get",
-        "propertyName": "buffer_messages",
+        "propertyName": "buffer_text",
         "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
         "keyType": "string",
         "options": {}
@@ -719,7 +719,7 @@
       "parameters": {
         "operation": "set",
         "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
-        "value": "={{ $json.body.message }}",
+        "value": "={{ $json.buffer_text ?? \"\" + \" \" + $json.body.message }}",
         "keyType": "string"
       },
       "type": "n8n-nodes-base.redis",
@@ -1131,9 +1131,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "3262f407-95c7-4d63-944d-2b89169ac435",
-  "activeVersionId": "3262f407-95c7-4d63-944d-2b89169ac435",
-  "versionCounter": 658,
+  "versionId": "81dde0b7-f699-48d0-8667-cdf0706e8f11",
+  "activeVersionId": "81dde0b7-f699-48d0-8667-cdf0706e8f11",
+  "versionCounter": 671,
   "triggerCount": 1,
   "shared": [
     {
@@ -1163,9 +1163,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-18T11:32:17.000Z",
-    "createdAt": "2026-05-18T11:32:16.193Z",
-    "versionId": "3262f407-95c7-4d63-944d-2b89169ac435",
+    "updatedAt": "2026-05-19T05:58:53.000Z",
+    "createdAt": "2026-05-19T05:58:44.643Z",
+    "versionId": "81dde0b7-f699-48d0-8667-cdf0706e8f11",
     "workflowId": "PwhaL2zq4ueiFqfw",
     "nodes": [
       {
@@ -1758,7 +1758,7 @@
       {
         "parameters": {
           "operation": "get",
-          "propertyName": "buffer_messages",
+          "propertyName": "buffer_text",
           "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
           "keyType": "string",
           "options": {}
@@ -1880,7 +1880,7 @@
         "parameters": {
           "operation": "set",
           "key": "=messages:{{ $('Webhook').item.json.body.chatid }}",
-          "value": "={{ $json.body.message }}",
+          "value": "={{ $json.buffer_text ?? \"\" + \" \" + $json.body.message }}",
           "keyType": "string"
         },
         "type": "n8n-nodes-base.redis",
@@ -2281,15 +2281,15 @@
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version 3262f407",
+    "name": "Version 81dde0b7",
     "description": "",
     "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-18T11:32:17.617Z",
-        "id": 551,
+        "createdAt": "2026-05-19T05:58:53.161Z",
+        "id": 557,
         "workflowId": "PwhaL2zq4ueiFqfw",
-        "versionId": "3262f407-95c7-4d63-944d-2b89169ac435",
+        "versionId": "81dde0b7-f699-48d0-8667-cdf0706e8f11",
         "event": "activated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
