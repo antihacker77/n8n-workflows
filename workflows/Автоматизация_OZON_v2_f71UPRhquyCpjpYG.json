@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-20T06:05:41.954Z",
+  "updatedAt": "2026-05-20T07:30:05.807Z",
   "createdAt": "2026-05-18T09:21:30.674Z",
   "id": "f71UPRhquyCpjpYG",
   "name": "Автоматизация OZON v2",
@@ -202,13 +202,14 @@
     },
     {
       "parameters": {
-        "workspace": {
-          "value": "={{ $vars.ASANA_WORKSPACE_ID }}"
-        },
+        "workspace": "1204484241508804",
         "name": "=[{{ $json.priority.toUpperCase() }}] {{ $json.name }} ({{ $json.sku }}) — {{ $json.action }}",
         "otherProperties": {
           "due_on": "={{ $json.deadline === 'Сегодня' ? $now.format('yyyy-MM-dd') : $json.deadline === '1-2 дня' ? $now.plus(2, 'days').format('yyyy-MM-dd') : $now.plus(7, 'days').format('yyyy-MM-dd') }}",
-          "notes": "=Категория: {{ $json.category }}\nПричина: {{ $json.reason }}\nСрок: {{ $json.deadline }}\nАртикул: {{ $json.sku }}"
+          "notes": "=Категория: {{ $json.category }}\nПричина: {{ $json.reason }}\nСрок: {{ $json.deadline }}\nАртикул: {{ $json.sku }}",
+          "projects": [
+            "1214956334162822"
+          ]
         }
       },
       "id": "99502728-896a-4fc3-869a-3a5ed798d0e7",
@@ -216,9 +217,15 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        3280,
-        1024
-      ]
+        3264,
+        1040
+      ],
+      "credentials": {
+        "asanaApi": {
+          "id": "k1vPpQ0691WvWhhw",
+          "name": "Asana Svyat"
+        }
+      }
     },
     {
       "parameters": {
@@ -270,7 +277,7 @@
         "promptType": "define",
         "text": "={{ JSON.stringify($json.products) }}",
         "options": {
-          "systemMessage": "Ты — AI-аналитик маркетплейса Ozon. Ты получаешь массив товаров с сырыми данными.\n\nШАГ 1 — РАССЧИТАЙ по каждому товару:\n- salesDelta = (revenue_current - revenue_previous) / revenue_previous * 100\n- ordersDelta = (ordered_units_current - ordered_units_previous) / ordered_units_previous * 100\n- convToCart = hits_tocart / session_view * 100\n- returnRate = returns / ordered_units_current * 100\n- cancelRate = cancelled_units / ordered_units_current * 100\n- daysLeft = stock_qty / (revenue_current / 14)\n- margin = (price - cost_price - commission - logistics - ad_spend) / price * 100\n- drr = ad_spend / revenue_current * 100\n\nШАГ 2 — ОПРЕДЕЛИ задачи по правилам:\n- restock: daysLeft меньше 14\n- price: salesDelta меньше -20 и ordersDelta меньше -20, или convToCart меньше 3\n- card: есть сессии но convToCart меньше 5\n- ads_up: salesDelta больше 15 и margin больше 20 и daysLeft больше 14\n- ads_down: drr больше 25 и convToCart меньше 3\n- returns: returnRate больше 15 или cancelRate больше 20\n- scale: salesDelta больше 20 и ordersDelta больше 20 и daysLeft больше 21\n- freeze: salesDelta меньше -30 и ordered_units_current меньше 5\n\nПРИОРИТЕТЫ:\n- high: daysLeft меньше 7 или падение продаж больше 30%\n- medium: daysLeft меньше 14 или падение больше 20% или проблемы с рекламой/возвратами\n- low: остальное\n\nОТВЕЧАЙ СТРОГО ТОЛЬКО ВАЛИДНЫМ JSON без пояснений, без markdown, без текста до и после.\nСтруктура ответа: объект с ключом tasks, значение — массив объектов.\nКаждый объект содержит поля: sku, name, priority, category, action, reason, deadline.\nЗначения priority: high, medium или low.\nЗначения category: restock, price, card, ads_up, ads_down, returns, scale, freeze.\nЗначения deadline: Сегодня, 1-2 дня, До конца недели.\n\nВАЖНО:\n- Одна задача = одно действие. Несколько проблем у товара = несколько задач с одним sku.\n- Каждая причина содержит конкретные цифры из расчётов.\n- Товары без отклонений от норм в ответ не включай.\n- Если данных для расчёта не хватает — пропускай это правило для товара.\n\nТРЕБОВАНИЯ К ПОЛЮ reason:\n- Пиши ТОЛЬКО на русском языке\n- Никаких английских названий переменных (salesDelta, orderedUnitsCurrent, convToCart и т.д.)\n- Формат: короткое предложение с цифрами\n\nПравильные примеры:\n- \"продажи упали на 39%, заказов за период 31 шт, Ozon рекомендует заморозить закуп\"\n- \"выручка выросла на 93%, заказов стало больше на 132%, товар активно растёт\"\n- \"конверсия карточки 5%, показов 12 915, посещений 476 — трафик есть, в корзину не добавляют\"\n- \"остаток 361 шт, дней продаж осталось менее 7, Ozon рекомендует срочно поставить\"\n- \"ДРР 12%, конверсия низкая — реклама тратит бюджет без результата\"\n\nНеправильные примеры (так писать нельзя):\n- \"salesDelta = -39%, orderedUnitsCurrent = 31\"\n- \"convToCart < 3, drr > 25\"\n- \"daysLeft = 5, restock needed\""
+          "systemMessage": "=Ты — AI-аналитик маркетплейса Ozon. Ты получаешь массив товаров с сырыми данными.\n\nШАГ 1 — РАССЧИТАЙ по каждому товару:\n- salesDelta = (revenue_current - revenue_previous) / revenue_previous * 100\n- ordersDelta = (ordered_units_current - ordered_units_previous) / ordered_units_previous * 100\n- convToCart = hits_tocart / session_view * 100\n- returnRate = returns / ordered_units_current * 100\n- cancelRate = cancelled_units / ordered_units_current * 100\n- daysLeft = stock_qty / (revenue_current / 14)\n- margin = (price - cost_price - commission - logistics - ad_spend) / price * 100\n- drr = ad_spend / revenue_current * 100\n\nШАГ 2 — ОПРЕДЕЛИ задачи по правилам:\n- restock: daysLeft меньше 14\n- price: salesDelta меньше -20 и ordersDelta меньше -20, или convToCart меньше 3\n- card: есть сессии но convToCart меньше 5\n- ads_up: salesDelta больше 15 и margin больше 20 и daysLeft больше 14\n- ads_down: drr больше 25 и convToCart меньше 3\n- returns: returnRate больше 15 или cancelRate больше 20\n- scale: salesDelta больше 20 и ordersDelta больше 20 и daysLeft больше 21\n- freeze: salesDelta меньше -30 и ordered_units_current меньше 5\n\nПРИОРИТЕТЫ:\n- high: daysLeft меньше 7 или падение продаж больше 30%\n- medium: daysLeft меньше 14 или падение больше 20% или проблемы с рекламой/возвратами\n- low: остальное\n\nОТВЕЧАЙ СТРОГО ТОЛЬКО ВАЛИДНЫМ JSON без пояснений, без markdown, без текста до и после.\nСтруктура ответа: объект с ключом tasks, значение — массив объектов.\nКаждый объект содержит поля: sku, name, priority, category, action, reason, deadline.\nЗначения priority: high, medium или low.\nЗначения category: restock, price, card, ads_up, ads_down, returns, scale, freeze.\nЗначения deadline: Сегодня, 1-2 дня, До конца недели.\n\nВАЖНО:\n- Одна задача = одно действие. Несколько проблем у товара = несколько задач с одним sku.\n- Каждая причина содержит конкретные цифры из расчётов.\n- Товары без отклонений от норм в ответ не включай.\n- Если данных для расчёта не хватает — пропускай это правило для товара.\n\nТРЕБОВАНИЯ К ПОЛЮ reason:\n- Пиши ТОЛЬКО на русском языке\n- Никаких английских названий переменных (salesDelta, orderedUnitsCurrent, convToCart и т.д.)\n- Формат: короткое предложение с цифрами\n\nПравильные примеры:\n- \"продажи упали на 39%, заказов за период 31 шт, Ozon рекомендует заморозить закуп\"\n- \"выручка выросла на 93%, заказов стало больше на 132%, товар активно растёт\"\n- \"конверсия карточки 5%, показов 12 915, посещений 476 — трафик есть, в корзину не добавляют\"\n- \"остаток 361 шт, дней продаж осталось менее 7, Ozon рекомендует срочно поставить\"\n- \"ДРР 12%, конверсия низкая — реклама тратит бюджет без результата\"\n\nНеправильные примеры (так писать нельзя):\n- \"salesDelta = -39%, orderedUnitsCurrent = 31\"\n- \"convToCart < 3, drr > 25\"\n- \"daysLeft = 5, restock needed\""
         }
       },
       "id": "a5f3d48d-3026-4b19-9c7d-b38222b02d51",
@@ -420,7 +427,13 @@
     },
     "Split — разбить задачи3": {
       "main": [
-        []
+        [
+          {
+            "node": "Asana — создать задачи3",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Telegram — получить файл2": {
@@ -466,9 +479,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "8204d33b-51b3-4564-a498-8e748ad540a6",
+  "versionId": "aecae0b2-0f4d-404a-949f-0686ebc7600d",
   "activeVersionId": null,
-  "versionCounter": 179,
+  "versionCounter": 185,
   "triggerCount": 0,
   "shared": [
     {
