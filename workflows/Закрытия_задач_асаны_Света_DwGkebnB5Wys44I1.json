@@ -1215,7 +1215,7 @@
   "pinData": {},
   "versionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
   "activeVersionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
-  "versionCounter": 7822,
+  "versionCounter": 7874,
   "triggerCount": 1,
   "shared": [
     {
@@ -1251,7 +1251,7 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-14T12:27:12.000Z",
+    "updatedAt": "2026-05-20T09:16:13.000Z",
     "createdAt": "2026-05-14T12:27:09.282Z",
     "versionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
     "workflowId": "DwGkebnB5Wys44I1",
@@ -2460,6 +2460,22 @@
         "workflowId": "DwGkebnB5Wys44I1",
         "versionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
         "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      },
+      {
+        "createdAt": "2026-05-20T09:16:13.675Z",
+        "id": 571,
+        "workflowId": "DwGkebnB5Wys44I1",
+        "versionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
+        "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      },
+      {
+        "createdAt": "2026-05-20T09:03:05.629Z",
+        "id": 570,
+        "workflowId": "DwGkebnB5Wys44I1",
+        "versionId": "ad72fd65-8ec0-40b1-9db2-1a8949743cdb",
+        "event": "deactivated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
     ]
