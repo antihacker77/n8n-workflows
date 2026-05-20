@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-04-27T10:17:56.504Z",
+  "updatedAt": "2026-05-20T09:27:56.000Z",
   "createdAt": "2026-04-01T11:44:07.940Z",
   "id": "gc9RCCH73sHQIfPA",
   "name": "Пересылка документов поставщикам",
   "description": null,
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
@@ -222,9 +222,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "c2446a63-5e71-4a99-a40b-96b551e935f6",
+  "versionId": "5b512983-ede4-4355-8461-ddb11f14164d",
   "activeVersionId": null,
-  "versionCounter": 799,
+  "versionCounter": 800,
   "triggerCount": 1,
   "shared": [
     {
