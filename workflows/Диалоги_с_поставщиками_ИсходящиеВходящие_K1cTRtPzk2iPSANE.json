@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-20T06:40:04.316Z",
+  "updatedAt": "2026-05-20T07:34:31.178Z",
   "createdAt": "2026-04-23T09:58:08.928Z",
   "id": "K1cTRtPzk2iPSANE",
   "name": "Диалоги с поставщиками Исходящие/Входящие",
@@ -316,7 +316,7 @@
       "name": "WAHA Trigger",
       "type": "n8n-nodes-waha.wahaTrigger",
       "position": [
-        -672,
+        -832,
         2000
       ],
       "typeVersion": 202411,
@@ -376,7 +376,7 @@
       "name": "Normalize WAHA Payload",
       "type": "n8n-nodes-base.set",
       "position": [
-        64,
+        272,
         2256
       ],
       "typeVersion": 3.4
@@ -411,7 +411,7 @@
       "name": "Find Contact In Sheet1",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        240,
+        448,
         2352
       ],
       "typeVersion": 4.6,
@@ -434,7 +434,7 @@
       "name": "Merge Incoming And Sheet1",
       "type": "n8n-nodes-base.merge",
       "position": [
-        416,
+        624,
         2240
       ],
       "typeVersion": 3.2
@@ -448,7 +448,7 @@
       "name": "Build Dialog Context",
       "type": "n8n-nodes-base.code",
       "position": [
-        576,
+        784,
         2256
       ],
       "typeVersion": 2
@@ -470,7 +470,7 @@
       "name": "Supplier Dialog Planner",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "position": [
-        736,
+        944,
         2256
       ],
       "typeVersion": 1.5,
@@ -488,7 +488,7 @@
       "name": "Structured Output Parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "position": [
-        848,
+        1056,
         2432
       ],
       "typeVersion": 1.2
@@ -559,7 +559,7 @@
       "name": "Prepare Sheet1 Progress",
       "type": "n8n-nodes-base.set",
       "position": [
-        1024,
+        1232,
         2256
       ],
       "typeVersion": 3.4
@@ -592,7 +592,7 @@
       "name": "Catalog File Attached",
       "type": "n8n-nodes-base.if",
       "position": [
-        1200,
+        1408,
         2256
       ],
       "typeVersion": 2.2
@@ -622,7 +622,7 @@
       "name": "Upload Catalog To Drive",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
-        1488,
+        1696,
         2144
       ],
       "typeVersion": 3,
@@ -653,7 +653,7 @@
       "name": "Share Catalog File",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
-        1616,
+        1824,
         2144
       ],
       "typeVersion": 3,
@@ -730,7 +730,7 @@
       "name": "Add Drive Link To Progress",
       "type": "n8n-nodes-base.set",
       "position": [
-        1760,
+        1968,
         2144
       ],
       "typeVersion": 3.4
@@ -868,7 +868,7 @@
       "name": "Upsert Sheet1 Progress",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        1888,
+        2096,
         2272
       ],
       "typeVersion": 4.6,
@@ -925,7 +925,7 @@
       "name": "Full Package Ready",
       "type": "n8n-nodes-base.if",
       "position": [
-        2096,
+        2304,
         2160
       ],
       "typeVersion": 2.2
@@ -966,7 +966,7 @@
       "name": "Prepare Final Row For Sheet2",
       "type": "n8n-nodes-base.set",
       "position": [
-        2320,
+        2528,
         2144
       ],
       "typeVersion": 3.4
@@ -1047,7 +1047,7 @@
       "name": "Upsert Final To Sheet2",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        2512,
+        2720,
         2144
       ],
       "typeVersion": 4.6,
@@ -1086,7 +1086,7 @@
       "name": "Reply Needed",
       "type": "n8n-nodes-base.if",
       "position": [
-        2096,
+        2304,
         2352
       ],
       "typeVersion": 2.2
@@ -1104,7 +1104,7 @@
       "name": "Send WAHA Reply",
       "type": "n8n-nodes-waha.WAHA",
       "position": [
-        2320,
+        2528,
         2336
       ],
       "typeVersion": 202411,
@@ -1123,7 +1123,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        736,
+        944,
         2416
       ],
       "id": "9910a330-91dc-4166-954f-8d97718a4d78",
@@ -1165,7 +1165,7 @@
       "name": "Find Contact In Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        240,
+        448,
         2160
       ],
       "typeVersion": 4.6,
@@ -1200,7 +1200,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1360,
+        1568,
         2144
       ],
       "id": "646d9cf5-1470-422c-af23-5c441c3d7bc1",
@@ -1254,7 +1254,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -448,
+        -528,
         2016
       ],
       "id": "bbf88463-f3af-467f-9f31-94468fad42b7",
@@ -1315,7 +1315,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        32,
+        240,
         1744
       ]
     },
@@ -1348,7 +1348,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        256,
+        464,
         1744
       ]
     },
@@ -1364,7 +1364,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        496,
+        704,
         1872
       ],
       "alwaysOutputData": true,
@@ -1386,7 +1386,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        720,
+        928,
         1744
       ]
     },
@@ -1400,7 +1400,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        944,
+        1152,
         1744
       ]
     },
@@ -1417,7 +1417,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1136,
+        1344,
         1744
       ],
       "credentials": {
@@ -1439,7 +1439,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1600,
+        1808,
         1872
       ],
       "alwaysOutputData": true,
@@ -1461,7 +1461,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1808,
+        2016,
         1760
       ]
     },
@@ -1503,7 +1503,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2032,
+        2240,
         1760
       ]
     },
@@ -1517,7 +1517,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2240,
+        2448,
         1744
       ]
     },
@@ -1531,7 +1531,7 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        1472,
+        1680,
         2272
       ],
       "credentials": {
@@ -1550,7 +1550,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -32,
+        176,
         1616
       ],
       "id": "a4e41b4a-9eef-40ab-b3ee-d09578f5df30",
@@ -1581,7 +1581,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1376,
+        1584,
         1744
       ],
       "webhookId": "compact-buffer-wait"
@@ -1623,7 +1623,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -240,
+        -32,
         2000
       ],
       "id": "0d0bf189-f6af-4f89-b892-649f0d668ed2",
@@ -1638,7 +1638,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -32,
+        176,
         2096
       ],
       "typeVersion": 1,
@@ -1807,7 +1807,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        1152,
+        1360,
         2416
       ],
       "id": "6f4fc097-e4da-4cfd-8e8a-83a9637ff599",
@@ -1851,6 +1851,39 @@
       ],
       "id": "a8cfe4f1-49d3-4aad-a7a8-cd822b2ba5f9",
       "name": "If3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f5ff22d9-aeb5-4143-adc2-d1f20c51c81b",
+              "leftValue": "={{ $json.payload._data.key.remoteJidAlt }}",
+              "rightValue": " 8613721090413",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -304,
+        2000
+      ],
+      "id": "435e6611-dd4d-4e2c-9ad9-894c72d3e133",
+      "name": "Filter"
     }
   ],
   "connections": {
@@ -2173,7 +2206,7 @@
       "main": [
         [
           {
-            "node": "If1",
+            "node": "Filter",
             "type": "main",
             "index": 0
           }
@@ -2408,6 +2441,17 @@
           }
         ]
       ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2427,8 +2471,8 @@
     "WAHA Trigger": [
       {
         "json": {
-          "id": "evt_01krzc0m2an99h3p22z98jecc5",
-          "timestamp": 1779169251402,
+          "id": "evt_01ks24nwve3ecd0f369wnvybye",
+          "timestamp": 1779262223215,
           "event": "message",
           "session": "default",
           "metadata": {},
@@ -2438,56 +2482,64 @@
             "lid": "173637323776219@lid"
           },
           "payload": {
-            "id": "false_77755334210@c.us_3EB02A87D951AB181690",
-            "timestamp": 1779169251,
-            "from": "77755334210@c.us",
+            "id": "false_262821984112835@lid_3EB05E4B4DC39DAE9A9FE3",
+            "timestamp": 1779262223,
+            "from": "262821984112835@lid",
             "fromMe": false,
             "source": "app",
-            "body": null,
+            "body": "your quantity is too small for us",
             "hasMedia": false,
             "media": null,
             "ack": 2,
             "ackName": "DEVICE",
             "location": null,
             "vCards": null,
-            "replyTo": null,
+            "replyTo": {
+              "id": "3EB073703E40FA2C491690",
+              "participant": "173637323776219@lid",
+              "body": "Latex fitness resistance bands set (5 pcs) 100 sets\nPilates board/platform 50 pcs\nMFR Roller 50 pcs\nMaterial: PVC + EVA (hollow type)\nSize: 33 × 13 cm\nPilates ball 50 pcs\nTPE yoga mat, 6 mm 100 pcs\n2 kg dumbbell set 50 set",
+              "_data": {
+                "conversation": "Latex fitness resistance bands set (5 pcs) 100 sets\nPilates board/platform 50 pcs\nMFR Roller 50 pcs\nMaterial: PVC + EVA (hollow type)\nSize: 33 × 13 cm\nPilates ball 50 pcs\nTPE yoga mat, 6 mm 100 pcs\n2 kg dumbbell set 50 set"
+              }
+            },
             "_data": {
               "key": {
-                "remoteJid": "77755334210@s.whatsapp.net",
+                "remoteJid": "262821984112835@lid",
+                "remoteJidAlt": "8613721090413@s.whatsapp.net",
                 "fromMe": false,
-                "id": "3EB02A87D951AB181690",
+                "id": "3EB05E4B4DC39DAE9A9FE3",
                 "participant": "",
-                "addressingMode": "pn"
+                "addressingMode": "lid"
               },
-              "category": "peer",
-              "messageTimestamp": 1779169251,
+              "messageTimestamp": 1779262223,
+              "pushName": "Cassie-Merrybody Sports",
               "broadcast": false,
               "message": {
-                "protocolMessage": {
-                  "type": "APP_STATE_SYNC_KEY_REQUEST",
-                  "appStateSyncKeyRequest": {
-                    "keyIds": [
-                      {
-                        "keyId": "AAAAACaw"
-                      }
-                    ]
-                  }
+                "extendedTextMessage": {
+                  "text": "your quantity is too small for us",
+                  "contextInfo": {
+                    "stanzaId": "3EB073703E40FA2C491690",
+                    "participant": "173637323776219@lid",
+                    "quotedMessage": {
+                      "conversation": "Latex fitness resistance bands set (5 pcs) 100 sets\nPilates board/platform 50 pcs\nMFR Roller 50 pcs\nMaterial: PVC + EVA (hollow type)\nSize: 33 × 13 cm\nPilates ball 50 pcs\nTPE yoga mat, 6 mm 100 pcs\n2 kg dumbbell set 50 set"
+                    }
+                  },
+                  "inviteLinkGroupTypeV2": "DEFAULT"
                 },
                 "messageContextInfo": {
                   "deviceListMetadata": {
-                    "senderKeyHash": "U0SYJF/PnjbNmw==",
-                    "senderTimestamp": "1779169238",
-                    "senderKeyIndexes": [
-                      1,
-                      0,
-                      2
-                    ],
+                    "senderKeyHash": "bkrmboPhP9C7jQ==",
+                    "senderTimestamp": "1778208918",
                     "senderAccountType": "E2EE",
-                    "receiverAccountType": "E2EE"
+                    "receiverAccountType": "E2EE",
+                    "recipientKeyHash": "U0SYJF/PnjbNmw==",
+                    "recipientTimestamp": "1779169238"
                   },
-                  "deviceListMetadataVersion": 2
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": "/jVn2k5Bi7lCl9Faxew7nMDfUoSZCzb74iUI6dXKvGI="
                 }
               },
+              "verifiedBizName": "Cassie-Merrybody Sports",
               "status": 3
             }
           },
@@ -2510,9 +2562,9 @@
       }
     ]
   },
-  "versionId": "4d84ba06-be3b-486e-a59c-39dcdda354d6",
-  "activeVersionId": "4d84ba06-be3b-486e-a59c-39dcdda354d6",
-  "versionCounter": 808,
+  "versionId": "f9d2d687-00f2-4b4a-8bdd-f6b257e0b4d7",
+  "activeVersionId": "f9d2d687-00f2-4b4a-8bdd-f6b257e0b4d7",
+  "versionCounter": 831,
   "triggerCount": 2,
   "shared": [
     {
@@ -2542,9 +2594,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-20T06:40:06.000Z",
-    "createdAt": "2026-05-20T06:40:04.318Z",
-    "versionId": "4d84ba06-be3b-486e-a59c-39dcdda354d6",
+    "updatedAt": "2026-05-20T07:57:39.000Z",
+    "createdAt": "2026-05-20T07:34:31.180Z",
+    "versionId": "f9d2d687-00f2-4b4a-8bdd-f6b257e0b4d7",
     "workflowId": "K1cTRtPzk2iPSANE",
     "nodes": [
       {
@@ -2856,7 +2908,7 @@
         "name": "WAHA Trigger",
         "type": "n8n-nodes-waha.wahaTrigger",
         "position": [
-          -672,
+          -832,
           2000
         ],
         "typeVersion": 202411,
@@ -2916,7 +2968,7 @@
         "name": "Normalize WAHA Payload",
         "type": "n8n-nodes-base.set",
         "position": [
-          64,
+          272,
           2256
         ],
         "typeVersion": 3.4
@@ -2951,7 +3003,7 @@
         "name": "Find Contact In Sheet1",
         "type": "n8n-nodes-base.googleSheets",
         "position": [
-          240,
+          448,
           2352
         ],
         "typeVersion": 4.6,
@@ -2974,7 +3026,7 @@
         "name": "Merge Incoming And Sheet1",
         "type": "n8n-nodes-base.merge",
         "position": [
-          416,
+          624,
           2240
         ],
         "typeVersion": 3.2
@@ -2988,7 +3040,7 @@
         "name": "Build Dialog Context",
         "type": "n8n-nodes-base.code",
         "position": [
-          576,
+          784,
           2256
         ],
         "typeVersion": 2
@@ -3010,7 +3062,7 @@
         "name": "Supplier Dialog Planner",
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "position": [
-          736,
+          944,
           2256
         ],
         "typeVersion": 1.5,
@@ -3028,7 +3080,7 @@
         "name": "Structured Output Parser",
         "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
         "position": [
-          848,
+          1056,
           2432
         ],
         "typeVersion": 1.2
@@ -3099,7 +3151,7 @@
         "name": "Prepare Sheet1 Progress",
         "type": "n8n-nodes-base.set",
         "position": [
-          1024,
+          1232,
           2256
         ],
         "typeVersion": 3.4
@@ -3132,7 +3184,7 @@
         "name": "Catalog File Attached",
         "type": "n8n-nodes-base.if",
         "position": [
-          1200,
+          1408,
           2256
         ],
         "typeVersion": 2.2
@@ -3162,7 +3214,7 @@
         "name": "Upload Catalog To Drive",
         "type": "n8n-nodes-base.googleDrive",
         "position": [
-          1488,
+          1696,
           2144
         ],
         "typeVersion": 3,
@@ -3193,7 +3245,7 @@
         "name": "Share Catalog File",
         "type": "n8n-nodes-base.googleDrive",
         "position": [
-          1616,
+          1824,
           2144
         ],
         "typeVersion": 3,
@@ -3270,7 +3322,7 @@
         "name": "Add Drive Link To Progress",
         "type": "n8n-nodes-base.set",
         "position": [
-          1760,
+          1968,
           2144
         ],
         "typeVersion": 3.4
@@ -3408,7 +3460,7 @@
         "name": "Upsert Sheet1 Progress",
         "type": "n8n-nodes-base.googleSheets",
         "position": [
-          1888,
+          2096,
           2272
         ],
         "typeVersion": 4.6,
@@ -3465,7 +3517,7 @@
         "name": "Full Package Ready",
         "type": "n8n-nodes-base.if",
         "position": [
-          2096,
+          2304,
           2160
         ],
         "typeVersion": 2.2
@@ -3506,7 +3558,7 @@
         "name": "Prepare Final Row For Sheet2",
         "type": "n8n-nodes-base.set",
         "position": [
-          2320,
+          2528,
           2144
         ],
         "typeVersion": 3.4
@@ -3587,7 +3639,7 @@
         "name": "Upsert Final To Sheet2",
         "type": "n8n-nodes-base.googleSheets",
         "position": [
-          2512,
+          2720,
           2144
         ],
         "typeVersion": 4.6,
@@ -3626,7 +3678,7 @@
         "name": "Reply Needed",
         "type": "n8n-nodes-base.if",
         "position": [
-          2096,
+          2304,
           2352
         ],
         "typeVersion": 2.2
@@ -3644,7 +3696,7 @@
         "name": "Send WAHA Reply",
         "type": "n8n-nodes-waha.WAHA",
         "position": [
-          2320,
+          2528,
           2336
         ],
         "typeVersion": 202411,
@@ -3663,7 +3715,7 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         "typeVersion": 1,
         "position": [
-          736,
+          944,
           2416
         ],
         "id": "9910a330-91dc-4166-954f-8d97718a4d78",
@@ -3705,7 +3757,7 @@
         "name": "Find Contact In Sheet",
         "type": "n8n-nodes-base.googleSheets",
         "position": [
-          240,
+          448,
           2160
         ],
         "typeVersion": 4.6,
@@ -3740,7 +3792,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4,
         "position": [
-          1360,
+          1568,
           2144
         ],
         "id": "646d9cf5-1470-422c-af23-5c441c3d7bc1",
@@ -3794,7 +3846,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          -448,
+          -528,
           2016
         ],
         "id": "bbf88463-f3af-467f-9f31-94468fad42b7",
@@ -3855,7 +3907,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          32,
+          240,
           1744
         ]
       },
@@ -3888,7 +3940,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          256,
+          464,
           1744
         ]
       },
@@ -3904,7 +3956,7 @@
         "type": "n8n-nodes-base.redis",
         "typeVersion": 1,
         "position": [
-          496,
+          704,
           1872
         ],
         "alwaysOutputData": true,
@@ -3926,7 +3978,7 @@
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.2,
         "position": [
-          720,
+          928,
           1744
         ]
       },
@@ -3940,7 +3992,7 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          944,
+          1152,
           1744
         ]
       },
@@ -3957,7 +4009,7 @@
         "type": "n8n-nodes-base.redis",
         "typeVersion": 1,
         "position": [
-          1136,
+          1344,
           1744
         ],
         "credentials": {
@@ -3979,7 +4031,7 @@
         "type": "n8n-nodes-base.redis",
         "typeVersion": 1,
         "position": [
-          1600,
+          1808,
           1872
         ],
         "alwaysOutputData": true,
@@ -4001,7 +4053,7 @@
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.2,
         "position": [
-          1808,
+          2016,
           1760
         ]
       },
@@ -4043,7 +4095,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          2032,
+          2240,
           1760
         ]
       },
@@ -4057,7 +4109,7 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2240,
+          2448,
           1744
         ]
       },
@@ -4071,7 +4123,7 @@
         "type": "n8n-nodes-base.redis",
         "typeVersion": 1,
         "position": [
-          1472,
+          1680,
           2272
         ],
         "credentials": {
@@ -4090,7 +4142,7 @@
         "type": "n8n-nodes-base.stickyNote",
         "typeVersion": 1,
         "position": [
-          -32,
+          176,
           1616
         ],
         "id": "a4e41b4a-9eef-40ab-b3ee-d09578f5df30",
@@ -4121,7 +4173,7 @@
         "type": "n8n-nodes-base.wait",
         "typeVersion": 1.1,
         "position": [
-          1376,
+          1584,
           1744
         ],
         "webhookId": "compact-buffer-wait"
@@ -4163,7 +4215,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          -240,
+          -32,
           2000
         ],
         "id": "0d0bf189-f6af-4f89-b892-649f0d668ed2",
@@ -4178,7 +4230,7 @@
         },
         "type": "n8n-nodes-base.stickyNote",
         "position": [
-          -32,
+          176,
           2096
         ],
         "typeVersion": 1,
@@ -4347,7 +4399,7 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         "typeVersion": 1.1,
         "position": [
-          1152,
+          1360,
           2416
         ],
         "id": "6f4fc097-e4da-4cfd-8e8a-83a9637ff599",
@@ -4391,6 +4443,39 @@
         ],
         "id": "a8cfe4f1-49d3-4aad-a7a8-cd822b2ba5f9",
         "name": "If3"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "f5ff22d9-aeb5-4143-adc2-d1f20c51c81b",
+                "leftValue": "={{ $json.payload._data.key.remoteJidAlt }}",
+                "rightValue": " 8613721090413",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          -304,
+          2000
+        ],
+        "id": "435e6611-dd4d-4e2c-9ad9-894c72d3e133",
+        "name": "Filter"
       }
     ],
     "connections": {
@@ -4713,7 +4798,7 @@
         "main": [
           [
             {
-              "node": "If1",
+              "node": "Filter",
               "type": "main",
               "index": 0
             }
@@ -4948,19 +5033,46 @@
             }
           ]
         ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version 4d84ba06",
+    "name": "Version f9d2d687",
     "description": "",
     "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-20T06:40:06.656Z",
-        "id": 564,
+        "createdAt": "2026-05-20T07:35:20.774Z",
+        "id": 566,
         "workflowId": "K1cTRtPzk2iPSANE",
-        "versionId": "4d84ba06-be3b-486e-a59c-39dcdda354d6",
+        "versionId": "f9d2d687-00f2-4b4a-8bdd-f6b257e0b4d7",
         "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      },
+      {
+        "createdAt": "2026-05-20T07:57:39.070Z",
+        "id": 568,
+        "workflowId": "K1cTRtPzk2iPSANE",
+        "versionId": "f9d2d687-00f2-4b4a-8bdd-f6b257e0b4d7",
+        "event": "activated",
+        "userId": "18902431-99cf-4918-a77b-b66a93276e18"
+      },
+      {
+        "createdAt": "2026-05-20T07:57:31.458Z",
+        "id": 567,
+        "workflowId": "K1cTRtPzk2iPSANE",
+        "versionId": "f9d2d687-00f2-4b4a-8bdd-f6b257e0b4d7",
+        "event": "deactivated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
     ]
