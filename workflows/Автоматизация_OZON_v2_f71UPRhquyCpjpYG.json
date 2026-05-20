@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-19T12:55:55.426Z",
+  "updatedAt": "2026-05-20T06:05:41.954Z",
   "createdAt": "2026-05-18T09:21:30.674Z",
   "id": "f71UPRhquyCpjpYG",
   "name": "Автоматизация OZON v2",
@@ -9,294 +9,6 @@
   "nodes": [
     {
       "parameters": {
-        "agent": "conversationalAgent",
-        "promptType": "define",
-        "text": "={{ JSON.stringify($json, null, 2) }}",
-        "options": {
-          "systemMessage": "=Ты — AI-аналитик маркетплейса Ozon. Ты получаешь массив товаров с сырыми данными.\n\nШАГ 1 — РАССЧИТАЙ по каждому товару:\n- salesDelta = (revenue_current - revenue_previous) / revenue_previous * 100\n- ordersDelta = (ordered_units_current - ordered_units_previous) / ordered_units_previous * 100\n- convToCart = hits_tocart / session_view * 100\n- returnRate = returns / ordered_units_current * 100\n- cancelRate = cancelled_units / ordered_units_current * 100\n- daysLeft = stock_qty / (revenue_current / 14)\n- margin = (price - cost_price - commission - logistics - ad_spend) / price * 100\n- drr = ad_spend / revenue_current * 100\n\nШАГ 2 — ОПРЕДЕЛИ задачи по правилам:\n- restock: daysLeft меньше 14\n- price: salesDelta меньше -20 и ordersDelta меньше -20, или convToCart меньше 3\n- card: есть сессии но convToCart меньше 5\n- ads_up: salesDelta больше 15 и margin больше 20 и daysLeft больше 14\n- ads_down: drr больше 25 и convToCart меньше 3\n- returns: returnRate больше 15 или cancelRate больше 20\n- scale: salesDelta больше 20 и ordersDelta больше 20 и daysLeft больше 21\n- freeze: salesDelta меньше -30 и ordered_units_current меньше 5\n\nПРИОРИТЕТЫ:\n- high: daysLeft меньше 7 или падение продаж больше 30%\n- medium: daysLeft меньше 14 или падение больше 20% или проблемы с рекламой/возвратами\n- low: остальное\n\nОТВЕЧАЙ СТРОГО ТОЛЬКО ВАЛИДНЫМ JSON без пояснений, без markdown, без текста до и после.\nСтруктура ответа: объект с ключом tasks, значение — массив объектов.\nКаждый объект содержит поля: sku, name, priority, category, action, reason, deadline.\nЗначения priority: high, medium или low.\nЗначения category: restock, price, card, ads_up, ads_down, returns, scale, freeze.\nЗначения deadline: Сегодня, 1-2 дня, До конца недели.\n\nВАЖНО:\n- Одна задача = одно действие. Несколько проблем у товара = несколько задач с одним sku.\n- Каждая причина содержит конкретные цифры из расчётов.\n- Товары без отклонений от норм в ответ не включай.\n- Если данных для расчёта не хватает — пропускай это правило для товара."
-        }
-      },
-      "id": "7349ff01-5f79-404c-934d-c9fa0d149c6f",
-      "name": "AI Agent — расчёт и анализ",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.7,
-      "position": [
-        1856,
-        752
-      ]
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-4o-mini",
-          "mode": "list",
-          "cachedResultName": "gpt-4o-mini"
-        },
-        "options": {
-          "temperature": 0.1
-        }
-      },
-      "id": "2fb3128b-ba71-409c-96c4-2e6a4be4ea44",
-      "name": "OpenAI Chat Model",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        1856,
-        1008
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "3ArAyCEngveD0BDa",
-          "name": "catalog"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "updates": [
-          "message"
-        ],
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        480,
-        608
-      ],
-      "id": "5b07dad6-0141-4dfb-87ee-23b73f7aa164",
-      "name": "Telegram Trigger2",
-      "webhookId": "b03a486c-3a9a-4bd8-893f-849e9e15a07f",
-      "credentials": {
-        "telegramApi": {
-          "id": "UN3cSWUbiewNKmox",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Проверяем тип входящего сообщения\n// Поддерживаем: документ (CSV/Excel), текст с данными или команду /analyze\nconst msg = $input.first().json.message ?? {};\n\nconst hasDocument = !!msg.document;\nconst hasText = !!msg.text;\nconst chatId = msg.chat?.id ?? msg.from?.id;\n\nif (!hasDocument && !hasText) {\n  return [{ json: { skip: true, chatId, reason: 'no_content' } }];\n}\n\nreturn [{\n  json: {\n    skip: false,\n    chatId,\n    hasDocument,\n    hasText,\n    text: msg.text ?? '',\n    fileId: msg.document?.file_id ?? null,\n    fileName: msg.document?.file_name ?? null,\n    mimeType: msg.document?.mime_type ?? null\n  }\n}];"
-      },
-      "id": "85c4404e-75a9-4f86-8045-aef0ec2887c5",
-      "name": "Code — разбор входящего2",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        720,
-        608
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": false,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 1
-          },
-          "conditions": [
-            {
-              "id": "cond-skip",
-              "leftValue": "={{ $json.skip }}",
-              "rightValue": false,
-              "operator": {
-                "type": "boolean",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "98a097b4-29df-4c6d-b050-2aac779ee940",
-      "name": "IF — есть контент?2",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        944,
-        608
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": false,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 1
-          },
-          "conditions": [
-            {
-              "id": "cond-doc",
-              "leftValue": "={{ $json.hasDocument }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "7903acf3-d7fc-414d-a754-bb20e28d4be7",
-      "name": "IF — файл или текст?2",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        1168,
-        592
-      ]
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "id": "3cf65692-10fd-434a-a1c4-f5d39791e3a1",
-      "name": "Spreadsheet — CSV/Excel → JSON2",
-      "type": "n8n-nodes-base.spreadsheetFile",
-      "typeVersion": 2,
-      "position": [
-        1568,
-        608
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Парсинг текстовых данных из Telegram (если менеджер вставил текст/JSON вручную)\nconst raw = $input.first().json.text ?? '';\n\nlet rows = [];\n\n// Пробуем JSON\ntry {\n  const parsed = JSON.parse(raw);\n  rows = Array.isArray(parsed) ? parsed : [parsed];\n} catch(e) {\n  // Пробуем CSV (разделители: запятая или точка с запятой)\n  const lines = raw.trim().split('\\n').filter(Boolean);\n  if (lines.length >= 2) {\n    const sep = lines[0].includes(';') ? ';' : ',';\n    const headers = lines[0].split(sep).map(h => h.trim().replace(/^\"|\"$/g, ''));\n    rows = lines.slice(1).map(line => {\n      const vals = line.split(sep).map(v => v.trim().replace(/^\"|\"$/g, ''));\n      const obj = {};\n      headers.forEach((h, i) => { obj[h] = isNaN(vals[i]) ? vals[i] : Number(vals[i]); });\n      return obj;\n    });\n  }\n}\n\nif (rows.length === 0) {\n  return [{ json: { error: 'Не удалось распарсить данные', raw } }];\n}\n\nreturn rows.map(r => ({ json: r }));"
-      },
-      "id": "8c4e35ce-f0b4-44a5-be84-70ab33a8b911",
-      "name": "Code — парсинг текста/JSON2",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1392,
-        752
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Парсинг ответа Claude\nconst raw = $input.first().json;\nconst text = raw.output ?? raw.content?.[0]?.text ?? '{\"tasks\":[]}';\n\nlet parsed;\ntry {\n  const clean = text.replace(/```json|```/g, '').trim();\n  parsed = JSON.parse(clean);\n} catch(e) {\n  parsed = { tasks: [], error: 'parse failed', raw: text };\n}\n\nconst tasks = parsed.tasks ?? [];\n\n// Сортировка: high → medium → low\nconst order = { high: 0, medium: 1, low: 2 };\ntasks.sort((a, b) => (order[a.priority] ?? 2) - (order[b.priority] ?? 2));\n\n// Форматируем текст для Telegram\nconst priorityEmoji = { high: '🔴', medium: '🟡', low: '🟢' };\nconst categoryLabel = {\n  restock:   '📦 Допоставка',\n  price:     '💰 Цена / скидка',\n  card:      '🖼 Карточка',\n  ads_up:    '📈 Усилить рекламу',\n  ads_down:  '📉 Снизить рекламу',\n  returns:   '↩️ Возвраты',\n  scale:     '🚀 Масштабирование',\n  freeze:    '❄️ Заморозить закуп'\n};\n\nconst lines = tasks.map(t =>\n  `${priorityEmoji[t.priority] ?? '⚪'} *${t.name}* \\`[${t.sku}]\\`\\n` +\n  `${categoryLabel[t.category] ?? t.category}\\n` +\n  `✅ ${t.action}\\n` +\n  `💬 ${t.reason}\\n` +\n  `⏰ ${t.deadline}`\n).join('\\n\\n─────────────\\n\\n');\n\nconst date = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });\nconst highCount = tasks.filter(t => t.priority === 'high').length;\nconst header = `📊 *Задачи по Ozon — ${date}*\\n🔴 Срочных: ${highCount} | Всего: ${tasks.length}\\n`;\n\nconst telegramText = tasks.length > 0\n  ? header + '\\n' + lines\n  : `📊 *Задачи по Ozon — ${date}*\\n\\n✅ Нет срочных задач — все показатели в норме`;\n\nreturn [{\n  json: {\n    tasks,\n    telegramText,\n    totalTasks: tasks.length,\n    highCount\n  }\n}];"
-      },
-      "id": "82982475-cc5c-481d-a02b-0983b9de99f2",
-      "name": "Code — парсинг и форматирование2",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2272,
-        752
-      ]
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Code — разбор входящего2').first().json.chatId }}",
-        "text": "={{ $json.telegramText }}",
-        "additionalFields": {
-          "parse_mode": "Markdown"
-        }
-      },
-      "id": "f3e829ed-b598-490f-a170-2f802e67ce43",
-      "name": "Telegram — задачи менеджеру2",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        2624,
-        608
-      ],
-      "webhookId": "03db2dab-80ea-46df-b1d5-787b180a1928",
-      "credentials": {
-        "telegramApi": {
-          "id": "yO2XgMSlvA23CyKY",
-          "name": "Telegram ai_seller09_bot"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "tasks",
-        "options": {}
-      },
-      "id": "2169ea2a-3891-4d70-9a81-09f6554e4c9a",
-      "name": "Split — разбить задачи2",
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [
-        2640,
-        816
-      ]
-    },
-    {
-      "parameters": {
-        "workspace": {
-          "value": "={{ $vars.ASANA_WORKSPACE_ID }}"
-        },
-        "name": "=[{{ $json.priority.toUpperCase() }}] {{ $json.name }} ({{ $json.sku }}) — {{ $json.action }}",
-        "otherProperties": {
-          "due_on": "={{ $json.deadline === 'Сегодня' ? $now.format('yyyy-MM-dd') : $json.deadline === '1-2 дня' ? $now.plus(2, 'days').format('yyyy-MM-dd') : $now.plus(7, 'days').format('yyyy-MM-dd') }}",
-          "notes": "=Категория: {{ $json.category }}\nПричина: {{ $json.reason }}\nСрок: {{ $json.deadline }}\nАртикул: {{ $json.sku }}"
-        }
-      },
-      "id": "bb3670e1-6f73-4f53-a018-2814e0a4f96b",
-      "name": "Asana — создать задачи2",
-      "type": "n8n-nodes-base.asana",
-      "typeVersion": 1,
-      "position": [
-        3152,
-        752
-      ]
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Code — разбор входящего2').first().json.chatId }}",
-        "text": "❌ Не удалось обработать сообщение. Пожалуйста, отправь CSV или Excel файл с аналитикой, либо JSON с данными товаров.",
-        "additionalFields": {}
-      },
-      "id": "f2ad5ec5-8e03-4cc2-91c2-4af6977dc935",
-      "name": "Telegram — ошибка формата2",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        1408,
-        976
-      ],
-      "webhookId": "57fabced-2476-45e9-a6f1-cb42f8333e5b",
-      "credentials": {
-        "telegramApi": {
-          "id": "yO2XgMSlvA23CyKY",
-          "name": "Telegram ai_seller09_bot"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "file",
-        "fileId": "={{ $('Telegram Trigger2').item.json.message.document.file_id }}",
-        "additionalFields": {}
-      },
-      "id": "4ac38441-2faa-48b4-941a-38641b382e6c",
-      "name": "Telegram — получить файл1",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        1376,
-        464
-      ],
-      "webhookId": "f8777d58-11dc-4454-ab0e-22f2a1eddd9c",
-      "credentials": {
-        "telegramApi": {
-          "id": "UN3cSWUbiewNKmox",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "jsCode": "const items = $input.all();\n\n// Маппинг реальных колонок по номерам __EMPTY\nconst COLS = {\n  name:        'Период: 27.04.2026 \\u2013 03.05.2026', // название товара\n  category1:   '__EMPTY',\n  sku:         '__EMPTY_7',   // Артикул\n  ozon_id:     '__EMPTY_6',   // SKU Ozon\n  abc_sum:     '__EMPTY_8',   // ABC по сумме\n  revenue:     '__EMPTY_10',  // Заказано на сумму\n  rev_delta:   '__EMPTY_11',  // Динамика выручки\n  position:    '__EMPTY_14',  // Позиция в поиске\n  shows:       '__EMPTY_16',  // Показы всего\n  show_delta:  '__EMPTY_17',  // Динамика показов\n  conv_order:  '__EMPTY_18',  // Конверсия из показа в заказ\n  shows_search:'__EMPTY_20',  // Показы в поиске\n  cart_from_search: '__EMPTY_22', // Конверсия поиск→корзина\n  card_visits: '__EMPTY_28',  // Посещения карточки\n  card_delta:  '__EMPTY_29',  // Динамика посещений\n  cart_from_card: '__EMPTY_30', // Конверсия карточка→корзина\n  cart_total:  '__EMPTY_34',  // Конверсия в корзину общая\n  ordered:     '__EMPTY_40',  // Заказано товаров (шт)\n  ord_delta:   '__EMPTY_41',  // Динамика заказов\n  buyout_rate: '__EMPTY_44',  // Конверсия из заказа в выкуп\n  cancelled:   '__EMPTY_48',  // Отменено товаров\n  returned:    '__EMPTY_52',  // Возвращено товаров\n  avg_price:   '__EMPTY_56',  // Средняя цена\n  discount:    '__EMPTY_58',  // Скидка\n  price_index: '__EMPTY_60',  // Индекс цен\n  drr:         '__EMPTY_62',  // Общая ДРР\n  days_no_stock: '__EMPTY_65',// Дней без остатка\n  stock:       '__EMPTY_66',  // Остаток на конец периода\n  ozon_rec:    '__EMPTY_67',  // Рекомендация Ozon\n  to_supply:   '__EMPTY_68',  // Сколько поставить\n  reviews:     '__EMPTY_69',  // Отзывы\n  rating:      '__EMPTY_70',  // Рейтинг\n};\n\nfunction num(v) {\n  if (v === '–' || v === null || v === undefined || v === '') return null;\n  const n = Number(v);\n  return isNaN(n) ? null : n;\n}\n\n// Убираем служебные строки (заголовки, описания, итого)\nconst SKIP_NAMES = ['Товар:', 'Категория:', 'Цена:', 'Схема работы:', 'Признак товара:',\n  'Платформа:', 'Продавец:', 'Товары', 'Итого и среднее'];\n\nconst rows = items.map(i => i.json);\nconst products = [];\n\nfor (const r of rows) {\n  const name = r[COLS.name];\n  if (!name || SKIP_NAMES.some(s => String(name).startsWith(s))) continue;\n  \n  const revenue = num(r[COLS.revenue]);\n  if (!revenue || revenue === 0) continue; // пропускаем нулевые товары\n  \n  const revDelta    = num(r[COLS.rev_delta]);   // дробное, напр. -0.39 = -39%\n  const ordDelta    = num(r[COLS.ord_delta]);\n  const ordered     = num(r[COLS.ordered]) ?? 0;\n  const cancelled   = num(r[COLS.cancelled]) ?? 0;\n  const returned    = num(r[COLS.returned]) ?? 0;\n  const stock       = num(r[COLS.stock]);\n  const drr         = num(r[COLS.drr]);\n  const buyoutRate  = num(r[COLS.buyout_rate]);\n  const cardVisits  = num(r[COLS.card_visits]) ?? 0;\n  const cartFromCard= num(r[COLS.cart_from_card]);\n  const priceIndex  = r[COLS.price_index];\n  const ozonRec     = r[COLS.ozon_rec] ?? '';\n  const toSupply    = num(r[COLS.to_supply]);\n  const daysNoStock = r[COLS.days_no_stock] ?? '';\n  \n  // Парсим \"дней без остатка\": \"22 из 28\" → 22\n  const daysNoStockNum = parseInt(String(daysNoStock).split(' ')[0]) || 0;\n  \n  // Конверсия карточка→корзина в % (уже дробное 0.12 = 12%)\n  const cartConv = cartFromCard !== null ? cartFromCard * 100 : null;\n  \n  // returnRate и cancelRate от заказов\n  const returnRate = ordered > 0 ? (returned / ordered) * 100 : 0;\n  const cancelRate = ordered > 0 ? (cancelled / ordered) * 100 : 0;\n  \n  products.push({\n    sku:          String(r[COLS.sku] ?? ''),\n    name:         String(name).substring(0, 80),\n    revenue,\n    revDeltaPct:  revDelta !== null ? Math.round(revDelta * 100) : null,\n    ordDeltaPct:  ordDelta !== null ? Math.round(ordDelta * 100) : null,\n    ordered,\n    cancelRate:   Math.round(cancelRate),\n    returnRate:   Math.round(returnRate),\n    stock:        stock !== null ? stock : '?',\n    daysNoStock:  daysNoStockNum,\n    cartConvPct:  cartConv !== null ? Math.round(cartConv * 10) / 10 : null,\n    drr:          drr !== null ? Math.round(drr * 100) : 0,\n    buyoutRate:   buyoutRate !== null ? Math.round(buyoutRate * 100) : null,\n    priceIndex:   priceIndex ?? '–',\n    ozonRec:      String(ozonRec),\n    toSupply:     toSupply ?? 0,\n    abc:          r[COLS.abc_sum] ?? '–',\n  });\n}\n\nreturn [{ json: { products, total: products.length } }];"
       },
       "id": "5364471e-7f60-471d-9ef2-a6bf18d0b8e1",
@@ -304,8 +16,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2112,
-        1728
+        2064,
+        896
       ]
     },
     {
@@ -318,8 +30,8 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        544,
-        1728
+        576,
+        784
       ],
       "id": "c03ce37c-03e4-4dec-86ee-fd059cea5640",
       "name": "Telegram Trigger3",
@@ -340,8 +52,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        784,
-        1728
+        816,
+        784
       ]
     },
     {
@@ -373,8 +85,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1008,
-        1728
+        1040,
+        784
       ]
     },
     {
@@ -406,8 +118,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1232,
-        1728
+        1280,
+        768
       ]
     },
     {
@@ -419,8 +131,8 @@
       "type": "n8n-nodes-base.spreadsheetFile",
       "typeVersion": 2,
       "position": [
-        1888,
-        1584
+        1920,
+        640
       ]
     },
     {
@@ -432,8 +144,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1440,
-        1840
+        1472,
+        896
       ]
     },
     {
@@ -445,8 +157,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2768,
-        1728
+        2816,
+        896
       ]
     },
     {
@@ -454,6 +166,7 @@
         "chatId": "={{ $('Code — разбор входящего3').first().json.chatId }}",
         "text": "={{ $json.telegramText }}",
         "additionalFields": {
+          "appendAttribution": false,
           "parse_mode": "Markdown"
         }
       },
@@ -462,8 +175,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2992,
-        1584
+        3040,
+        752
       ],
       "webhookId": "c946eab3-0a01-4a00-a76b-92647e60c8a2",
       "credentials": {
@@ -483,8 +196,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        2992,
-        1872
+        3040,
+        1040
       ]
     },
     {
@@ -503,8 +216,8 @@
       "type": "n8n-nodes-base.asana",
       "typeVersion": 1,
       "position": [
-        3200,
-        1872
+        3280,
+        1024
       ]
     },
     {
@@ -518,8 +231,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1232,
-        1936
+        1264,
+        992
       ],
       "webhookId": "bb144c25-417c-4481-bac2-637f16bafde5",
       "credentials": {
@@ -540,8 +253,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1456,
-        1584
+        1488,
+        640
       ],
       "webhookId": "1c033cfb-8707-4b86-8640-c83453f1d5fe",
       "credentials": {
@@ -557,7 +270,7 @@
         "promptType": "define",
         "text": "={{ JSON.stringify($json.products) }}",
         "options": {
-          "systemMessage": "Ты — AI-аналитик маркетплейса Ozon. Ты получаешь массив товаров с сырыми данными.\n\nШАГ 1 — РАССЧИТАЙ по каждому товару:\n- salesDelta = (revenue_current - revenue_previous) / revenue_previous * 100\n- ordersDelta = (ordered_units_current - ordered_units_previous) / ordered_units_previous * 100\n- convToCart = hits_tocart / session_view * 100\n- returnRate = returns / ordered_units_current * 100\n- cancelRate = cancelled_units / ordered_units_current * 100\n- daysLeft = stock_qty / (revenue_current / 14)\n- margin = (price - cost_price - commission - logistics - ad_spend) / price * 100\n- drr = ad_spend / revenue_current * 100\n\nШАГ 2 — ОПРЕДЕЛИ задачи по правилам:\n- restock: daysLeft меньше 14\n- price: salesDelta меньше -20 и ordersDelta меньше -20, или convToCart меньше 3\n- card: есть сессии но convToCart меньше 5\n- ads_up: salesDelta больше 15 и margin больше 20 и daysLeft больше 14\n- ads_down: drr больше 25 и convToCart меньше 3\n- returns: returnRate больше 15 или cancelRate больше 20\n- scale: salesDelta больше 20 и ordersDelta больше 20 и daysLeft больше 21\n- freeze: salesDelta меньше -30 и ordered_units_current меньше 5\n\nПРИОРИТЕТЫ:\n- high: daysLeft меньше 7 или падение продаж больше 30%\n- medium: daysLeft меньше 14 или падение больше 20% или проблемы с рекламой/возвратами\n- low: остальное\n\nОТВЕЧАЙ СТРОГО ТОЛЬКО ВАЛИДНЫМ JSON без пояснений, без markdown, без текста до и после.\nСтруктура ответа: объект с ключом tasks, значение — массив объектов.\nКаждый объект содержит поля: sku, name, priority, category, action, reason, deadline.\nЗначения priority: high, medium или low.\nЗначения category: restock, price, card, ads_up, ads_down, returns, scale, freeze.\nЗначения deadline: Сегодня, 1-2 дня, До конца недели.\n\nВАЖНО:\n- Одна задача = одно действие. Несколько проблем у товара = несколько задач с одним sku.\n- Каждая причина содержит конкретные цифры из расчётов.\n- Товары без отклонений от норм в ответ не включай.\n- Если данных для расчёта не хватает — пропускай это правило для товара."
+          "systemMessage": "Ты — AI-аналитик маркетплейса Ozon. Ты получаешь массив товаров с сырыми данными.\n\nШАГ 1 — РАССЧИТАЙ по каждому товару:\n- salesDelta = (revenue_current - revenue_previous) / revenue_previous * 100\n- ordersDelta = (ordered_units_current - ordered_units_previous) / ordered_units_previous * 100\n- convToCart = hits_tocart / session_view * 100\n- returnRate = returns / ordered_units_current * 100\n- cancelRate = cancelled_units / ordered_units_current * 100\n- daysLeft = stock_qty / (revenue_current / 14)\n- margin = (price - cost_price - commission - logistics - ad_spend) / price * 100\n- drr = ad_spend / revenue_current * 100\n\nШАГ 2 — ОПРЕДЕЛИ задачи по правилам:\n- restock: daysLeft меньше 14\n- price: salesDelta меньше -20 и ordersDelta меньше -20, или convToCart меньше 3\n- card: есть сессии но convToCart меньше 5\n- ads_up: salesDelta больше 15 и margin больше 20 и daysLeft больше 14\n- ads_down: drr больше 25 и convToCart меньше 3\n- returns: returnRate больше 15 или cancelRate больше 20\n- scale: salesDelta больше 20 и ordersDelta больше 20 и daysLeft больше 21\n- freeze: salesDelta меньше -30 и ordered_units_current меньше 5\n\nПРИОРИТЕТЫ:\n- high: daysLeft меньше 7 или падение продаж больше 30%\n- medium: daysLeft меньше 14 или падение больше 20% или проблемы с рекламой/возвратами\n- low: остальное\n\nОТВЕЧАЙ СТРОГО ТОЛЬКО ВАЛИДНЫМ JSON без пояснений, без markdown, без текста до и после.\nСтруктура ответа: объект с ключом tasks, значение — массив объектов.\nКаждый объект содержит поля: sku, name, priority, category, action, reason, deadline.\nЗначения priority: high, medium или low.\nЗначения category: restock, price, card, ads_up, ads_down, returns, scale, freeze.\nЗначения deadline: Сегодня, 1-2 дня, До конца недели.\n\nВАЖНО:\n- Одна задача = одно действие. Несколько проблем у товара = несколько задач с одним sku.\n- Каждая причина содержит конкретные цифры из расчётов.\n- Товары без отклонений от норм в ответ не включай.\n- Если данных для расчёта не хватает — пропускай это правило для товара.\n\nТРЕБОВАНИЯ К ПОЛЮ reason:\n- Пиши ТОЛЬКО на русском языке\n- Никаких английских названий переменных (salesDelta, orderedUnitsCurrent, convToCart и т.д.)\n- Формат: короткое предложение с цифрами\n\nПравильные примеры:\n- \"продажи упали на 39%, заказов за период 31 шт, Ozon рекомендует заморозить закуп\"\n- \"выручка выросла на 93%, заказов стало больше на 132%, товар активно растёт\"\n- \"конверсия карточки 5%, показов 12 915, посещений 476 — трафик есть, в корзину не добавляют\"\n- \"остаток 361 шт, дней продаж осталось менее 7, Ozon рекомендует срочно поставить\"\n- \"ДРР 12%, конверсия низкая — реклама тратит бюджет без результата\"\n\nНеправильные примеры (так писать нельзя):\n- \"salesDelta = -39%, orderedUnitsCurrent = 31\"\n- \"convToCart < 3, drr > 25\"\n- \"daysLeft = 5, restock needed\""
         }
       },
       "id": "a5f3d48d-3026-4b19-9c7d-b38222b02d51",
@@ -565,8 +278,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
       "position": [
-        2320,
-        1728
+        2336,
+        896
       ]
     },
     {
@@ -586,8 +299,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2304,
-        1936
+        2320,
+        1104
       ],
       "credentials": {
         "openAiApi": {
@@ -598,140 +311,6 @@
     }
   ],
   "connections": {
-    "AI Agent — расчёт и анализ": {
-      "main": [
-        [
-          {
-            "node": "Code — парсинг и форматирование2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent — расчёт и анализ",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Telegram Trigger2": {
-      "main": [
-        [
-          {
-            "node": "Code — разбор входящего2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code — разбор входящего2": {
-      "main": [
-        [
-          {
-            "node": "IF — есть контент?2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF — есть контент?2": {
-      "main": [
-        [
-          {
-            "node": "IF — файл или текст?2",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Telegram — ошибка формата2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF — файл или текст?2": {
-      "main": [
-        [
-          {
-            "node": "Telegram — получить файл1",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Code — парсинг текста/JSON2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Spreadsheet — CSV/Excel → JSON2": {
-      "main": [
-        [
-          {
-            "node": "AI Agent — расчёт и анализ",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code — парсинг текста/JSON2": {
-      "main": [
-        [
-          {
-            "node": "AI Agent — расчёт и анализ",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code — парсинг и форматирование2": {
-      "main": [
-        [
-          {
-            "node": "Telegram — задачи менеджеру2",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Split — разбить задачи2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Split — разбить задачи2": {
-      "main": [
-        []
-      ]
-    },
-    "Telegram — получить файл1": {
-      "main": [
-        [
-          {
-            "node": "Spreadsheet — CSV/Excel → JSON2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Code — фильтр и сжатие": {
       "main": [
         [
@@ -887,9 +466,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "c420097c-bbdd-42de-8459-c87dc1c5a60b",
+  "versionId": "8204d33b-51b3-4564-a498-8e748ad540a6",
   "activeVersionId": null,
-  "versionCounter": 158,
+  "versionCounter": 179,
   "triggerCount": 0,
   "shared": [
     {
