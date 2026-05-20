@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-19T11:40:40.106Z",
+  "updatedAt": "2026-05-20T06:40:04.316Z",
   "createdAt": "2026-04-23T09:58:08.928Z",
   "id": "K1cTRtPzk2iPSANE",
   "name": "Диалоги с поставщиками Исходящие/Входящие",
@@ -1179,39 +1179,6 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "86b8fd43-c423-484c-8d57-dbd037d148a2",
-              "leftValue": "={{ $json.payload._data.key.remoteJidAlt }}",
-              "rightValue": "77075536107@s.whatsapp.net",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.3,
-      "position": [
-        -480,
-        1648
-      ],
-      "id": "d85ef816-8352-44a4-8332-2bfc04dc2e99",
-      "name": "Filter"
-    },
-    {
-      "parameters": {
         "url": "={{ $('WAHA Trigger').item.json.payload.media.url.replace('http://localhost:3000', 'https://waha.lux.kz') }}",
         "sendHeaders": true,
         "headerParameters": {
@@ -1884,19 +1851,6 @@
       ],
       "id": "a8cfe4f1-49d3-4aad-a7a8-cd822b2ba5f9",
       "name": "If3"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1792,
-        928
-      ],
-      "id": "44d97014-0007-4393-b3ea-c3c25f552855",
-      "name": "Edit Fields"
     }
   ],
   "connections": {
@@ -2202,11 +2156,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Filter": {
-      "main": [
-        []
       ]
     },
     "HTTP Request": {
@@ -2561,9 +2510,9 @@
       }
     ]
   },
-  "versionId": "6b732e89-96e1-4fb5-a069-0cce9c605d62",
-  "activeVersionId": "6b732e89-96e1-4fb5-a069-0cce9c605d62",
-  "versionCounter": 804,
+  "versionId": "4d84ba06-be3b-486e-a59c-39dcdda354d6",
+  "activeVersionId": "4d84ba06-be3b-486e-a59c-39dcdda354d6",
+  "versionCounter": 808,
   "triggerCount": 2,
   "shared": [
     {
@@ -2593,9 +2542,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-19T11:40:42.000Z",
-    "createdAt": "2026-05-19T11:40:40.107Z",
-    "versionId": "6b732e89-96e1-4fb5-a069-0cce9c605d62",
+    "updatedAt": "2026-05-20T06:40:06.000Z",
+    "createdAt": "2026-05-20T06:40:04.318Z",
+    "versionId": "4d84ba06-be3b-486e-a59c-39dcdda354d6",
     "workflowId": "K1cTRtPzk2iPSANE",
     "nodes": [
       {
@@ -3770,39 +3719,6 @@
       },
       {
         "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict",
-              "version": 3
-            },
-            "conditions": [
-              {
-                "id": "86b8fd43-c423-484c-8d57-dbd037d148a2",
-                "leftValue": "={{ $json.payload._data.key.remoteJidAlt }}",
-                "rightValue": "77075536107@s.whatsapp.net",
-                "operator": {
-                  "type": "string",
-                  "operation": "contains"
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.filter",
-        "typeVersion": 2.3,
-        "position": [
-          -480,
-          1648
-        ],
-        "id": "d85ef816-8352-44a4-8332-2bfc04dc2e99",
-        "name": "Filter"
-      },
-      {
-        "parameters": {
           "url": "={{ $('WAHA Trigger').item.json.payload.media.url.replace('http://localhost:3000', 'https://waha.lux.kz') }}",
           "sendHeaders": true,
           "headerParameters": {
@@ -4475,19 +4391,6 @@
         ],
         "id": "a8cfe4f1-49d3-4aad-a7a8-cd822b2ba5f9",
         "name": "If3"
-      },
-      {
-        "parameters": {
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          1792,
-          928
-        ],
-        "id": "44d97014-0007-4393-b3ea-c3c25f552855",
-        "name": "Edit Fields"
       }
     ],
     "connections": {
@@ -4795,11 +4698,6 @@
           ]
         ]
       },
-      "Filter": {
-        "main": [
-          []
-        ]
-      },
       "HTTP Request": {
         "main": [
           [
@@ -5053,15 +4951,15 @@
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version 6b732e89",
+    "name": "Version 4d84ba06",
     "description": "",
     "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-19T11:40:42.655Z",
-        "id": 562,
+        "createdAt": "2026-05-20T06:40:06.656Z",
+        "id": 564,
         "workflowId": "K1cTRtPzk2iPSANE",
-        "versionId": "6b732e89-96e1-4fb5-a069-0cce9c605d62",
+        "versionId": "4d84ba06-be3b-486e-a59c-39dcdda354d6",
         "event": "activated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
