@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-21T06:02:03.736Z",
+  "updatedAt": "2026-05-21T07:09:25.615Z",
   "createdAt": "2026-05-20T07:24:36.657Z",
   "id": "XRyhOQEfez23Uq3j",
   "name": "Диалоги с поставщиками Исходящие/Входящие 2.0",
@@ -337,7 +337,7 @@
               "id": "b8",
               "name": "Last Reply",
               "type": "string",
-              "value": "={{ `Hello! My name is Ilyas, I am a purchasing manager from Kazakhstan.\n\nWe are a wholesale and retail company developing our own brands (electronics and other categories), and we are currently expanding into the sports equipment segment (website: https://15kg.net) \n\nWe met at the Shanghai Sports Expo (March 13–15) and discussed potential cooperation.\n\nAt this stage, we are interested in the following products:\ndumbbells, resistance bands, workout mats, shakers, ankle/wrist weights, foldable hoops, jump ropes, Pilates platforms, foam rollers, and similar items.\n\nCould you please share:\n* your latest product catalog\n* MOQ for trial order\n* private label options (logo printing) and MOQ for branding\n* price range for key products\n\nWe are planning to build a long-term partnership and scale volumes if quality and pricing meet our expectations.\n\nLooking forward to your reply.` }}"
+              "value": "={{ `Hello!\nMy name is Ilyas, and I represent a wholesale and retail company from Kazakhstan developing our own brands in electronics and consumer products. We are currently expanding into the sports equipment category.\n\nIt was a pleasure meeting your team at the recent sports industry exhibition in Shanghai. We are now looking for reliable manufacturing partners for products such as dumbbells, resistance bands, workout mats, shakers, jump ropes, foam rollers, Pilates equipment, and other fitness accessories.\n\nCould you please share:\n* your latest product catalog\n* MOQ for trial orders\n* private label / logo branding options\n* pricing for your key products\n\nWe are interested in building a long-term partnership with scalable order volumes for the right supplier.\n\nLooking forward to your reply and hopefully to successful cooperation!` }}"
             },
             {
               "id": "b9",
@@ -2865,9 +2865,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "680d4e0d-9611-45bf-ba6f-0a45d1fef417",
-  "activeVersionId": "680d4e0d-9611-45bf-ba6f-0a45d1fef417",
-  "versionCounter": 287,
+  "versionId": "5293d3be-e4f8-45ff-932e-4be4297e3fe0",
+  "activeVersionId": "5293d3be-e4f8-45ff-932e-4be4297e3fe0",
+  "versionCounter": 290,
   "triggerCount": 2,
   "shared": [
     {
@@ -2897,9 +2897,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-21T06:03:21.000Z",
-    "createdAt": "2026-05-21T06:02:02.691Z",
-    "versionId": "680d4e0d-9611-45bf-ba6f-0a45d1fef417",
+    "updatedAt": "2026-05-21T07:09:54.000Z",
+    "createdAt": "2026-05-21T07:09:25.618Z",
+    "versionId": "5293d3be-e4f8-45ff-932e-4be4297e3fe0",
     "workflowId": "XRyhOQEfez23Uq3j",
     "nodes": [
       {
@@ -3232,7 +3232,7 @@
                 "id": "b8",
                 "name": "Last Reply",
                 "type": "string",
-                "value": "={{ `Hello! My name is Ilyas, I am a purchasing manager from Kazakhstan.\n\nWe are a wholesale and retail company developing our own brands (electronics and other categories), and we are currently expanding into the sports equipment segment (website: https://15kg.net) \n\nWe met at the Shanghai Sports Expo (March 13–15) and discussed potential cooperation.\n\nAt this stage, we are interested in the following products:\ndumbbells, resistance bands, workout mats, shakers, ankle/wrist weights, foldable hoops, jump ropes, Pilates platforms, foam rollers, and similar items.\n\nCould you please share:\n* your latest product catalog\n* MOQ for trial order\n* private label options (logo printing) and MOQ for branding\n* price range for key products\n\nWe are planning to build a long-term partnership and scale volumes if quality and pricing meet our expectations.\n\nLooking forward to your reply.` }}"
+                "value": "={{ `Hello!\nMy name is Ilyas, and I represent a wholesale and retail company from Kazakhstan developing our own brands in electronics and consumer products. We are currently expanding into the sports equipment category.\n\nIt was a pleasure meeting your team at the recent sports industry exhibition in Shanghai. We are now looking for reliable manufacturing partners for products such as dumbbells, resistance bands, workout mats, shakers, jump ropes, foam rollers, Pilates equipment, and other fitness accessories.\n\nCould you please share:\n* your latest product catalog\n* MOQ for trial orders\n* private label / logo branding options\n* pricing for your key products\n\nWe are interested in building a long-term partnership with scalable order volumes for the right supplier.\n\nLooking forward to your reply and hopefully to successful cooperation!` }}"
               },
               {
                 "id": "b9",
@@ -5744,15 +5744,15 @@
       }
     },
     "authors": "Святослав it@mail6.luxkz.kz",
-    "name": "Version 680d4e0d",
+    "name": "Version 5293d3be",
     "description": "",
-    "autosaved": false,
+    "autosaved": true,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-21T06:03:21.264Z",
-        "id": 595,
+        "createdAt": "2026-05-21T07:09:54.531Z",
+        "id": 597,
         "workflowId": "XRyhOQEfez23Uq3j",
-        "versionId": "680d4e0d-9611-45bf-ba6f-0a45d1fef417",
+        "versionId": "5293d3be-e4f8-45ff-932e-4be4297e3fe0",
         "event": "activated",
         "userId": "18902431-99cf-4918-a77b-b66a93276e18"
       }
