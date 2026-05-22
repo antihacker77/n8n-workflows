@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-21T07:09:25.615Z",
+  "updatedAt": "2026-05-22T05:59:11.263Z",
   "createdAt": "2026-05-20T07:24:36.657Z",
   "id": "XRyhOQEfez23Uq3j",
   "name": "Диалоги с поставщиками Исходящие/Входящие 2.0",
@@ -202,7 +202,7 @@
       "name": "Schedule Trigger1",
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
-        448,
+        656,
         1008
       ],
       "typeVersion": 1.2
@@ -229,7 +229,7 @@
       "name": "Read Sheet1 Contacts1",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        672,
+        880,
         1008
       ],
       "typeVersion": 4.6,
@@ -269,7 +269,7 @@
       "name": "Needs first contact1",
       "type": "n8n-nodes-base.if",
       "position": [
-        880,
+        1088,
         1008
       ],
       "typeVersion": 2.2
@@ -282,7 +282,7 @@
       "name": "Loop Contacts1",
       "type": "n8n-nodes-base.splitInBatches",
       "position": [
-        1120,
+        1328,
         992
       ],
       "typeVersion": 3
@@ -353,7 +353,7 @@
       "name": "Build First Message1",
       "type": "n8n-nodes-base.set",
       "position": [
-        1600,
+        1808,
         992
       ],
       "typeVersion": 3.4
@@ -371,7 +371,7 @@
       "name": "Send First WAHA Message1",
       "type": "n8n-nodes-waha.WAHA",
       "position": [
-        2160,
+        2368,
         864
       ],
       "typeVersion": 202411,
@@ -468,7 +468,7 @@
       "name": "Update Sheet1 After First Message2",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        2384,
+        2592,
         864
       ],
       "typeVersion": 4.6,
@@ -485,7 +485,7 @@
       "name": "Continue Loop1",
       "type": "n8n-nodes-base.noOp",
       "position": [
-        2560,
+        2768,
         1008
       ],
       "typeVersion": 1
@@ -1724,7 +1724,7 @@
     },
     {
       "parameters": {
-        "content": "# Блок первого письма поставщикам по номеру ",
+        "content": "# Блок первого письма поставщикам по номеру Waha-1 4210\n",
         "height": 320,
         "width": 2388,
         "color": 3
@@ -1732,7 +1732,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        304,
+        512,
         912
       ],
       "id": "9d2550ba-4823-4e24-9b49-86f5ea07c254",
@@ -1822,7 +1822,7 @@
       "type": "n8n-nodes-waha.WAHA",
       "typeVersion": 202411,
       "position": [
-        1776,
+        1984,
         992
       ],
       "id": "67d7ce27-0ca4-4dec-8420-d9bac2d78944",
@@ -1862,7 +1862,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1952,
+        2160,
         992
       ],
       "id": "745eec3f-5e16-4fc4-970a-0ea4c7519166",
@@ -1954,7 +1954,7 @@
       "name": "Update Sheet1 After First Message3",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        2256,
+        2464,
         1136
       ],
       "typeVersion": 4.6,
@@ -2012,7 +2012,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1328,
+        1536,
         1008
       ],
       "id": "e01533fc-ebba-4914-9cc3-52689e28712f",
@@ -2156,6 +2156,538 @@
           "name": "Google Drive vkitae"
         }
       }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 59
+            }
+          ]
+        }
+      },
+      "id": "5fb0b4bb-178d-4547-ae7e-5c04a35c1ddb",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        624,
+        320
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1068126293,
+          "mode": "list",
+          "cachedResultName": "Написать с 1196",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=1068126293"
+        },
+        "options": {}
+      },
+      "id": "a870d8c2-7f08-4219-bb25-fb9de3d26bea",
+      "name": "Read Sheet1 Contacts",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        880,
+        544
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a1",
+              "leftValue": "={{ $json['Отправленно '].toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1aaee3f4-71d7-4e75-9354-f6df9ab29273",
+      "name": "Needs first contact",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1088,
+        544
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "5bd78f90-600f-45ee-967b-7eaae9235950",
+      "name": "Loop Contacts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        1328,
+        528
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "Контакты",
+              "type": "string",
+              "value": "={{ $json['Phone / WhatsApp / WeChat'] }}"
+            },
+            {
+              "id": "b2",
+              "name": "First Contact Sent",
+              "type": "string",
+              "value": "Yes"
+            },
+            {
+              "id": "b3",
+              "name": "Stage",
+              "type": "string",
+              "value": "awaiting_catalog"
+            },
+            {
+              "id": "b4",
+              "name": "Название компании временно",
+              "type": "string",
+              "value": "={{ $json['Название компании временно'] || '' }}"
+            },
+            {
+              "id": "b5",
+              "name": "Деятельность компании временно",
+              "type": "string",
+              "value": "={{ $json['Деятельность компании временно'] || '' }}"
+            },
+            {
+              "id": "b6",
+              "name": "Ссылка на каталог временно",
+              "type": "string",
+              "value": "={{ $json['Ссылка на каталог временно'] || '' }}"
+            },
+            {
+              "id": "b7",
+              "name": "Полный пакет получен",
+              "type": "string",
+              "value": "={{ $json['Полный пакет получен'] || '' }}"
+            },
+            {
+              "id": "b8",
+              "name": "Last Reply",
+              "type": "string",
+              "value": "={{ `Hello!\n\nMy name is George, and I represent a wholesale and retail company from Kazakhstan developing our own brands in electronics and consumer products. We are currently expanding into the sports equipment category.\n\nWe are now looking for reliable manufacturing partners for products such as dumbbells, resistance bands, workout mats, shakers, jump ropes, foam rollers, Pilates equipment, and other fitness accessories.\n\nCould you please share:\n* your latest product catalog\n* MOQ for trial orders\n* private label / logo branding options\n* pricing for your key products\n\nWe are interested in building a long-term partnership with scalable order volumes for the right supplier.\nLooking forward to your reply and hopefully to successful cooperation!` }}"
+            },
+            {
+              "id": "b9",
+              "name": "Updated At",
+              "type": "string",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a59d709b-780e-475a-b60f-770fb6a49a41",
+      "name": "Build First Message",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1808,
+        528
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "=default",
+        "chatId": "={{ $json.chatId.split('@')[0] }}@s.whatsapp.net",
+        "text": "={{ $('Build First Message').item.json['Last Reply'] }}",
+        "requestOptions": {}
+      },
+      "id": "6a99ebf8-6121-4ae9-86df-2d38ebaa1994",
+      "name": "Send First WAHA Message",
+      "type": "n8n-nodes-waha.WAHA",
+      "position": [
+        2560,
+        400
+      ],
+      "typeVersion": 202411,
+      "credentials": {
+        "wahaApi": {
+          "id": "vuGNMgBxJGJ558Yt",
+          "name": "WAHA 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1068126293,
+          "mode": "list",
+          "cachedResultName": "Написать с 1196",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=1068126293"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone / WhatsApp / WeChat": "={{ $('Build First Message').item.json['Контакты'] }}",
+            "Отправленно ": "={{ $json.key.fromMe }}"
+          },
+          "matchingColumns": [
+            "Phone / WhatsApp / WeChat"
+          ],
+          "schema": [
+            {
+              "id": "Supplier name (Название)",
+              "displayName": "Supplier name (Название)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone / WhatsApp / WeChat",
+              "displayName": "Phone / WhatsApp / WeChat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email (Почта)",
+              "displayName": "Email (Почта)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Отправленно ",
+              "displayName": "Отправленно ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ИИ",
+              "displayName": "ИИ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c3f71f15-4b77-41e2-b5b6-b42ed9201db7",
+      "name": "Update Sheet1 After First Message",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2784,
+        400
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "8290bf8b-abcb-493d-a6e4-67842f8bc3e3",
+      "name": "Continue Loop",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        2960,
+        544
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Блок первого письма поставщикам по номеру  Waha-2 1198\n\n",
+        "height": 320,
+        "width": 2388,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        528,
+        432
+      ],
+      "id": "fb7f83bf-c817-4bda-8a10-084bc2438c2d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "resource": "Contacts",
+        "operation": "Check Exists",
+        "session": "=default",
+        "phone": "={{ $json['Контакты'] }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        2176,
+        528
+      ],
+      "id": "5242ce40-8e78-45f0-a4b1-3de6dba17648",
+      "name": "Check phone number is registered in WhatsApp.",
+      "credentials": {
+        "wahaApi": {
+          "id": "vuGNMgBxJGJ558Yt",
+          "name": "WAHA 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6da2ea0e-693b-4caa-937e-c51b4881d893",
+              "leftValue": "={{ $json.numberExists }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2352,
+        528
+      ],
+      "id": "7da35317-69e5-49ed-bce7-5fd1d07d0e4a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc",
+          "mode": "list",
+          "cachedResultName": "Тест общения с поставщиками исходящие",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1068126293,
+          "mode": "list",
+          "cachedResultName": "Написать с 1196",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lciDcPcRw0AGGN-yg44ssWKnuSg51dNGy31qKx6CRRc/edit#gid=1068126293"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Отправленно ": "={{ $json.numberExists }}",
+            "Phone / WhatsApp / WeChat": "={{ $('Build First Message').item.json['Контакты'] }}"
+          },
+          "matchingColumns": [
+            "Phone / WhatsApp / WeChat"
+          ],
+          "schema": [
+            {
+              "id": "Supplier name (Название)",
+              "displayName": "Supplier name (Название)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone / WhatsApp / WeChat",
+              "displayName": "Phone / WhatsApp / WeChat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email (Почта)",
+              "displayName": "Email (Почта)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Отправленно ",
+              "displayName": "Отправленно ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ИИ",
+              "displayName": "ИИ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "89e38668-8fa4-4600-9d86-df2587040514",
+      "name": "Update Sheet1 After First Message4",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2656,
+        672
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c5V2Tj04TILmCSts",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "07dc6188-ad03-4970-950b-be24c9702c2e",
+              "leftValue": "={{ $json['Phone / WhatsApp / WeChat'].toString() }}",
+              "rightValue": "8",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1536,
+        544
+      ],
+      "id": "20a4ec4c-af5b-4ee9-8e06-227ac389bf19",
+      "name": "If8"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        640,
+        544
+      ],
+      "id": "745166e9-f9a4-4017-8fe7-8ada3b9bfc0b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        528
+      ],
+      "id": "8168d9d2-d429-4a88-8192-c1dcbf158b54",
+      "name": "Wait",
+      "webhookId": "65ae1a18-4432-446f-9c12-75260ee02a69"
     }
   ],
   "connections": {
@@ -2846,6 +3378,164 @@
           }
         ]
       ]
+    },
+    "Read Sheet1 Contacts": {
+      "main": [
+        [
+          {
+            "node": "Needs first contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs first contact": {
+      "main": [
+        [
+          {
+            "node": "Loop Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Contacts": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build First Message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send First WAHA Message": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet1 After First Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet1 After First Message": {
+      "main": [
+        [
+          {
+            "node": "Continue Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue Loop": {
+      "main": [
+        [
+          {
+            "node": "Loop Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check phone number is registered in WhatsApp.": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send First WAHA Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Sheet1 After First Message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet1 After First Message4": {
+      "main": [
+        [
+          {
+            "node": "Continue Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If8": {
+      "main": [
+        [
+          {
+            "node": "Build First Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read Sheet1 Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check phone number is registered in WhatsApp.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2865,9 +3555,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "5293d3be-e4f8-45ff-932e-4be4297e3fe0",
+  "versionId": "1ff76798-089a-4be8-b216-b5c737d11cbc",
   "activeVersionId": "5293d3be-e4f8-45ff-932e-4be4297e3fe0",
-  "versionCounter": 290,
+  "versionCounter": 353,
   "triggerCount": 2,
   "shared": [
     {
